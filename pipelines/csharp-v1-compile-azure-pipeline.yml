@@ -22,11 +22,11 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '**/*.csproj'
+    projects: 'msgraph-sdk-raptor/**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/*V1Tests/*.csproj'
+    projects: 'msgraph-sdk-raptor/**/*V1Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
