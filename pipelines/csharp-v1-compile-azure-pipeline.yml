@@ -28,5 +28,5 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: 'msgraph-sdk-raptor/CsharpV1Tests/*.csproj'
+    projects: '**/CsharpV1Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
