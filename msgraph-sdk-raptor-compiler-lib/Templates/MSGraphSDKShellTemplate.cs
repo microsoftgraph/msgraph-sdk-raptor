@@ -25,8 +25,7 @@ namespace MsGraphSDKSnippetsCompiler.Templates
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write(@"
-using System;
+            this.Write(@"using System;
 using Microsoft.Graph;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -34,16 +33,16 @@ using MsGraphSDKSnippetsCompiler;
 
 public class GraphSDKTest
 {
-	private IAuthenticationProvider authProvider = null;
+    private IAuthenticationProvider authProvider = null;
 
-	private async void Main()
-	{
-	    authProvider = AuthenticationProvider.GetIAuthenticationProvider();
+    private async void Main()
+    {
+        authProvider = AuthenticationProvider.GetIAuthenticationProvider();
 
         #region msgraphsnippets
-		//insert-code-here
+        //insert-code-here
         #endregion
-	}
+    }
 }");
             return this.GenerationEnvironment.ToString();
         }
