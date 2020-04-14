@@ -32,7 +32,6 @@ steps:
     command: 'test'
     projects: '**/CsharpV1Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
-    publishTestResults: false
   displayName: 'Csharp V1 Compilation Tests'
   continueOnError: true
 
