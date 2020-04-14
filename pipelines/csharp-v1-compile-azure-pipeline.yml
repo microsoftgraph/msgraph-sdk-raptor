@@ -31,7 +31,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/CsharpV1Tests.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Common.TestResultsDirectory)'
+    arguments: '--configuration $(buildConfiguration)'
   displayName: 'Csharp V1 Compilation Tests'
   continueOnError: true
 
@@ -39,7 +39,7 @@ steps:
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'VSTest'
-    searchFolder: '$(Common.TestResultsDirectory)'
+    searchFolder: '$(Agent.TempDirectory)'
     testResultsFiles: '**/*.trx'
     testRunTitle: 'V1 C# Snippet Compilation Tests'
   displayName: 'Publish Test Results'
