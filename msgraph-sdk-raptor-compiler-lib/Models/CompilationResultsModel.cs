@@ -8,6 +8,5 @@ namespace MsGraphSDKSnippetsCompiler.Models
         public bool IsSuccess { get; set; }
         public IEnumerable<Diagnostic> Diagnostics { get; set; }
         public string MarkdownFileName { get; set; }
-        public string Snippet { get; set; }
     }
 }
