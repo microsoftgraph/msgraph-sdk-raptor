@@ -3,6 +3,8 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+name: 'Azure Pipeline for V1 Snippet Compilation Tests'
+
 trigger:
 - master
 
@@ -18,15 +20,18 @@ steps:
   inputs:
     targetType: 'inline'
     script: 'git clone https://github.com/microsoftgraph/microsoft-graph-docs'
+  displayName: 'Clone Docs Repo for Snippets'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: 'msgraph-sdk-raptor/**/*.csproj'
+    projects: 'msgraph-sdk-raptor/**/*.csproj' # to prevent building docs repo, do not change path to wildcard here
     arguments: '--configuration $(buildConfiguration)'
+  displayName: 'Build all'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
     projects: '**/CsharpV1Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
+  displayName: 'Csharp V1 Compilation Tests'
