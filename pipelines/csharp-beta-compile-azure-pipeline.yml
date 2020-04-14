@@ -23,7 +23,9 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: 'msgraph-sdk-raptor/**/*.csproj' # to prevent building docs repo, do not change path to wildcard here
+    projects: |
+      **/*.csproj
+      !microsoft-graph-docs/*.csproj
     arguments: '--configuration $(buildConfiguration)'
   displayName: 'Build Projects'
 
