@@ -36,8 +36,9 @@ steps:
   continueOnError: true
 
 - task: PublishTestResults@2
+  condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TEST-*.trx'
-    testRunTitle: ''
+    testResultsFiles: '**/*.trx'
+    testRunTitle: 'V1 C# Snippet Compilation Tests'
   displayName: 'Publish Test Results'
