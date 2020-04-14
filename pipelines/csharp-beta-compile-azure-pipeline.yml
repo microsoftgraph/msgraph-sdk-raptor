@@ -25,7 +25,7 @@ steps:
     command: 'build'
     projects: 'msgraph-sdk-raptor/**/*.csproj' # to prevent building docs repo, do not change path to wildcard here
     arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build all'
+  displayName: 'Build Projects'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -33,3 +33,13 @@ steps:
     projects: '**/CsharpBetaTests.csproj'
     arguments: '--configuration $(buildConfiguration)'
   displayName: 'Csharp Beta Compilation Tests'
+  continueOnError: true
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFormat: 'VSTest'
+    searchFolder: '$(Agent.TempDirectory)'
+    testResultsFiles: '**/*.trx'
+    testRunTitle: 'V1 C# Snippet Compilation Tests'
+  displayName: 'Publish Test Results'
