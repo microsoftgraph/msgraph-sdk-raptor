@@ -33,10 +33,11 @@ steps:
     projects: '**/CsharpV1Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
   displayName: 'Csharp V1 Compilation Tests'
+  continueOnError: true
 
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/TEST-*.trx'
-    testRunTitle: 'V1 C# Snippet Compilation Tests'
+    testRunTitle: ''
   displayName: 'Publish Test Results'
