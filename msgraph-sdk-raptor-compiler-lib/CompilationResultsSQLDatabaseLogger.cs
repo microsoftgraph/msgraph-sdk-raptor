@@ -22,28 +22,32 @@ namespace MsGraphSDKSnippetsCompiler
         public void Log(CompilationCycleResultsModel compilationCycleResultsModel)
         {
             //Log Compile Cycle
-            CompileCycle compileCycle = new CompileCycle();
-            compileCycle.CompileCycleID = Guid.NewGuid();
-            compileCycle.TotalCompiledSnippets = compilationCycleResultsModel.TotalCompiledSnippets;
-            compileCycle.TotalSnippetsWithError = compilationCycleResultsModel.TotalSnippetsWithError;
-            compileCycle.TotalErrors = compilationCycleResultsModel.TotalErrors;
-            compileCycle.Language = compilationCycleResultsModel.Language;
-            compileCycle.Version = compilationCycleResultsModel.Version;
-            compileCycle.ExecutionTime = compilationCycleResultsModel.ExecutionTime;
-            compileCycle.CompileDate = DateTime.Now;
+            CompileCycle compileCycle = new CompileCycle
+            {
+                CompileCycleID = Guid.NewGuid(),
+                TotalCompiledSnippets = compilationCycleResultsModel.TotalCompiledSnippets,
+                TotalSnippetsWithError = compilationCycleResultsModel.TotalSnippetsWithError,
+                TotalErrors = compilationCycleResultsModel.TotalErrors,
+                Language = compilationCycleResultsModel.Language,
+                Version = compilationCycleResultsModel.Version,
+                ExecutionTime = compilationCycleResultsModel.ExecutionTime,
+                CompileDate = DateTime.Now
+            };
 
             ICompileCycle compileCycleData = new CompileCycleData(new RaptorDbContext(_connectionString));
             compileCycleData.Add(compileCycle);
 
             //Log CompileCycle Results in database
-            foreach (CompilationResultsModel compilationResultsModel in compilationCycleResultsModel.compilationResultsModelList)
+            foreach (CompilationResultsModel compilationResultsModel in compilationCycleResultsModel.CompilationResultsModelList)
             {
-                CompileResult compileResult = new CompileResult();
-                compileResult.CompileResultsID = Guid.NewGuid();
-                compileResult.CompileCycleID = compileCycle.CompileCycleID;
-                compileResult.IsSuccess = compilationResultsModel.IsSuccess;
-                compileResult.FileName = compilationResultsModel.MarkdownFileName;
-                compileResult.Snippet = compilationResultsModel.Snippet;
+                CompileResult compileResult = new CompileResult
+                {
+                    CompileResultsID = Guid.NewGuid(),
+                    CompileCycleID = compileCycle.CompileCycleID,
+                    IsSuccess = compilationResultsModel.IsSuccess,
+                    FileName = compilationResultsModel.MarkdownFileName,
+                    Snippet = compilationResultsModel.Snippet
+                };
 
                 ICompileResult compileResultData = new CompileResultData(new RaptorDbContext(_connectionString));
                 compileResultData.Add(compileResult);
@@ -52,13 +56,15 @@ namespace MsGraphSDKSnippetsCompiler
                 {
                     foreach (Diagnostic diagnostics in compilationResultsModel.Diagnostics)
                     {
-                        CompileResultsError compileResultsError = new CompileResultsError();
-                        compileResultsError.CompileResultsErrorID = Guid.NewGuid();
-                        compileResultsError.CompileResultsID = compileResult.CompileResultsID;
-                        compileResultsError.ErrorCode = diagnostics.Id;
-                        compileResultsError.IsWarning = diagnostics.IsWarningAsError;
-                        compileResultsError.WarningLevel = diagnostics.WarningLevel;
-                        compileResultsError.ErrorMessage = diagnostics.GetMessage();
+                        CompileResultsError compileResultsError = new CompileResultsError
+                        {
+                            CompileResultsErrorID = Guid.NewGuid(),
+                            CompileResultsID = compileResult.CompileResultsID,
+                            ErrorCode = diagnostics.Id,
+                            IsWarning = diagnostics.IsWarningAsError,
+                            WarningLevel = diagnostics.WarningLevel,
+                            ErrorMessage = diagnostics.GetMessage()
+                        };
 
                         ICompileResultsError compileResultsErrorData = new CompileResultsErrorData(new RaptorDbContext(_connectionString));
                         compileResultsErrorData.Add(compileResultsError);

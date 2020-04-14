@@ -18,7 +18,7 @@ namespace MsGraphSDKSnippetsCompiler
     /// </summary>
     public class MicrosoftGraphCSharpCompiler : IMicrosoftGraphSnippetsCompiler
     {
-        private string  _markdownFileName;
+        private readonly string _markdownFileName;
 
         public MicrosoftGraphCSharpCompiler(string markdownFileName)
         {

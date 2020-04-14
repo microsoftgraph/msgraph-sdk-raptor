@@ -1,4 +1,5 @@
 ﻿using MsGraphSDKSnippetsCompiler.Models;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace TestsCommon
     {
         public static string CompilerErrors(CompilationResultsModel model)
         {
-            if (model.Diagnostics == null)
+            if (model?.Diagnostics == null)
             {
                 return "No diagnostics from the compiler!";
             }
@@ -34,14 +35,19 @@ namespace TestsCommon
         /// <returns></returns>
         public static string AddLineNumbers(string code)
         {
+            if (code == null)
+            {
+                return string.Empty;
+            }
+
             var lines = code.Split("\r\n");
 
-            var widestLineNumberStringLength = lines.Length.ToString().Length;
+            var widestLineNumberWidth = lines.Length.ToString(CultureInfo.InvariantCulture).Length;
 
             var builder = new StringBuilder("\r\n");
             for (int lineNumber = 1; lineNumber < lines.Length + 1; lineNumber++)
             {
-                builder.Append(lineNumber.ToString().PadLeft(widestLineNumberStringLength)) // align line numbers to the right
+                builder.Append(lineNumber.ToString(CultureInfo.InvariantCulture).PadLeft(widestLineNumberWidth)) // align line numbers to the right
                        .Append(" ")
                        .Append(lines[lineNumber - 1])
                        .Append("\r\n");

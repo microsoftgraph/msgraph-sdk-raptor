@@ -9,7 +9,7 @@ namespace MsGraphSDKSnippetsCompiler.Services
 {
     public class CompileCycleData : ICompileCycle
     {
-        private RaptorDbContext _context;
+        private readonly RaptorDbContext _context;
 
         public CompileCycleData(RaptorDbContext context)
         {

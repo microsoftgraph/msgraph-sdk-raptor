@@ -11,9 +11,9 @@ namespace MsGraphSDKSnippetsCompiler
         private static readonly IConfigurationRoot configuration = AppSettings.Config();
 
         private static readonly string clientId = configuration.GetSection("Azure").GetSection("ClientId").Value;
-        private static string scopes = configuration.GetSection("Azure").GetSection("Scopes").Value;
+        private static readonly string scopes = configuration.GetSection("Azure").GetSection("Scopes").Value;
 
-        private static string[] scopesArray = scopes.Split(",");
+        private static readonly string[] scopesArray = scopes.Split(",");
 
         private static IAuthenticationProvider authProvider = null;
 

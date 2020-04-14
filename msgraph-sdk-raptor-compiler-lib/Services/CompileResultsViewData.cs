@@ -7,7 +7,7 @@ namespace MsGraphSDKSnippetsCompiler.Services
 {
     public class CompileResultsViewData
     {
-        private RaptorDbContext _context;
+        private readonly RaptorDbContext _context;
 
         public CompileResultsViewData(RaptorDbContext context)
         {

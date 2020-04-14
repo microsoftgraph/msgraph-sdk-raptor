@@ -7,7 +7,7 @@ namespace MsGraphSDKSnippetsCompiler.Models
 {
     public class CompilationCycleResultsModel
     {
-        public List<CompilationResultsModel> compilationResultsModelList { get; set; }
+        public List<CompilationResultsModel> CompilationResultsModelList { get; set; }
         public int TotalCompiledSnippets { get; set; }
         public int TotalSnippetsWithError { get; set; }
         public int TotalErrors { get; set; }

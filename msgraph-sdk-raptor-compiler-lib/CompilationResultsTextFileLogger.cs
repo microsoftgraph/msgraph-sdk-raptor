@@ -36,7 +36,7 @@ namespace MsGraphSDKSnippetsCompiler
                     streamWriter.WriteLine("|++++++++++++++++++++++++|\n");
 
                     //Log CompileCycle Results in txt
-                    foreach (CompilationResultsModel compilationResultsModel in compilationCycleResultsModel.compilationResultsModelList)
+                    foreach (CompilationResultsModel compilationResultsModel in compilationCycleResultsModel.CompilationResultsModelList)
                     {
                         streamWriter.WriteLine($"#### Markdown FileName: {compilationResultsModel.MarkdownFileName}");
                         streamWriter.WriteLine($"#### IsSuccess: {compilationResultsModel.IsSuccess}");

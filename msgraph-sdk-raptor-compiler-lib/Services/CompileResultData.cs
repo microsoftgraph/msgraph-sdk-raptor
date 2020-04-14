@@ -9,7 +9,7 @@ namespace MsGraphSDKSnippetsCompiler.Services
 {
     public class CompileResultData : ICompileResult
     {
-        private RaptorDbContext _context;
+        private readonly RaptorDbContext _context;
 
         public CompileResultData(RaptorDbContext context)
         {
