@@ -4,12 +4,31 @@ using System.IO;
 
 namespace TestsCommon
 {
+    /// <summary>
+    /// Init-once access to snippets directory
+    /// </summary>
     public static class GraphDocsDirectory
     {
+        /// <summary>
+        /// Represents where the snippets are stored. Expected to refer to a single directory for each assembly.
+        /// </summary>
         private static string SnippetsDirectory = null;
-        const string LocalMsGraphDocsRepo = @"C:\github";
 
-        public static string GetDirectory(Versions version)
+        /// <summary>
+        /// Represents the root directory where you checkout microsoft-graph-docs repo
+        /// </summary>
+        const string RootGitDirectory = @"C:\github";
+
+        /// <summary>
+        /// Sets snippets directory only once and refers to the string if it is already set
+        /// Assumes that default "git clone <remote-reference>" command is used, in other words,
+        /// the repo is always in microsoft-graph-docs folder under RootDirectory defined above
+        /// </summary>
+        /// <param name="version">Docs version (e.g. V1 or Beta)</param>
+        /// <returns>
+        /// C# snippets directory
+        /// </returns>
+        public static string GetCsharpSnippetsDirectory(Versions version)
         {
             if (SnippetsDirectory is object)
             {
@@ -23,7 +42,7 @@ namespace TestsCommon
                 _ => throw new ArgumentException("Unexpected version, we can't resolve this to a source code path."),
             };
 
-            var msGraphDocsRepoLocation = Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY") ?? LocalMsGraphDocsRepo;
+            var msGraphDocsRepoLocation = Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY") ?? RootGitDirectory;
             SnippetsDirectory = Path.Join(msGraphDocsRepoLocation, $@"microsoft-graph-docs\api-reference\{versionString}\includes\snippets\csharp");
 
             return SnippetsDirectory;
