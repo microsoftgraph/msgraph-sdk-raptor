@@ -3,8 +3,20 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-trigger:
-- master
+trigger: none # disable triggers based on commits.
+
+resources:
+ repositories:
+   - repository: microsoft-graph-docs
+     type: github
+     endpoint: microsoftgraph
+     name: microsoftgraph/microsoft-graph-docs
+     ref: master
+   - repository: msgraph-sdk-raptor
+     type: github
+     endpoint: microsoftgraph
+     name: microsoftgraph/msgraph-sdk-raptor
+     ref: master
 
 pool:
   vmImage: 'windows-2019'
@@ -13,19 +25,19 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- checkout: microsoft-graph-docs
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'git clone https://github.com/microsoftgraph/microsoft-graph-docs'
-  displayName: 'Clone Docs Repo for Snippets'
+- checkout: msgraph-sdk-raptor
+  clean: true
+  fetchDepth: 1
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: |
-      **/*.csproj
-      !microsoft-graph-docs/*.csproj
+    projects: msgraph-sdk-raptor/**/*.csproj
     arguments: '--configuration $(buildConfiguration)'
   displayName: 'Build Projects'
 
