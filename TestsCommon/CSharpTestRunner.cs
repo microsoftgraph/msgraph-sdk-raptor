@@ -1,4 +1,6 @@
-﻿using MsGraphSDKSnippetsCompiler;
+﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+
+using MsGraphSDKSnippetsCompiler;
 using MsGraphSDKSnippetsCompiler.Models;
 using MsGraphSDKSnippetsCompiler.Templates;
 using NUnit.Framework;
