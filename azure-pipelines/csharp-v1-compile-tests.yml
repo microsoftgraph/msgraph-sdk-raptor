@@ -38,6 +38,7 @@ steps:
     command: 'test'
     projects: '**/CsharpV1Tests.csproj'
     arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory)'
+    publishTestResults: false
   displayName: 'Csharp V1 Compilation Tests'
   continueOnError: true
 
