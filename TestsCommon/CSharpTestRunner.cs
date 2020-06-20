@@ -111,7 +111,64 @@ public class GraphSDKTest
             }
 
             var compilationOutputMessage = new CompilationOutputMessage(compilationResultsModel, codeToCompile, testData.DocsLink, testData.KnownIssueMessage, testData.IsKnownIssue);
+
+            // environment variable for sources directory is defined only for cloud runs
+            var isLocalRun = Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY") == null;
+            if (isLocalRun)
+            {
+                WriteLinqFile(testData, codeSnippetFormatted);
+            }
+
             Assert.Fail($"{compilationOutputMessage}");
+        }
+
+        /// <summary>
+        /// Generates .linq file in default My Queries folder so that the results are visible in LinqPad right away
+        /// </summary>
+        /// <param name="testData">test data</param>
+        /// <param name="codeSnippetFormatted">code snippet</param>
+        private static void WriteLinqFile(CsharpTestData testData, string codeSnippetFormatted)
+        {
+            var linqPadQueriesFolder = Path.Join(
+                    Environment.GetEnvironmentVariable("USERPROFILE"),
+                    "/Documents",
+                    "/LINQPad Queries");
+
+            var linqDirectory = Path.Join(
+                    linqPadQueriesFolder,
+                    "/RaptorResults",
+                    (testData.Version, testData.IsKnownIssue) switch
+                    {
+                        (Versions.Beta, false) => "/Beta",
+                        (Versions.Beta, true) => "/BetaKnown",
+                        (Versions.V1, false) => "/V1",
+                        (Versions.V1, true) => "/V1Known",
+                    });
+
+            Directory.CreateDirectory(linqDirectory);
+
+            var linqFilePath = Path.Join(linqDirectory, testData.FileName.Replace(".md", ".linq"));
+
+            const string LinqTemplateStart = "<Query Kind=\"Statements\">\r\n";
+            const string LinqTemplateEnd = @"  <Namespace>DayOfWeek = Microsoft.Graph.DayOfWeek</Namespace>
+  <Namespace>KeyValuePair = Microsoft.Graph.KeyValuePair</Namespace>
+  <Namespace>Microsoft.Graph</Namespace>
+  <Namespace>Newtonsoft.Json.Linq</Namespace>
+  <Namespace>System.Threading.Tasks</Namespace>
+  <Namespace>TimeOfDay = Microsoft.Graph.TimeOfDay</Namespace>
+</Query>
+
+IAuthenticationProvider authProvider  = null;";
+
+            File.WriteAllText(linqFilePath,
+                LinqTemplateStart
+                + (testData.Version) switch
+                {
+                    Versions.Beta => "  <NuGetReference Prerelease=\"true\">Microsoft.Graph.Beta</NuGetReference>\r\n",
+                    Versions.V1 => "  <NuGetReference>Microsoft.Graph</NuGetReference>\r\n"
+                }
+                + LinqTemplateEnd
+                + codeSnippetFormatted.Replace("\n        ", "\n"));
         }
     }
 }
