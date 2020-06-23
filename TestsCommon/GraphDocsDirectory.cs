@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
+using MsGraphSDKSnippetsCompiler;
 using MsGraphSDKSnippetsCompiler.Models;
 using System;
 using System.IO;
@@ -17,11 +18,6 @@ namespace TestsCommon
         private static string SnippetsDirectory = null;
 
         /// <summary>
-        /// Represents the root directory where you checkout microsoft-graph-docs repo
-        /// </summary>
-        const string RootGitDirectory = @"C:\github";
-
-        /// <summary>
         /// Sets snippets directory only once and refers to the string if it is already set
         /// Assumes that default "git clone <remote-reference>" command is used, in other words,
         /// the repo is always in microsoft-graph-docs folder under RootDirectory defined above
@@ -37,7 +33,7 @@ namespace TestsCommon
                 return SnippetsDirectory;
             }
 
-            var msGraphDocsRepoLocation = Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY") ?? RootGitDirectory;
+            var msGraphDocsRepoLocation = GetSourcesDirectory();
             SnippetsDirectory = Path.Join(msGraphDocsRepoLocation, $@"microsoft-graph-docs\api-reference\{new VersionString(version)}\includes\snippets\csharp");
 
             return SnippetsDirectory;
@@ -52,8 +48,32 @@ namespace TestsCommon
         /// </returns>
         public static string GetDocumentationDirectory(Versions version)
         {
-            var msGraphDocsRepoLocation = Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY") ?? RootGitDirectory;
+            var msGraphDocsRepoLocation = GetSourcesDirectory();
             return Path.Join(msGraphDocsRepoLocation, $@"microsoft-graph-docs\api-reference\{new VersionString(version)}\api");
+        }
+
+        /// <summary>
+        /// Gets git source directory
+        /// </summary>
+        /// <returns>
+        /// 1. For local runs, the directory specified in AppSettings file with LocalRootGitDirectory
+        /// 2. For cloud runs, BUILD_SOURCESDIRECTORY
+        /// </returns>
+        private static string GetSourcesDirectory()
+        {
+            var config = AppSettings.Config();
+            var isLocalRun = bool.Parse(config.GetSection("IsLocalRun").Value);
+
+            var msGraphDocsRepoLocation = isLocalRun
+                ? config.GetSection("LocalRootGitDirectory").Value
+                : Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY");
+
+            if (!Directory.Exists(msGraphDocsRepoLocation))
+            {
+                throw new FileNotFoundException("If you are running this locally, please set IsLocalRun=true with a valid LocalRootGitDirectory");
+            }
+
+            return msGraphDocsRepoLocation;
         }
     }
 }
