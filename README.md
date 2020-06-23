@@ -1,4 +1,7 @@
 # msgraph-sdk-raptor
+
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=microsoftgraph/msgraph-sdk-raptor)](https://dependabot.com)
+
 This repository consists of 4 test projects.
 
 1. CsharpBetaKnownFailureTests
