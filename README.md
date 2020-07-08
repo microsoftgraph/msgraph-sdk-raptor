@@ -25,8 +25,10 @@ Tests compile C# snippets, which based on HTTP snippets in Microsoft Graph docum
    2. `"LocalRootGitDirectory"= <where microsoft-graph-docs repo is located>`
 5. Build and run tests
    - Test count will show as 1 for each project initially because test cases are generated on the fly from a single meta test description.
-6. Local test runs also generate `.linq` files so that they can be analyzed using LinqPad. Default drop location for these files is:
-   - `~\Documents\LINQPad Queries\RaptorResults`
+6. Local test runs also generate `.linq` files so that they can be analyzed using LinqPad.
+   - If you want this option to be turned on, make sure that you have this in the settings: `"GenerateLinqPadOutputInLocalRun": true`
+   - Default drop location for these files is:
+     - `~\Documents\LINQPad Queries\RaptorResults`
    - They will automatically appear in LinqPad if the default setting for the location of queries are not changed.
    - The prerequisite on the LinqPad side is to have NuGet references to following packages:
      - `Microsoft.Graph`

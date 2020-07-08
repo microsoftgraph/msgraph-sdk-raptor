@@ -113,8 +113,9 @@ public class GraphSDKTest
             var compilationOutputMessage = new CompilationOutputMessage(compilationResultsModel, codeToCompile, testData.DocsLink, testData.KnownIssueMessage, testData.IsKnownIssue);
 
             // environment variable for sources directory is defined only for cloud runs
-            var isLocalRun = bool.Parse(AppSettings.Config().GetSection("IsLocalRun").Value);
-            if (isLocalRun)
+            var config = AppSettings.Config();
+            if (bool.Parse(config.GetSection("IsLocalRun").Value)
+                && bool.Parse(config.GetSection("GenerateLinqPadOutputInLocalRun").Value))
             {
                 WriteLinqFile(testData, codeSnippetFormatted);
             }
