@@ -63,37 +63,47 @@ namespace TestsCommon
         private const string RefNeeded = "URL needs to end with /$ref for reference types";
 
         /// <summary>
+        /// Snippet generation flattens issue.
+        /// </summary>
+        private const string SnippetGenerationFlattens = "Snippet generation flattens the nested Odata queries, see https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/287 for more details";
+
+        /// <summary>
         /// SDK team as owner
         /// </summary>
-        private const string SDK = "SDK";
+        private const string SDK = nameof(SDK);
 
         /// <summary>
         /// Owner value where HTTP snippet needs fixing
         /// </summary>
-        private const string HTTP = "HTTP";
+        private const string HTTP = nameof(HTTP);
 
         /// <summary>
         /// Owner value where HTTP snippet URL needs fixing to have camelCase
         /// </summary>
-        private const string HTTPCamelCase = "HTTPCamelCase";
+        private const string HTTPCamelCase = nameof(HTTPCamelCase);
 
         /// <summary>
         /// Owner value where HTTP snippet needs to fix HTTP method
         /// </summary>
-        private const string HTTPMethodWrong = "HTTPMethodWrong";
+        private const string HTTPMethodWrong = nameof(HTTPMethodWrong);
 
         /// <summary>
         /// Oner value where Metadata needs fixing
         /// </summary>
-        private const string Metadata = "Metadata";
+        private const string Metadata = nameof(Metadata);
+
+        /// <summary>
+        /// Snippet generation has a bug
+        /// </summary>
+        private const string SnippetGeneration = nameof(SnippetGeneration);
 
         #region HTTP methods
 
-        private const string DELETE = "DELETE";
-        private const string PUT = "PUT";
-        private const string POST = "POST";
-        private const string GET = "GET";
-        private const string PATCH = "PATCH";
+        private const string DELETE = nameof(DELETE);
+        private const string PUT = nameof(PUT);
+        private const string POST = nameof(POST);
+        private const string GET = nameof(GET);
+        private const string PATCH = nameof(PATCH);
 
         #endregion
 
@@ -173,6 +183,7 @@ namespace TestsCommon
                 { "create-educationschool-from-educationroot-csharp-Beta-compiles", new KnownIssue(HTTP, GetPropertyNotFoundMessage("EducationSchool", "Status")) },
                 { "create-item-attachment-from-eventmessage-csharp-Beta-compiles", new KnownIssue(HTTP, HttpSnippetWrong + ": Item needs to be an OutlookItem object, not a string") },
                 { "create-item-attachment-from-eventmessage-csharp-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + ": Item needs to be an OutlookItem object, not a string") },
+                { "create-manager-from-group-csharp-V1-compiles", new KnownIssue(SnippetGeneration, "See issue: https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/289") },
                 { "create-rangeborder-from-rangeformat-csharp-Beta-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "create-rangeborder-from-rangeformat-csharp-V1-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "create-reference-attachment-with-post-csharp-V1-compiles", new KnownIssue(HTTP, GetPropertyNotFoundMessage("ReferenceAttachment", "SourceUrl, ProviderType, Permission and IsFolder")) },
@@ -205,6 +216,8 @@ namespace TestsCommon
                 { "get-formatprotection-csharp-V1-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "get-message-in-mime-csharp-Beta-compiles", new KnownIssue(Metadata, "Message entity doesn't have hasStream=true.") },
                 { "get-message-in-mime-csharp-V1-compiles", new KnownIssue(Metadata, "Message entity doesn't have hasStream=true.") },
+                { "get-opentypeextension-3-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
+                { "get-opentypeextension-3-csharp-V1-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
                 { "get-rangeborder-csharp-Beta-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "get-rangeborder-csharp-V1-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "get-rangebordercollection-csharp-Beta-compiles", new KnownIssue(SDK, FeatureNotSupported) },
@@ -220,6 +233,8 @@ namespace TestsCommon
                 { "get-rows-csharp-Beta-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "get-rows-csharp-V1-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "get-scopedadministratorof-csharp-Beta-compiles", new KnownIssue(Metadata, GetTypeNotDefinedMessage("ScopedAdministratorOf")) },
+                { "get-singlevaluelegacyextendedproperty-1-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
+                { "get-singlevaluelegacyextendedproperty-1-csharp-V1-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
                 { "informationprotectionlabel-evaluateapplication-csharp-Beta-compiles", new KnownIssue(HTTPCamelCase, GetCasingIssueMessage("informationprotection","informationProtection")) },
                 { "informationprotectionlabel-evaluateclassificationresults-csharp-Beta-compiles", new KnownIssue(HTTPCamelCase, GetCasingIssueMessage("informationprotection","informationProtection")) },
                 { "informationprotectionlabel-evaluateremoval-csharp-Beta-compiles", new KnownIssue(HTTPCamelCase, GetCasingIssueMessage("informationprotection","informationProtection")) },
@@ -228,6 +243,7 @@ namespace TestsCommon
                 { "list-serviceprincipal-csharp-V1-compiles", new KnownIssue(HTTP, GetCasingIssueMessage("serviceprincipal", "servicePrincipal")) },
                 { "nameditem-range-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(POST, GET)) },
                 { "oauth2permissiongrant-delta-csharp-Beta-compiles", new KnownIssue(HTTPCamelCase, GetCasingIssueMessage("oAuth2permissiongrants","oAuth2PermissionGrants")) },
+                { "oauth2permissiongrant-delta-csharp-V1-compiles", new KnownIssue(HTTPCamelCase, GetCasingIssueMessage("oAuth2permissiongrants","oAuth2PermissionGrants")) },
                 { "post-reply-csharp-Beta-compiles", new KnownIssue(HTTP, HttpSnippetWrong + ": Odata.Type for concreate Attachment type should be added") },
                 { "post-reply-csharp-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + ": Odata.Type for concreate Attachment type should be added") },
                 { "printer-getcapabilities-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(POST, GET)) },
@@ -305,6 +321,8 @@ namespace TestsCommon
                 { "update-homerealmdiscoverypolicy-csharp-Beta-compiles", new KnownIssue(HTTP, GetPropertyNotFoundMessage("HomeRealmDiscoveryPolicy", "Type")) },
                 { "update-homerealmdiscoverypolicy-csharp-V1-compiles", new KnownIssue(HTTP, GetPropertyNotFoundMessage("HomeRealmDiscoveryPolicy", "Type")) },
                 { "update-openshift-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
+                { "update-page-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "See issue: https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/288") },
+                { "update-page-csharp-V1-compiles", new KnownIssue(SnippetGeneration, "See issue: https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/288") },
                 { "update-phoneauthenticationmethod-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "update-rangeborder-csharp-Beta-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "update-rangeborder-csharp-V1-compiles", new KnownIssue(SDK, FeatureNotSupported) },
