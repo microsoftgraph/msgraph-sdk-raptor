@@ -1,0 +1,51 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger: none
+pr: none
+
+resources:
+ repositories:
+   - repository: microsoft-graph-docs
+     type: github
+     endpoint: microsoftgraph
+     name: microsoftgraph/microsoft-graph-docs
+     ref: master
+   - repository: apidoctor
+     type: github
+     endpoint: OneDrive
+     name: OneDrive/apidoctor
+     ref: zengin/snippets
+   - repository: microsoft-graph-explorer-api
+     type: github
+     endpoint: microsoftgraph
+     name: microsoftgraph/microsoft-graph-explorer-api
+     ref: dev
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- checkout: microsoft-graph-docs
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
+
+- checkout: apidoctor
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
+
+- checkout: microsoft-graph-explorer-api
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
+
+- checkout: self
+  clean: true
+  fetchDepth: 1
