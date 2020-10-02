@@ -43,5 +43,15 @@ namespace MsGraphSDKSnippetsCompiler.Models
                 _ => throw new ArgumentException("Unexpected version, we can't resolve this to a path or url segment."),
             };
         }
+
+        public string DocsUrlSegment()
+        {
+            return Version switch
+            {
+                Versions.V1 => "1.0",
+                Versions.Beta => "beta",
+                _ => throw new ArgumentException("Unexpected version, we can't resolve this to a path or url segment."),
+            };
+        }
     }
 }

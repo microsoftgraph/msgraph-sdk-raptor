@@ -162,13 +162,16 @@ namespace TestsCommon
                 { "call-transfer-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationAdditionalData) },
                 { "call-transfer-csharp-V1-compiles", new KnownIssue(Metadata, "v1 metadata doesn't have endpointType for invitationParticipantInfo") },
                 { "call-updatemetadata-csharp-Beta-compiles", new KnownIssue(Metadata, "updateMetadata doesn't exist in metadata") },
+                { "convert-team-from-group-csharp-V1-compiles", new KnownIssue(HTTP, "isFavoriteByDefault is only available in Beta. https://github.com/microsoftgraph/microsoft-graph-docs/issues/10145") },
+                { "convert-team-from-non-standard2-csharp-V1-compiles", new KnownIssue(HTTP, "isFavoriteByDefault is only available in Beta. https://github.com/microsoftgraph/microsoft-graph-docs/issues/10145") },
                 { "create-acceptedsender-csharp-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "acceptedSender")) },
                 { "create-acceptedsender-csharp-V1-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "rejectedSender")) },
                 { "create-allowedgroup-from-printers-csharp-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("printerShare", "allowedGroups"))},
                 { "create-alloweduser-from-printers-csharp-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("printerShare", "allowedUsers"))},
+                { "create-b2cuserflow-from-b2cuserflows-identityprovider-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "Snippet Generation needs casting support for *CollectionWithReferencesPage. See details at: https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/327") },
+                { "create-b2xuserflow-from-b2xuserflows-identityproviders-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "Snippet Generation needs casting support for *CollectionWithReferencesPage. See details at: https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/327") },
                 { "create-certificatebasedauthconfiguration-from-certificatebasedauthconfiguration-csharp-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
                 { "create-certificatebasedauthconfiguration-from-certificatebasedauthconfiguration-csharp-V1-compiles", new KnownIssue(HTTP, RefNeeded) },
-                { "create-claimsmappingpolicy-from-serviceprincipal-csharp-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
                 { "create-directoryobject-from-featurerolloutpolicy-csharp-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo"))},
                 { "create-directoryobject-from-orgcontact-csharp-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
                 { "create-educationrubric-from-educationassignment-csharp-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("educationAssignment", "rubric"))},
@@ -249,10 +252,8 @@ namespace TestsCommon
                 { "get-rooms-in-roomlist-csharp-V1-compiles", new KnownIssue(SDK, "SDK doesn't generate type segment in OData URL. https://microsoftgraph.visualstudio.com/Graph%20Developer%20Experiences/_workitems/edit/4997") },
                 { "get-rows-csharp-Beta-compiles", new KnownIssue(SDK, FeatureNotSupported) },
                 { "get-rows-csharp-V1-compiles", new KnownIssue(SDK, FeatureNotSupported) },
-                { "get-scopedadministratorof-csharp-Beta-compiles", new KnownIssue(Metadata, GetTypeNotDefinedMessage("ScopedAdministratorOf")) },
                 { "get-singlevaluelegacyextendedproperty-1-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
                 { "get-singlevaluelegacyextendedproperty-1-csharp-V1-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
-                { "get-store-csharp-Beta-compiles", new KnownIssue(SDK, NamespacesSupport) },
                 { "get-team-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
                 { "get-tier-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
                 { "get-user-memberof-count-only-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported) },
@@ -347,7 +348,6 @@ namespace TestsCommon
                 { "timeoff-put-csharp-V1-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "timeoffreason-put-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "timeoffreason-put-csharp-V1-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
-                { "trustframeworkkeyset-getactivekey-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(POST, GET)) },
                 { "unfollow-item-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(DELETE, POST)) },
                 { "unfollow-item-csharp-V1-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(DELETE, POST)) },
                 { "unfollow-site-csharp-Beta-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
@@ -450,7 +450,7 @@ namespace TestsCommon
             {
                 var content = File.ReadAllText(file);
                 var fileName = Path.GetFileNameWithoutExtension(file);
-                var docsLink = $"https://docs.microsoft.com/en-us/graph/api/{fileName}?view=graph-rest-{new VersionString(version)}&tabs=csharp";
+                var docsLink = $"https://docs.microsoft.com/en-us/graph/api/{fileName}?view=graph-rest-{new VersionString(version).DocsUrlSegment()}&tabs=csharp";
 
                 var match = SnippetLinkRegex.Match(content);
                 while (match.Success)
