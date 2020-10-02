@@ -15,8 +15,8 @@ resources:
      ref: master
    - repository: apidoctor
      type: github
-     endpoint: OneDrive
-     name: OneDrive/apidoctor
+     endpoint: microsoftgraph
+     name: microsoftgraph/apidoctor
      ref: zengin/snippets
    - repository: microsoft-graph-explorer-api
      type: github
