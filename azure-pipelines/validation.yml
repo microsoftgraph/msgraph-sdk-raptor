@@ -43,46 +43,55 @@ variables:
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
 
 steps:
-- checkout: docs
-  clean: true
-  fetchDepth: 1
-  persistCredentials: true
+#- checkout: docs
+#  clean: true
+#  fetchDepth: 1
+#  persistCredentials: true
 
-- checkout: apidoctor
-  clean: true
-  fetchDepth: 1
-  persistCredentials: true
+#- checkout: apidoctor
+#  clean: true
+#  fetchDepth: 1
+#  persistCredentials: true
 
 - checkout: api
   clean: true
   fetchDepth: 1
   persistCredentials: true
 
-- checkout: generator
-  clean: true
-  fetchDepth: 1
-  submodules: recursive
-  persistCredentials: true
+#- checkout: generator
+#  clean: true
+#  fetchDepth: 1
+#  submodules: recursive
+#  persistCredentials: true
 
-- checkout: self
-  clean: true
-  fetchDepth: 1
-  persistCredentials: true
+#- checkout: self
+#  clean: true
+#  fetchDepth: 1
+#  persistCredentials: true
 
-- checkout: dotnet
-  clean: true
-  fetchDepth: 1
-  persistCredentials: true
+#- checkout: dotnet
+#  clean: true
+#  fetchDepth: 1
+#  persistCredentials: true
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
     projects: 'microsoft-graph-explorer-api\CodeSnippetsReflection.App\CodeSnippetsReflection.App.csproj'
 
-- task: NuGetToolInstaller@1
-  displayName: "Install Nuget.exe"
-
-- task: NuGetCommand@2
-  displayName: "Restore Packages for  apidoctor Tool"
+- task: PowerShell@2
   inputs:
-    restoreSolution: '$(apidoctorSolution)'
+    targetType: 'inline'
+    script: |
+      # release folder can change based on .NET core version, so search recursively in bin folder
+      $snippetGeneratorPath = (Get-ChildItem C:\github\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin\Release *App.exe -Recurse).FullName
+      Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
+      Write-Host "##vso[task.setvariable variable=snippetGeneratorPath]$snippetGeneratorPath"
+
+#- task: NuGetToolInstaller@1
+#  displayName: "Install Nuget.exe"
+
+#- task: NuGetCommand@2
+#  displayName: "Restore Packages for  apidoctor Tool"
+#  inputs:
+#    restoreSolution: '$(apidoctorSolution)'
