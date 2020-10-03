@@ -91,9 +91,9 @@ steps:
     restoreSolution: '$(apidoctorSolution)'
 
 - task: VSBuild@1
-  displayName: "Build Source for Snippets Injection Tool"
+  displayName: "Build Source for apidoctor Tool"
   inputs:
-    solution: '$(solution)'
+    solution: '$(apidoctorSolution)'
     platform: 'Any CPU'
     configuration: 'Release'
 
