@@ -116,5 +116,6 @@ steps:
   displayName: "Run snippet injection against docs"
   inputs:
     workingDirectory: microsoft-graph-docs
+    targetType: 'inline'
     script: |
       $(apidoctorPath) --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --skip-publishing-changes
