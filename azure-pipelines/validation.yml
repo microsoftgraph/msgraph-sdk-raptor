@@ -84,7 +84,7 @@ steps:
     targetType: 'inline'
     script: |
       # release folder can change based on .NET core version, so search recursively in bin folder
-      $snippetGeneratorPath = (Get-ChildItem C:\github\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin\Release *App.exe -Recurse).FullName
+      $snippetGeneratorPath = (Get-ChildItem $env:Build_SourcesDirectory\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin\Release *App.exe -Recurse).FullName
       Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
       Write-Host "##vso[task.setvariable variable=snippetGeneratorPath]$snippetGeneratorPath"
 
