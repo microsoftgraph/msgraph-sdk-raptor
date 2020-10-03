@@ -43,36 +43,36 @@ variables:
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
 
 steps:
-#- checkout: microsoft-graph-docs
-#  clean: true
-#  fetchDepth: 1
-#  persistCredentials: true
+- checkout: microsoft-graph-docs
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
 
-#- checkout: apidoctor
-#  clean: true
-#  fetchDepth: 1
-#  persistCredentials: true
+- checkout: apidoctor
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
 
 - checkout: microsoft-graph-explorer-api
   clean: true
   fetchDepth: 1
   persistCredentials: true
 
-#- checkout: MSGraph-SDK-Code-Generator
-#  clean: true
-#  fetchDepth: 1
-#  submodules: recursive
-#  persistCredentials: true
+- checkout: MSGraph-SDK-Code-Generator
+  clean: true
+  fetchDepth: 1
+  submodules: recursive
+  persistCredentials: true
 
-#- checkout: self
-#  clean: true
-#  fetchDepth: 1
-#  persistCredentials: true
+- checkout: self
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
 
-#- checkout: msgraph-sdk-dotnet
-#  clean: true
-#  fetchDepth: 1
-#  persistCredentials: true
+- checkout: msgraph-sdk-dotnet
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
 
 - task: DotNetCoreCLI@2
   inputs:
