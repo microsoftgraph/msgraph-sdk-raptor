@@ -78,6 +78,8 @@ steps:
   inputs:
     command: 'build'
     projects: 'microsoft-graph-explorer-api\CodeSnippetsReflection.App\CodeSnippetsReflection.App.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+  displayName: 'Build Snippet Generator Tool'
 
 - task: PowerShell@2
   inputs:
