@@ -43,7 +43,7 @@ variables:
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
 
 steps:
-#- checkout: docs
+#- checkout: microsoft-graph-docs
 #  clean: true
 #  fetchDepth: 1
 #  persistCredentials: true
@@ -53,12 +53,12 @@ steps:
 #  fetchDepth: 1
 #  persistCredentials: true
 
-- checkout: api
+- checkout: microsoft-graph-explorer-api
   clean: true
   fetchDepth: 1
   persistCredentials: true
 
-#- checkout: generator
+#- checkout: MSGraph-SDK-Code-Generator
 #  clean: true
 #  fetchDepth: 1
 #  submodules: recursive
@@ -69,7 +69,7 @@ steps:
 #  fetchDepth: 1
 #  persistCredentials: true
 
-#- checkout: dotnet
+#- checkout: msgraph-sdk-dotnet
 #  clean: true
 #  fetchDepth: 1
 #  persistCredentials: true
