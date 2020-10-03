@@ -52,6 +52,7 @@ steps:
 - checkout: apidoctor
   clean: true
   fetchDepth: 1
+  submodules: recursive
   persistCredentials: true
 
 - checkout: microsoft-graph-explorer-api
