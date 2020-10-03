@@ -30,8 +30,8 @@ resources:
      ref: master
    - repository: dotnet
      type: github
-     endpoint: zengin
-     name: zengin/msgraph-sdk-dotnet
+     endpoint: microsoftgraph
+     name: microsoftgraph/msgraph-sdk-dotnet
      ref: dev
 
 pool:
