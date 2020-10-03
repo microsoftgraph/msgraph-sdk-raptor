@@ -41,6 +41,7 @@ variables:
   buildConfiguration: 'Release'
   apidoctorPath: 'apidoctor'
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
+  snippetLanguages: 'C#' #'C#,JavaScript,Objective-C,Java'
 
 steps:
 - checkout: microsoft-graph-docs
@@ -81,7 +82,23 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
   displayName: 'Build Snippet Generator Tool'
 
+- task: NuGetToolInstaller@1
+  displayName: "Install Nuget.exe"
+
+- task: NuGetCommand@2
+  displayName: "Restore Packages for  apidoctor Tool"
+  inputs:
+    restoreSolution: '$(apidoctorSolution)'
+
+- task: VSBuild@1
+  displayName: "Build Source for Snippets Injection Tool"
+  inputs:
+    solution: '$(solution)'
+    platform: 'Any CPU'
+    configuration: 'Release'
+
 - task: PowerShell@2
+  displayName: Set snippet generator and apidoctor paths
   inputs:
     targetType: 'inline'
     script: |
@@ -90,10 +107,13 @@ steps:
       Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
       Write-Host "##vso[task.setvariable variable=snippetGeneratorPath]$snippetGeneratorPath"
 
-#- task: NuGetToolInstaller@1
-#  displayName: "Install Nuget.exe"
+      $apidoctorPath = (Get-ChildItem $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin\Release apidoc.exe -Recurse).FullName
+      Write-Host "Path to apidoctor tool: $apidoctorPath"
+      Write-Host "##vso[task.setvariable variable=apidoctorPath]$apidoctorPath"
 
-#- task: NuGetCommand@2
-#  displayName: "Restore Packages for  apidoctor Tool"
-#  inputs:
-#    restoreSolution: '$(apidoctorSolution)'
+- task: PowerShell@2
+  displayName: "Run snippet injection against docs"
+  inputs:
+    workingDirectory: microsoft-graph-docs
+    script: |
+      $(apidoctorPath) --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --skip-publishing-changes
