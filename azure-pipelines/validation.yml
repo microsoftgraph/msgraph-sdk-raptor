@@ -8,7 +8,7 @@ pr: none
 
 resources:
  repositories:
-   - repository: docs
+   - repository: microsoft-graph-docs
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
@@ -18,17 +18,17 @@ resources:
      endpoint: microsoftgraph
      name: microsoftgraph/apidoctor
      ref: zengin/snippets
-   - repository: api
+   - repository: microsoft-graph-explorer-api
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-explorer-api
      ref: dev
-   - repository: generator
+   - repository: MSGraph-SDK-Code-Generator
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/MSGraph-SDK-Code-Generator
      ref: master
-   - repository: dotnet
+   - repository: msgraph-sdk-dotnet
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/msgraph-sdk-dotnet
