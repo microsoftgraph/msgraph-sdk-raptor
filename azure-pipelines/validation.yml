@@ -118,4 +118,4 @@ steps:
     workingDirectory: microsoft-graph-docs
     targetType: 'inline'
     script: |
-      $(apidoctorPath) --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --skip-publishing-changes
+      $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --skip-publishing-changes
