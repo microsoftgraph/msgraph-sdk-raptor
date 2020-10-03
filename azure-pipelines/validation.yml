@@ -8,7 +8,7 @@ pr: none
 
 resources:
  repositories:
-   - repository: microsoft-graph-docs
+   - repository: docs
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
@@ -18,10 +18,20 @@ resources:
      endpoint: microsoftgraph
      name: microsoftgraph/apidoctor
      ref: zengin/snippets
-   - repository: microsoft-graph-explorer-api
+   - repository: api
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-explorer-api
+     ref: dev
+   - repository: generator
+     type: github
+     endpoint: microsoftgraph
+     name: microsoftgraph/MSGraph-SDK-Code-Generator
+     ref: master
+   - repository: dotnet
+     type: github
+     endpoint: zengin
+     name: zengin/msgraph-sdk-dotnet
      ref: dev
 
 pool:
@@ -29,9 +39,11 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  apidoctorPath: 'apidoctor'
+  apidoctorSolution: '$(apidoctorPath)/**/*.sln'
 
 steps:
-- checkout: microsoft-graph-docs
+- checkout: docs
   clean: true
   fetchDepth: 1
   persistCredentials: true
@@ -41,11 +53,36 @@ steps:
   fetchDepth: 1
   persistCredentials: true
 
-- checkout: microsoft-graph-explorer-api
+- checkout: api
   clean: true
   fetchDepth: 1
+  persistCredentials: true
+
+- checkout: generator
+  clean: true
+  fetchDepth: 1
+  submodules: recursive
   persistCredentials: true
 
 - checkout: self
   clean: true
   fetchDepth: 1
+  persistCredentials: true
+
+- checkout: dotnet
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: 'microsoft-graph-explorer-api\CodeSnippetsReflection.App\CodeSnippetsReflection.App.csproj'
+
+- task: NuGetToolInstaller@1
+  displayName: "Install Nuget.exe"
+
+- task: NuGetCommand@2
+  displayName: "Restore Packages for  apidoctor Tool"
+  inputs:
+    restoreSolution: '$(apidoctorSolution)'
