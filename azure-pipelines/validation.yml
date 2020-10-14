@@ -46,7 +46,7 @@ variables:
   apidoctorPath: 'apidoctor'
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
   snippetLanguages: 'C#' #'C#,JavaScript,Objective-C,Java'
-  version: 'v1.0'
+  metadataVersion: 'v1.0'
   metadataURL: 'https://graph.microsoft.com/stagingv1.0/$metadata'
   typewriterReleaseVersion: true
 
@@ -226,7 +226,7 @@ jobs:
         script: |
           $runSettingsFile = (Get-ChildItem -Include Test.runsettings -Recurse).FullName
           $runSettingsContent = Get-Content $runSettingsFile
-          $runSettingsContent.Replace("---VersionPlaceholder---", $(version)).Replace("---DllPathPlaceholder---", $(dllPath)) > $runSettingsFile
+          $runSettingsContent.Replace("---VersionPlaceholder---", $(metadataVersion)).Replace("---DllPathPlaceholder---", $(dllPath)) > $runSettingsFile
           Write-Host "Path to .runsettings file: $runSettingsFile"
           Write-Host "##vso[task.setvariable variable=runSettingsFile]$runSettingsFile"
 
