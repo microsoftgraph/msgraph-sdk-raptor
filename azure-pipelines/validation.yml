@@ -194,12 +194,12 @@ steps:
   fetchDepth: 1
   persistCredentials: true
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: msgraph-sdk-raptor/**/*.csproj
-    arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build Raptor Projects'
+#- task: DotNetCoreCLI@2
+#  inputs:
+#    command: 'build'
+#    projects: msgraph-sdk-raptor/**/*.csproj
+#    arguments: '--configuration $(buildConfiguration)'
+#  displayName: 'Build Raptor Projects'
 
 - task: PowerShell@2
   displayName: 'Transform .runsettings file'
