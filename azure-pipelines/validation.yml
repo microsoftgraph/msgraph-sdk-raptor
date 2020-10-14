@@ -44,6 +44,8 @@ pool:
 variables:
   buildConfiguration: 'Release'
   apidoctorPath: 'apidoctor'
+  generatorPath: 'MSGraph-SDK-Code-Generator'
+  generatorSolution: '$(generatorPath)/**/Typewriter.sln'
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
   snippetLanguages: 'C#' #'C#,JavaScript,Objective-C,Java'
   metadataVersion: 'v1.0'
@@ -76,40 +78,6 @@ steps:
 
 - task: NuGetToolInstaller@1
   displayName: "Install Nuget.exe"
-
-- task: NuGetCommand@2
-  displayName: "Restore Packages for  apidoctor Tool"
-  inputs:
-    restoreSolution: '$(apidoctorSolution)'
-
-- task: VSBuild@1
-  displayName: "Build Source for apidoctor Tool"
-  inputs:
-    solution: '$(apidoctorSolution)'
-    platform: 'Any CPU'
-    configuration: 'Release'
-
-- task: PowerShell@2
-  displayName: Set snippet generator and apidoctor paths
-  inputs:
-    targetType: 'inline'
-    script: |
-      # release folder can change based on .NET core version, so search recursively in bin folder
-      $snippetGeneratorPath = (Get-ChildItem $env:Build_SourcesDirectory\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin\Release *App.exe -Recurse).FullName
-      Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
-      Write-Host "##vso[task.setvariable variable=snippetGeneratorPath]$snippetGeneratorPath"
-
-      $apidoctorPath = (Get-ChildItem $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin\Release apidoc.exe -Recurse).FullName
-      Write-Host "Path to apidoctor tool: $apidoctorPath"
-      Write-Host "##vso[task.setvariable variable=apidoctorPath]$apidoctorPath"
-
-- task: PowerShell@2
-  displayName: "Run snippet generation against docs"
-  inputs:
-    workingDirectory: microsoft-graph-docs
-    targetType: 'inline'
-    script: |
-      $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
 
 - checkout: msgraph-sdk-dotnet
   clean: true
@@ -145,21 +113,51 @@ steps:
   fetchDepth: 1
   persistCredentials: true
 
-- task: PowerShell@2
-  condition: eq(variables['typewriterReleaseVersion'], true)
-  displayName: 'Typewriter: generate .NET files'
-  inputs:
-    targetType: filePath
-    filePath: '$(Build.SourcesDirectory)/msgraph-metadata/scripts/runTypewriter.ps1'
-    arguments: '-verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files'
-    workingDirectory: '$(Build.SourcesDirectory)' # Set the root for a multi-repo pipeline. /s
+#- task: PowerShell@2
+#  condition: eq(variables['typewriterReleaseVersion'], true)
+#  displayName: 'Typewriter: generate .NET files'
+#  inputs:
+#    targetType: filePath
+#    filePath: '$(Build.SourcesDirectory)/msgraph-metadata/scripts/runTypewriter.ps1'
+#    arguments: '-verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files'
+#    workingDirectory: '$(Build.SourcesDirectory)' # Set the root for a multi-repo pipeline. /s
 
-#- checkout: MSGraph-SDK-Code-Generator
-#  condition: ne(variables['typewriterReleaseVersion'], true)
-#  clean: true
-#  fetchDepth: 1
-#  submodules: recursive
-#  persistCredentials: true
+- checkout: MSGraph-SDK-Code-Generator
+  clean: true
+  fetchDepth: 1
+  submodules: recursive
+  persistCredentials: true
+
+- task: NuGetCommand@2
+  displayName: "Restore Packages for typewriter tool"
+  inputs:
+    restoreSolution: '$(apidoctorSolution)'
+
+- task: VSBuild@1
+  displayName: "Build Typewriter"
+  inputs:
+    solution: '$(generatorSolution)'
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+
+- task: PowerShell@2
+  displayName: Run typewriter
+  inputs:
+    targetType: 'inline'
+    script: |
+      $typewriterPath = (Join-Path (Join-Path $env:Build_SourcesDirectory\MSGraph-SDK-CodeGenerator\src\Typewriter\bin\ $(buildConfiguration)) Typewriter.exe)
+      Write-Host "Path to typewriter tool: $typewriterPath"
+      Write-Host "##vso[task.setvariable variable=typewriterPath]$typewriterPath"
+
+      $(typewriterPath) -verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files
+
+- task: PowerShell@2
+  displayName: "Run snippet generation against docs"
+  inputs:
+    workingDirectory: microsoft-graph-docs
+    targetType: 'inline'
+    script: |
+      $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
 
 - task: PowerShell@2
   displayName: 'Copy generated files into the repo'
