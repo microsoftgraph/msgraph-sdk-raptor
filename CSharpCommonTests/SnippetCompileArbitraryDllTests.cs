@@ -7,18 +7,18 @@ using System.Collections.Generic;
 using System.IO;
 using TestsCommon;
 
-namespace CSharpCommonTests
+namespace CSharpArbitraryDllTests
 {
     [TestFixture]
-    public class SnippetCompileCommonTests
+    public class SnippetCompileArbitraryDllTests
     {
-        // change this to a record type in C#9
-        private class CommonTestData
+        // to validate runsettings data
+        private class RunSettingsTestData
         {
             public Versions Version { get; set; }
             public string DllPath { get; set; }
 
-            public CommonTestData(string versionString, string dllPath)
+            public RunSettingsTestData(string versionString, string dllPath)
             {
                 if (!File.Exists(dllPath))
                 {
@@ -31,11 +31,11 @@ namespace CSharpCommonTests
             }
         }
 
-        private static IEnumerable<TestCaseData> GenerateTestDataCommon()
+        private static IEnumerable<TestCaseData> GenerateTestDataForArbitraryDll()
         {
             var versionString = TestContext.Parameters.Get("Version");
             var dllPath = TestContext.Parameters.Get("DllPath");
-            var commonTestData = new CommonTestData(versionString, dllPath);
+            var commonTestData = new RunSettingsTestData(versionString, dllPath);
             return TestDataGenerator.GetTestCaseData(
                 commonTestData.Version,
                 knownFailuresRequested: false,
@@ -47,7 +47,7 @@ namespace CSharpCommonTests
         /// Gets TestCaseData for version specified in Test.runsettings
         /// TestCaseData contains snippet file name, version and test case name
         /// </summary>
-        public static IEnumerable<TestCaseData> TestDataCommon => GenerateTestDataCommon();
+        public static IEnumerable<TestCaseData> ArbitraryDllTestData => GenerateTestDataForArbitraryDll();
 
         /// <summary>
         /// Represents test runs generated from test case data
@@ -56,7 +56,7 @@ namespace CSharpCommonTests
         /// <param name="docsLink">documentation page where the snippet is shown</param>
         /// <param name="version">Docs version (e.g. V1, Beta)</param>
         [Test]
-        [TestCaseSource(typeof(SnippetCompileCommonTests), nameof(TestDataCommon))]
+        [TestCaseSource(typeof(SnippetCompileArbitraryDllTests), nameof(ArbitraryDllTestData))]
         public void Test(CsharpTestData testData)
         {
             CSharpTestRunner.Run(testData);

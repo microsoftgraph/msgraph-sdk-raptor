@@ -126,7 +126,7 @@ namespace TestsCommon
             for (int lineNumber = 1; lineNumber < lines.Length + 1; lineNumber++)
             {
                 builder.Append(lineNumber.ToString(CultureInfo.InvariantCulture).PadLeft(widestLineNumberWidth)) // align line numbers to the right
-                       .Append(" ")
+                       .Append(' ')
                        .Append(lines[lineNumber - 1])
                        .Append("\r\n");
             }

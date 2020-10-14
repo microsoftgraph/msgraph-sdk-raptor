@@ -479,9 +479,10 @@ namespace TestsCommon
             var documentationLinks = GetDocumentationLinks(version);
             var knownIssues = KnownIssues.GetIssues();
             var snippetFileNames = documentationLinks.Keys.ToList();
-            return from fileName in snippetFileNames                                // e.g. application-addpassword-csharp-snippets.md
-                   let testNamePostfix = version.ToString() + "-compiles"           // e.g. Beta-compiles
-                   let testName = fileName.Replace("snippets.md", testNamePostfix)  // e.g. application-addpassword-csharp-Beta-compiles
+            return from fileName in snippetFileNames                                            // e.g. application-addpassword-csharp-snippets.md
+                   let arbitraryDllPostfix = dllPath == null ? string.Empty : "arbitraryDll-"
+                   let testNamePostfix = arbitraryDllPostfix + version.ToString() + "-compiles" // e.g. Beta-compiles or arbitraryDll-Beta-compiles
+                   let testName = fileName.Replace("snippets.md", testNamePostfix)              // e.g. application-addpassword-csharp-Beta-compiles
                    let docsLink = documentationLinks[fileName]
                    let isKnownIssue = knownIssues.ContainsKey(testName)
                    let knownIssue = isKnownIssue ? knownIssues[testName] : null

@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpBetaKnownFailureTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpV1KnownFailureTests", "CsharpV1KnownFailureTests\CsharpV1KnownFailureTests.csproj", "{418B1372-FC4F-4C90-9526-45C7A62F8BBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpCommonTests", "CSharpCommonTests\CSharpCommonTests.csproj", "{510AA0B8-CC03-4FE5-9DE4-97BD69FD81D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpArbitraryDllTests", "CSharpCommonTests\CSharpArbitraryDllTests.csproj", "{510AA0B8-CC03-4FE5-9DE4-97BD69FD81D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
