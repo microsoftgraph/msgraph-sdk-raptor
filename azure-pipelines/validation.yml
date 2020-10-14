@@ -181,7 +181,7 @@ steps:
   displayName: 'Get DLL path'
   inputs:
     targetType: inline
-    workingDirectory: '$(Build.SourcesDirectory)/msgraph-sdk-dotnet'
+    workingDirectory: '$(Build.SourcesDirectory)'
     script: |
       $allGeneratedDlls = Get-ChildItem -Include Microsoft.Graph.dll -Recurse
       $dotNetFrameworkDll = $allGeneratedDlls | Where-Object { !$_.FullName.Contains("obj") -and !$_.FullName.Contains("netstandard") }
@@ -209,7 +209,7 @@ steps:
     script: |
       $runSettingsFile = (Get-ChildItem -Include Test.runsettings -Recurse).FullName
       $runSettingsContent = Get-Content $runSettingsFile
-      $updatedRunSettingsContent = $runSettingsContent.Replace("---VersionPlaceholder---", $(metadataVersion)).Replace("---DllPathPlaceholder---", $(dllPath))
+      $updatedRunSettingsContent = $runSettingsContent.Replace("---VersionPlaceholder---", "$(metadataVersion)").Replace("---DllPathPlaceholder---", "$(dllPath)")
       $updatedRunSettingsContent > $runSettingsFile
       Write-Host "--- Test.runsettings file ---"
       Write-Host $updatedRunSettingsContent
