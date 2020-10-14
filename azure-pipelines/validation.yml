@@ -51,7 +51,7 @@ variables:
   typewriterReleaseVersion: true
 
 jobs:
-  - job: Snippet Generation
+  - job: SnippetGeneration
     steps:
     - checkout: microsoft-graph-docs
       clean: true
@@ -113,7 +113,7 @@ jobs:
         script: |
           $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
 
-  - job: Prepare dotnet repo
+  - job: PrepareDotnetRepo
     steps:
     - checkout: msgraph-sdk-dotnet
       clean: true
@@ -142,7 +142,7 @@ jobs:
           Remove-Item -Recurse $env:repoModelsDir | Write-Host
           Write-Host "Removed the existing generated files in the repo." -ForegroundColor Green
 
-  - job: Typewriter release version
+  - job: TypewriterReleaseVersion
     condition: eq(variables['typewriterReleaseVersion'], true)
     steps:
     - checkout: msgraph-metadata
@@ -158,7 +158,7 @@ jobs:
         arguments: '-verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files'
         workingDirectory: '$(Build.SourcesDirectory)' # Set the root for a multi-repo pipeline. /s
 
-  - job: Typewriter build from source
+  - job: TypewriterBuildFromSource
     condition: ne(variables['typewriterReleaseVersion'], true)
     steps:
     - checkout: MSGraph-SDK-Code-Generator
@@ -167,7 +167,7 @@ jobs:
       submodules: recursive
       persistCredentials: true
   
-  - job: Build .NET repo
+  - job: BuildDotNetRepo
     steps:
     - task: PowerShell@2
       displayName: 'Copy generated files into the repo'
@@ -197,7 +197,7 @@ jobs:
           Write-Host "Path to Microsoft.Graph.dll: $dllPath"
           Write-Host "##vso[task.setvariable variable=dllPath]$dllPath"
 
-  - job: Run Raptor
+  - job: RunRaptor
     steps:
     - checkout: self
       clean: true
