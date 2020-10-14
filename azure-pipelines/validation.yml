@@ -184,8 +184,8 @@ steps:
     workingDirectory: '$(Build.SourcesDirectory)'
     script: |
       $allGeneratedDlls = Get-ChildItem -Include Microsoft.Graph.dll -Recurse
-      $dotNetFrameworkDll = $allGeneratedDlls | Where-Object { !$_.FullName.Contains("obj") -and !$_.FullName.Contains("netstandard") }
-      $dllPath = $dotNetFrameworkDll.FullName
+      $dotNetCoreDll = $allGeneratedDlls | Where-Object { $_.FullName.Contains("netcoreapp") }
+      $dllPath = $dotNetCoreDll.FullName
       Write-Host "Path to Microsoft.Graph.dll: $dllPath"
       Write-Host "##vso[task.setvariable variable=dllPath]$dllPath"
 
