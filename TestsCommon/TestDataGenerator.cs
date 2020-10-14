@@ -484,8 +484,9 @@ namespace TestsCommon
                    let testNamePostfix = arbitraryDllPostfix + version.ToString() + "-compiles" // e.g. Beta-compiles or arbitraryDll-Beta-compiles
                    let testName = fileName.Replace("snippets.md", testNamePostfix)              // e.g. application-addpassword-csharp-Beta-compiles
                    let docsLink = documentationLinks[fileName]
-                   let isKnownIssue = knownIssues.ContainsKey(testName.Replace("arbitraryDll-", string.Empty))
-                   let knownIssue = isKnownIssue ? knownIssues[testName] : null
+                   let knownIssueLookupKey = testName.Replace("arbitraryDll-", string.Empty)
+                   let isKnownIssue = knownIssues.ContainsKey(knownIssueLookupKey)
+                   let knownIssue = isKnownIssue ? knownIssues[knownIssueLookupKey] : null
                    let knownIssueMessage = knownIssue?.Message ?? string.Empty
                    let owner = knownIssue?.Owner ?? string.Empty
                    let testCaseData = new CsharpTestData
