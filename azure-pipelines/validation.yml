@@ -168,7 +168,10 @@ jobs:
       persistCredentials: true
   
   - job: BuildDotNetRepo
-    dependsOn: PrepareDotNetRepo | TypewriterReleaseVersion | TypewriterBuildFromSource
+    dependsOn:
+    - PrepareDotNetRepo
+    - TypewriterReleaseVersion
+    - TypewriterBuildFromSource
     steps:
     - task: PowerShell@2
       displayName: 'Copy generated files into the repo'
@@ -199,7 +202,9 @@ jobs:
           Write-Host "##vso[task.setvariable variable=dllPath]$dllPath"
 
   - job: RunRaptor
-    dependsOn: BuildDotNetRepo | SnippetGeneration
+    dependsOn:
+    - BuildDotNetRepo
+    - SnippetGeneration
     steps:
     - checkout: self
       clean: true
