@@ -220,7 +220,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/CsharpCommonTests.csproj'
+    projects: '**/CSharpArbitraryDllTests.csproj'
     arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(runSettingsFile)'
     publishTestResults: false
   displayName: 'Csharp Compilation Tests'
