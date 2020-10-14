@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestsCommon", "TestsCommon\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpBetaTests", "CsharpBetaTests\CsharpBetaTests.csproj", "{409BE1A6-4978-405C-9F0B-478DDF344AA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsharpBetaKnownFailureTests", "CsharpBetaKnownFailureTests\CsharpBetaKnownFailureTests.csproj", "{6A08DD1F-4865-4366-AFFF-A1A5A4B6C24A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpBetaKnownFailureTests", "CsharpBetaKnownFailureTests\CsharpBetaKnownFailureTests.csproj", "{6A08DD1F-4865-4366-AFFF-A1A5A4B6C24A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsharpV1KnownFailureTests", "CsharpV1KnownFailureTests\CsharpV1KnownFailureTests.csproj", "{418B1372-FC4F-4C90-9526-45C7A62F8BBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpV1KnownFailureTests", "CsharpV1KnownFailureTests\CsharpV1KnownFailureTests.csproj", "{418B1372-FC4F-4C90-9526-45C7A62F8BBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpCommonTests", "CSharpCommonTests\CSharpCommonTests.csproj", "{510AA0B8-CC03-4FE5-9DE4-97BD69FD81D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{418B1372-FC4F-4C90-9526-45C7A62F8BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{418B1372-FC4F-4C90-9526-45C7A62F8BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{418B1372-FC4F-4C90-9526-45C7A62F8BBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{510AA0B8-CC03-4FE5-9DE4-97BD69FD81D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{510AA0B8-CC03-4FE5-9DE4-97BD69FD81D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{510AA0B8-CC03-4FE5-9DE4-97BD69FD81D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{510AA0B8-CC03-4FE5-9DE4-97BD69FD81D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

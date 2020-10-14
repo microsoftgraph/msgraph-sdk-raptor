@@ -27,11 +27,22 @@ namespace MsGraphSDKSnippetsCompiler.Models
     /// </summary>
     public class VersionString
     {
+        private const string UnexpectedVersionMessage = "Unexpected version, we can't resolve this to a path or url segment.";
         private readonly Versions Version;
 
         public VersionString(Versions version)
         {
             Version = version;
+        }
+
+        public static Versions GetVersion(string versionString)
+        {
+            return versionString switch
+            {
+                "v1.0" => Versions.V1,
+                "beta" => Versions.Beta,
+                _ => throw new ArgumentException(UnexpectedVersionMessage)
+            };
         }
 
         public override string ToString()
@@ -40,7 +51,7 @@ namespace MsGraphSDKSnippetsCompiler.Models
             {
                 Versions.V1 => "v1.0",
                 Versions.Beta => "beta",
-                _ => throw new ArgumentException("Unexpected version, we can't resolve this to a path or url segment."),
+                _ => throw new ArgumentException(UnexpectedVersionMessage),
             };
         }
 

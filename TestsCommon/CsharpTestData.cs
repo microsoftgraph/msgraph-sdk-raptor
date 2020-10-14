@@ -28,5 +28,10 @@ namespace TestsCommon
         /// Snippet file name
         /// </summary>
         public string FileName { get; set; }
+
+        /// <summary>
+        /// Optional dll path to load Microsoft.Graph from a local resource instead of published nuget
+        /// </summary>
+        public string DllPath { get; set; }
     }
 }

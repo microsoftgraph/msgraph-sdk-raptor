@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Graph;
 using MsGraphSDKSnippetsCompiler.Models;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,10 +22,12 @@ namespace MsGraphSDKSnippetsCompiler
     public class MicrosoftGraphCSharpCompiler : IMicrosoftGraphSnippetsCompiler
     {
         private readonly string _markdownFileName;
+        private readonly string _dllPath;
 
-        public MicrosoftGraphCSharpCompiler(string markdownFileName)
+        public MicrosoftGraphCSharpCompiler(string markdownFileName, string dllPath)
         {
             _markdownFileName = markdownFileName;
+            _dllPath = dllPath;
         }
 
         /// <summary>
@@ -56,7 +59,16 @@ namespace MsGraphSDKSnippetsCompiler
             };
 
             //Use the right Microsoft Graph Version
-            if(version == Versions.V1)
+            if (_dllPath != null && _dllPath != string.Empty)
+            {
+                if (!System.IO.File.Exists(_dllPath))
+                {
+                    throw new ArgumentException($"Provided dll path {_dllPath} doesn't exist!");
+                }
+
+                metadataReferences.Add(MetadataReference.CreateFromFile(_dllPath));
+            }
+            else if(version == Versions.V1)
             {
                 metadataReferences.Add(MetadataReference.CreateFromFile(Path.Combine(graphAssemblyPathV1, "Microsoft.Graph.dll")));
             }

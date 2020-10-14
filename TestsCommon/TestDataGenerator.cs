@@ -474,7 +474,7 @@ namespace TestsCommon
         /// <returns>
         /// TestCaseData to be consumed by C# compilation tests
         /// </returns>
-        public static IEnumerable<TestCaseData> GetTestCaseData(Versions version, bool knownFailuresRequested = false)
+        public static IEnumerable<TestCaseData> GetTestCaseData(Versions version, bool knownFailuresRequested = false, string dllPath = null)
         {
             var documentationLinks = GetDocumentationLinks(version);
             var knownIssues = KnownIssues.GetIssues();
@@ -493,7 +493,8 @@ namespace TestsCommon
                        IsKnownIssue = isKnownIssue,
                        KnownIssueMessage = knownIssueMessage,
                        DocsLink = docsLink,
-                       FileName = fileName
+                       FileName = fileName,
+                       DllPath = dllPath
                    }
                    where !(isKnownIssue ^ knownFailuresRequested) // select known issues if requested
                    select new TestCaseData(testCaseData).SetName(testName).SetProperty("Owner", owner);
