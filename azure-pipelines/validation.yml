@@ -113,7 +113,7 @@ jobs:
         script: |
           $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
 
-  - job: PrepareDotnetRepo
+  - job: PrepareDotNetRepo
     steps:
     - checkout: msgraph-sdk-dotnet
       clean: true
@@ -168,6 +168,7 @@ jobs:
       persistCredentials: true
   
   - job: BuildDotNetRepo
+    dependsOn: PrepareDotNetRepo | TypewriterReleaseVersion | TypewriterBuildFromSource
     steps:
     - task: PowerShell@2
       displayName: 'Copy generated files into the repo'
@@ -198,6 +199,7 @@ jobs:
           Write-Host "##vso[task.setvariable variable=dllPath]$dllPath"
 
   - job: RunRaptor
+    dependsOn: BuildDotNetRepo | SnippetGeneration
     steps:
     - checkout: self
       clean: true
