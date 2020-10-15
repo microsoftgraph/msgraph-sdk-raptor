@@ -131,7 +131,7 @@ steps:
 - task: NuGetCommand@2
   displayName: "Restore Packages for typewriter tool"
   inputs:
-    restoreSolution: '$(apidoctorSolution)'
+    restoreSolution: '$(generatorSolution)'
 
 - task: VSBuild@1
   displayName: "Build Typewriter"
