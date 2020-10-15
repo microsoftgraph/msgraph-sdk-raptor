@@ -149,6 +149,7 @@ steps:
 - task: PowerShell@2
   displayName: 'Run Typewriter and update models'
   inputs:
+    workingDirectory: $env:Build_SourcesDirectory
     targetType: 'inline'
     script: |
       $outputPath = Join-Path $env:Build_SourcesDirectory "output"
@@ -157,15 +158,17 @@ steps:
       $typewriterPath = (Join-Path (Join-Path $env:Build_SourcesDirectory\MSGraph-SDK-Code-Generator\src\Typewriter\bin\ $(buildConfiguration)) Typewriter.exe)
       Write-Host "Path to typewriter tool: $typewriterPath"
 
-      $metadataDir = Join-Path $env:temp "metadata"
+      $metadataDir = "metadata"
       mkdir $metadataDir
       $metadataFile = Join-Path $metadataDir "metadata.xml"
       Invoke-WebRequest -Uri $(metadataURL) -OutFile $metadataFile
       Write-Host "Downloaded $(metadataURL) to $metadataFile" -ForegroundColor Green
 
       $xslTranformScriptPath = "$env:Build_SourcesDirectory\msgraph-metadata\transforms\csdl\transform.ps1"
-      $xslPath = "$env:Build_SourcesDirectory\msgraph-metadata\transforms\csdl\preprocess_csdl.xsl"
+      $xslPath = "msgraph-metadata\transforms\csdl\preprocess_csdl.xsl"
       $cleanMetadataFile = Join-Path $metadataDir "clean_metadata.xml"
+
+      # transform script uses relative path to working directory
       & $xslTranformScriptPath -xslPath $xslPath -inputPath $metadataFile -outputPath $cleanMetadataFile
       Write-Host "Transformed $metadataFile to $cleanMetadataFile" -ForegroundColor Green
 
