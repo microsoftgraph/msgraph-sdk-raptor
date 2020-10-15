@@ -145,11 +145,11 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $typewriterPath = (Join-Path (Join-Path $env:Build_SourcesDirectory\MSGraph-SDK-CodeGenerator\src\Typewriter\bin\ $(buildConfiguration)) Typewriter.exe)
+      $typewriterPath = (Join-Path (Join-Path $env:Build_SourcesDirectory\MSGraph-SDK-CodeGenerator\src\Typewriter\bin\ $buildConfiguration) Typewriter.exe)
       Write-Host "Path to typewriter tool: $typewriterPath"
       Write-Host "##vso[task.setvariable variable=typewriterPath]$typewriterPath"
 
-      $(typewriterPath) -verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files
+      $typewriterPath -verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files
 
 - task: PowerShell@2
   displayName: "Run snippet generation against docs"
