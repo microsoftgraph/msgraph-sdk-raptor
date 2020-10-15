@@ -45,7 +45,7 @@ variables:
   buildConfiguration: 'Release'
   apidoctorPath: 'apidoctor'
   generatorPath: 'MSGraph-SDK-Code-Generator'
-  generatorSolution: '$(generatorPath)/**/Typewriter.sln'
+  typewriterSolution: '$(generatorPath)/**/Typewriter.sln'
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
   snippetLanguages: 'C#' #'C#,JavaScript,Objective-C,Java'
   metadataVersion: 'v1.0'
@@ -68,28 +68,79 @@ steps:
   clean: true
   fetchDepth: 1
   persistCredentials: true
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: 'microsoft-graph-explorer-api\CodeSnippetsReflection.App\CodeSnippetsReflection.App.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build Snippet Generator Tool'
-
-- task: NuGetToolInstaller@1
-  displayName: "Install Nuget.exe"
-
+  
 - checkout: msgraph-sdk-dotnet
   clean: true
   fetchDepth: 1
   persistCredentials: true
+
+- checkout: msgraph-metadata
+  condition: eq(variables['typewriterReleaseVersion'], true)
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
+
+- checkout: MSGraph-SDK-Code-Generator
+  clean: true
+  fetchDepth: 1
+  submodules: recursive
+  persistCredentials: true
+
+- checkout: self
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build snippet generator'
+  inputs:
+    command: 'build'
+    projects: 'microsoft-graph-explorer-api\CodeSnippetsReflection.App\CodeSnippetsReflection.App.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: NuGetToolInstaller@1
+  displayName: 'Install Nuget.exe'
+
+- task: NuGetCommand@2
+  displayName: 'Restore packages for apidoctor'
+  inputs:
+    restoreSolution: '$(apidoctorSolution)'
+
+- task: VSBuild@1
+  displayName: 'Build apidoctor'
+  inputs:
+    solution: '$(apidoctorSolution)'
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+
 - task: PowerShell@2
-  displayName: 'Calculate and set pipeline variables for this job'
+  displayName: 'Set snippet generator and apidoctor paths'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # release folder can change based on .NET core version, so search recursively in bin folder
+      $snippetGeneratorPath = (Get-ChildItem $env:Build_SourcesDirectory\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin\Release *App.exe -Recurse).FullName
+      Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
+      Write-Host "##vso[task.setvariable variable=snippetGeneratorPath]$snippetGeneratorPath"
+
+      $apidoctorPath = (Get-ChildItem $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin\Release apidoc.exe -Recurse).FullName
+      Write-Host "Path to apidoctor tool: $apidoctorPath"
+      Write-Host "##vso[task.setvariable variable=apidoctorPath]$apidoctorPath"
+
+- task: PowerShell@2
+  displayName: 'Run snippet generation'
+  inputs:
+    workingDirectory: microsoft-graph-docs
+    targetType: 'inline'
+    script: |
+      $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
+
+- task: PowerShell@2
+  displayName: 'Calculate and set pipeline variables'
   inputs:
     targetType: inline
     # TODO support metadata path
     script: |
-      
       $repoModelsDir = "$env:Build_SourcesDirectory\msgraph-sdk-dotnet\src\Microsoft.Graph\Generated\"
       Write-Host "Path to repo model directory: $repoModelsDir"
       Write-Host "##vso[task.setvariable variable=repoModelsDir]$repoModelsDir"
@@ -98,50 +149,20 @@ steps:
       Write-Host "Path to typewriter.exe output $outputPath"
       Write-Host "##vso[task.setvariable variable=outputPath]$outputPath"
 
-- task: PowerShell@2
-  displayName: 'Remove generated files from the repo'
-  inputs:
-    targetType: inline
-    script: |
-      Remove-Item -Recurse $env:repoModelsDir | Write-Host
-      Write-Host "Removed the existing generated files in the repo." -ForegroundColor Green
-
-
-- checkout: msgraph-metadata
-  condition: eq(variables['typewriterReleaseVersion'], true)
-  clean: true
-  fetchDepth: 1
-  persistCredentials: true
-
-#- task: PowerShell@2
-#  condition: eq(variables['typewriterReleaseVersion'], true)
-#  displayName: 'Typewriter: generate .NET files'
-#  inputs:
-#    targetType: filePath
-#    filePath: '$(Build.SourcesDirectory)/msgraph-metadata/scripts/runTypewriter.ps1'
-#    arguments: '-verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files'
-#    workingDirectory: '$(Build.SourcesDirectory)' # Set the root for a multi-repo pipeline. /s
-
-- checkout: MSGraph-SDK-Code-Generator
-  clean: true
-  fetchDepth: 1
-  submodules: recursive
-  persistCredentials: true
-
 - task: NuGetCommand@2
-  displayName: "Restore Packages for typewriter tool"
+  displayName: 'Restore packages for Typewriter tool'
   inputs:
-    restoreSolution: '$(generatorSolution)'
+    restoreSolution: '$(typewriterSolution)'
 
 - task: VSBuild@1
-  displayName: "Build Typewriter"
+  displayName: 'Build Typewriter'
   inputs:
-    solution: '$(generatorSolution)'
+    solution: '$(typewriterSolution)'
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
 
 - task: PowerShell@2
-  displayName: Run typewriter
+  displayName: 'Run Typewriter'
   inputs:
     targetType: 'inline'
     script: |
@@ -152,28 +173,23 @@ steps:
       & $typewriterPath -v Info -m $(metadataURL) -o $(outputPath) -g Files
 
 - task: PowerShell@2
-  displayName: "Run snippet generation against docs"
-  inputs:
-    workingDirectory: microsoft-graph-docs
-    targetType: 'inline'
-    script: |
-      $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
-
-- task: PowerShell@2
   displayName: 'Copy generated files into the repo'
   inputs:
     targetType: inline
     script: |
+      Remove-Item -Recurse $env:repoModelsDir | Write-Host
+      Write-Host "Removed the existing generated files in the repo." -ForegroundColor Green
+
       $modelsDirectory = Join-Path $env:outputPath "\com\microsoft\graph\"
       Move-Item $modelsDirectory $env:repoModelsDir
       Write-Host "Moved the models from $modelsDirectory into the local repo." -ForegroundColor Green
 
 - task: DotNetCoreCLI@2
+  displayName: 'Build Microsoft.Graph.dll'
   inputs:
     command: 'build'
     projects: msgraph-sdk-dotnet/**/*.csproj
     arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build DotNet projects'
 
 - task: PowerShell@2
   displayName: 'Get DLL path'
@@ -186,18 +202,6 @@ steps:
       $dllPath = $dotNetCoreDll.FullName
       Write-Host "Path to Microsoft.Graph.dll: $dllPath"
       Write-Host "##vso[task.setvariable variable=dllPath]$dllPath"
-
-- checkout: self
-  clean: true
-  fetchDepth: 1
-  persistCredentials: true
-
-#- task: DotNetCoreCLI@2
-#  inputs:
-#    command: 'build'
-#    projects: msgraph-sdk-raptor/**/*.csproj
-#    arguments: '--configuration $(buildConfiguration)'
-#  displayName: 'Build Raptor Projects'
 
 - task: PowerShell@2
   displayName: 'Transform .runsettings file'
@@ -216,10 +220,10 @@ steps:
       Write-Host "##vso[task.setvariable variable=runSettingsFile]$runSettingsFile"
 
 - task: DotNetCoreCLI@2
+  displayName: 'Csharp Compilation Tests'
   inputs:
     command: 'test'
     projects: '**/CSharpArbitraryDllTests.csproj'
     arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(runSettingsFile)'
     publishTestResults: false
-  displayName: 'Csharp Compilation Tests'
   continueOnError: true
