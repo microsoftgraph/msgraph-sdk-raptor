@@ -149,7 +149,7 @@ steps:
       Write-Host "Path to typewriter tool: $typewriterPath"
       Write-Host "##vso[task.setvariable variable=typewriterPath]$typewriterPath"
 
-      $typewriterPath -verbosity Info -metadata $(metadataURL) -output $(outputPath) -generationMode Files
+      & $typewriterPath -v Info -m $(metadataURL) -o $(outputPath) -g Files
 
 - task: PowerShell@2
   displayName: "Run snippet generation against docs"
