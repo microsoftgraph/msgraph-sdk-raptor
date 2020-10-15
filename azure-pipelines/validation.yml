@@ -157,7 +157,7 @@ steps:
       $typewriterPath = (Join-Path (Join-Path $env:Build_SourcesDirectory\MSGraph-SDK-Code-Generator\src\Typewriter\bin\ $(buildConfiguration)) Typewriter.exe)
       Write-Host "Path to typewriter tool: $typewriterPath"
 
-      & $typewriterPath -v Info -m $(metadataURL) -o $(outputPath) -g Files
+      & $typewriterPath -v Info -m $(metadataURL) -o $outputPath -g Files
 
       $repoModelsDir = "$env:Build_SourcesDirectory\msgraph-sdk-dotnet\src\Microsoft.Graph\Generated\"
       Write-Host "Path to repo model directory: $repoModelsDir"
@@ -187,7 +187,7 @@ steps:
 
       $runSettingsFile = (Get-ChildItem ./msgraph-sdk-raptor/ -Include Test.runsettings -Recurse).FullName
       $runSettingsContent = Get-Content $runSettingsFile
-      $updatedRunSettingsContent = $runSettingsContent.Replace("---VersionPlaceholder---", "$(metadataVersion)").Replace("---DllPathPlaceholder---", "$(dllPath)")
+      $updatedRunSettingsContent = $runSettingsContent.Replace("---VersionPlaceholder---", "$(metadataVersion)").Replace("---DllPathPlaceholder---", "$dllPath")
       $updatedRunSettingsContent > $runSettingsFile
 
       Write-Host "--- Test.runsettings file ---"
