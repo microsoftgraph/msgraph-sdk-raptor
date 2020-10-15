@@ -114,8 +114,9 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: PowerShell@2
-  displayName: 'Set snippet generator and apidoctor paths'
+  displayName: 'Run snippet generation'
   inputs:
+    workingDirectory: microsoft-graph-docs
     targetType: 'inline'
     script: |
       # release folder can change based on .NET core version, so search recursively in bin folder
@@ -125,29 +126,8 @@ steps:
 
       $apidoctorPath = (Get-ChildItem $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin\Release apidoc.exe -Recurse).FullName
       Write-Host "Path to apidoctor tool: $apidoctorPath"
-      Write-Host "##vso[task.setvariable variable=apidoctorPath]$apidoctorPath"
 
-- task: PowerShell@2
-  displayName: 'Run snippet generation'
-  inputs:
-    workingDirectory: microsoft-graph-docs
-    targetType: 'inline'
-    script: |
-      $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
-
-- task: PowerShell@2
-  displayName: 'Calculate and set pipeline variables'
-  inputs:
-    targetType: inline
-    # TODO support metadata path
-    script: |
-      $repoModelsDir = "$env:Build_SourcesDirectory\msgraph-sdk-dotnet\src\Microsoft.Graph\Generated\"
-      Write-Host "Path to repo model directory: $repoModelsDir"
-      Write-Host "##vso[task.setvariable variable=repoModelsDir]$repoModelsDir"
-
-      $outputPath = Join-Path $env:Build_SourcesDirectory "output"
-      Write-Host "Path to typewriter.exe output $outputPath"
-      Write-Host "##vso[task.setvariable variable=outputPath]$outputPath"
+      & $(apidoctorPath) generate-snippets --ignore-warnings --path . --snippet-generator-path $(snippetGeneratorPath) --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
 
 - task: NuGetCommand@2
   displayName: 'Restore packages for Typewriter tool'
@@ -161,27 +141,28 @@ steps:
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
 
+# TODO support metadata path
 - task: PowerShell@2
-  displayName: 'Run Typewriter'
+  displayName: 'Run Typewriter and update models'
   inputs:
     targetType: 'inline'
     script: |
+      $outputPath = Join-Path $env:Build_SourcesDirectory "output"
+      Write-Host "Path to typewriter.exe output $outputPath"
+
       $typewriterPath = (Join-Path (Join-Path $env:Build_SourcesDirectory\MSGraph-SDK-Code-Generator\src\Typewriter\bin\ $(buildConfiguration)) Typewriter.exe)
       Write-Host "Path to typewriter tool: $typewriterPath"
-      Write-Host "##vso[task.setvariable variable=typewriterPath]$typewriterPath"
 
       & $typewriterPath -v Info -m $(metadataURL) -o $(outputPath) -g Files
 
-- task: PowerShell@2
-  displayName: 'Copy generated files into the repo'
-  inputs:
-    targetType: inline
-    script: |
-      Remove-Item -Recurse $env:repoModelsDir | Write-Host
+      $repoModelsDir = "$env:Build_SourcesDirectory\msgraph-sdk-dotnet\src\Microsoft.Graph\Generated\"
+      Write-Host "Path to repo model directory: $repoModelsDir"
+
+      Remove-Item -Recurse $repoModelsDir | Write-Host
       Write-Host "Removed the existing generated files in the repo." -ForegroundColor Green
 
-      $modelsDirectory = Join-Path $env:outputPath "\com\microsoft\graph\"
-      Move-Item $modelsDirectory $env:repoModelsDir
+      $modelsDirectory = Join-Path $outputPath "\com\microsoft\graph\"
+      Move-Item $modelsDirectory $repoModelsDir
       Write-Host "Moved the models from $modelsDirectory into the local repo." -ForegroundColor Green
 
 - task: DotNetCoreCLI@2
@@ -192,30 +173,23 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: PowerShell@2
-  displayName: 'Get DLL path'
+  displayName: 'Transform .runsettings file'
   inputs:
     targetType: inline
     workingDirectory: '$(Build.SourcesDirectory)'
     script: |
-      $allGeneratedDlls = Get-ChildItem -Include Microsoft.Graph.dll -Recurse
-      $dotNetCoreDll = $allGeneratedDlls | Where-Object { $_.FullName.Contains("netcoreapp") }
-      $dllPath = $dotNetCoreDll.FullName
+      $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
       Write-Host "Path to Microsoft.Graph.dll: $dllPath"
-      Write-Host "##vso[task.setvariable variable=dllPath]$dllPath"
 
-- task: PowerShell@2
-  displayName: 'Transform .runsettings file'
-  inputs:
-    targetType: inline
-    workingDirectory: '$(Build.SourcesDirectory)/msgraph-sdk-raptor'
-    script: |
-      $runSettingsFile = (Get-ChildItem -Include Test.runsettings -Recurse).FullName
+      $runSettingsFile = (Get-ChildItem ./msgraph-sdk-raptor/ -Include Test.runsettings -Recurse).FullName
       $runSettingsContent = Get-Content $runSettingsFile
       $updatedRunSettingsContent = $runSettingsContent.Replace("---VersionPlaceholder---", "$(metadataVersion)").Replace("---DllPathPlaceholder---", "$(dllPath)")
       $updatedRunSettingsContent > $runSettingsFile
+
       Write-Host "--- Test.runsettings file ---"
       Write-Host $updatedRunSettingsContent
       Write-Host "-----------------------------"
+
       Write-Host "Path to .runsettings file: $runSettingsFile"
       Write-Host "##vso[task.setvariable variable=runSettingsFile]$runSettingsFile"
 
