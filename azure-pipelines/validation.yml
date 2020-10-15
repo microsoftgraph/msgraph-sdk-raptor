@@ -49,7 +49,7 @@ variables:
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
   snippetLanguages: 'C#' #'C#,JavaScript,Objective-C,Java'
   metadataVersion: 'v1.0'
-  metadataURL: 'https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/clean_v10_metadata/cleanMetadataWithDescriptionsv1.0.xml' #'https://graph.microsoft.com/stagingv1.0/$metadata'
+  metadataURL: 'https://graph.microsoft.com/stagingv1.0/$metadata'
 
 steps:
 - checkout: microsoft-graph-explorer-api
@@ -157,7 +157,19 @@ steps:
       $typewriterPath = (Join-Path (Join-Path $env:Build_SourcesDirectory\MSGraph-SDK-Code-Generator\src\Typewriter\bin\ $(buildConfiguration)) Typewriter.exe)
       Write-Host "Path to typewriter tool: $typewriterPath"
 
-      & $typewriterPath -v Info -m $(metadataURL) -o $outputPath -g Files
+      $metadataDir = Join-Path $env:temp "metadata"
+      mkdir $metadataDir
+      $metadataFile = Join-Path $metadataDir "metadata.xml"
+      Invoke-WebRequest -Uri $(metadataURL) -OutFile $metadataFile
+      Write-Host "Downloaded $(metadataURL) to $metadataFile" -ForegroundColor Green
+
+      $xslTranformScriptPath = "$env:Build_SourcesDirectory\msgraph-metadata\transforms\csdl\transform.ps1"
+      $xslPath = "$env:Build_SourcesDirectory\msgraph-metadata\transforms\csdl\preprocess_csdl.xsl"
+      $cleanMetadataFile = Join-Path $metadataDir "clean_metadata.xml"
+      & $xslTranformScriptPath -xslPath $xslPath -inputPath $metadataFile -outputFile $cleanMetadataFile
+      Write-Host "Transformed $metadataFile to $cleanMetadataFile" -ForegroundColor Green
+
+      & $typewriterPath -v Info -m $cleanMetadataFile -o $outputPath -g Files
 
       $repoModelsDir = "$env:Build_SourcesDirectory\msgraph-sdk-dotnet\src\Microsoft.Graph\Generated\"
       Write-Host "Path to repo model directory: $repoModelsDir"
