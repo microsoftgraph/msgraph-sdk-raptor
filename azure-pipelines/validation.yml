@@ -166,7 +166,7 @@ steps:
       $xslTranformScriptPath = "$env:Build_SourcesDirectory\msgraph-metadata\transforms\csdl\transform.ps1"
       $xslPath = "$env:Build_SourcesDirectory\msgraph-metadata\transforms\csdl\preprocess_csdl.xsl"
       $cleanMetadataFile = Join-Path $metadataDir "clean_metadata.xml"
-      & $xslTranformScriptPath -xslPath $xslPath -inputPath $metadataFile -outputFile $cleanMetadataFile
+      & $xslTranformScriptPath -xslPath $xslPath -inputPath $metadataFile -outputPath $cleanMetadataFile
       Write-Host "Transformed $metadataFile to $cleanMetadataFile" -ForegroundColor Green
 
       & $typewriterPath -v Info -m $cleanMetadataFile -o $outputPath -g Files
