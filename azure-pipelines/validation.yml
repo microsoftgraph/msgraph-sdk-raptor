@@ -149,7 +149,6 @@ steps:
 - task: PowerShell@2
   displayName: 'Run Typewriter and update models'
   inputs:
-    workingDirectory: $env:Build_SourcesDirectory
     targetType: 'inline'
     script: |
       $outputPath = Join-Path $env:Build_SourcesDirectory "output"
