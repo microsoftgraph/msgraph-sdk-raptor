@@ -54,45 +54,38 @@ variables:
 steps:
 - checkout: microsoft-graph-explorer-api
   displayName: checkout GE api
-  clean: true
   fetchDepth: 1
   persistCredentials: true
 
 - checkout: microsoft-graph-docs
   displayName: checkout docs
-  clean: true
   fetchDepth: 1
   persistCredentials: true
 
 - checkout: apidoctor
   displayName: checkout apidoctor
-  clean: true
   fetchDepth: 1
   submodules: recursive
   persistCredentials: true
   
 - checkout: msgraph-metadata
   displayName: checkout metadata
-  clean: true
   fetchDepth: 1
   persistCredentials: true
 
 - checkout: MSGraph-SDK-Code-Generator
   displayName: checkout generator
-  clean: true
   fetchDepth: 1
   submodules: recursive
   persistCredentials: true
 
 - checkout: msgraph-sdk-dotnet
   displayName: checkout dotnet
-  clean: true
   fetchDepth: 1
   persistCredentials: true
 
 - checkout: self
   displayName: checkout raptor
-  clean: true
   fetchDepth: 1
   persistCredentials: true
 
@@ -119,7 +112,7 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: PowerShell@2
-  displayName: 'Run snippet generation'
+  displayName: 'Generate snippets'
   inputs:
     workingDirectory: microsoft-graph-docs
     targetType: 'inline'
@@ -147,7 +140,7 @@ steps:
 
 # TODO support metadata path
 - task: PowerShell@2
-  displayName: 'Run Typewriter and update models'
+  displayName: 'Transform metadata, run Typewriter and update models'
   inputs:
     targetType: 'inline'
     script: |
@@ -171,6 +164,7 @@ steps:
       & $xslTranformScriptPath -xslPath $xslPath -inputPath $metadataFile -outputPath $cleanMetadataFile
       Write-Host "Transformed $metadataFile to $cleanMetadataFile" -ForegroundColor Green
 
+      Write-Host "Running Typewriter..."
       & $typewriterPath -v Info -m $cleanMetadataFile -o $outputPath -g Files
 
       $repoModelsDir = "$env:Build_SourcesDirectory\msgraph-sdk-dotnet\src\Microsoft.Graph\Generated\"
