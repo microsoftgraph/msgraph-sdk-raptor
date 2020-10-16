@@ -126,7 +126,7 @@ steps:
       $apidoctorPath = (Get-ChildItem $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin\Release apidoc.exe -Recurse).FullName
       Write-Host "Path to apidoctor tool: $apidoctorPath"
 
-      & $apidoctorPath generate-snippets --ignore-warnings --path . --snippet-generator-path $snippetGeneratorPath --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe" --skip-publishing-changes
+      & $apidoctorPath generate-snippets --ignore-warnings --path . --snippet-generator-path $snippetGeneratorPath --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe"
 
 - task: NuGetCommand@2
   displayName: 'Restore packages for Typewriter tool'
