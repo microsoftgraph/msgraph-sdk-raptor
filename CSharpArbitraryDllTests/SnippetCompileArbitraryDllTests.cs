@@ -12,42 +12,11 @@ namespace CSharpArbitraryDllTests
     [TestFixture]
     public class SnippetCompileArbitraryDllTests
     {
-        // to validate runsettings data
-        private class RunSettingsTestData
-        {
-            public Versions Version { get; set; }
-            public string DllPath { get; set; }
-
-            public RunSettingsTestData(string versionString, string dllPath)
-            {
-                if (!File.Exists(dllPath))
-                {
-                    throw new ArgumentException("File specified with DllPath in Test.runsettings doesn't exist!");
-                }
-
-                DllPath = dllPath;
-
-                Version = VersionString.GetVersion(versionString);
-            }
-        }
-
-        private static IEnumerable<TestCaseData> GenerateTestDataForArbitraryDll()
-        {
-            var versionString = TestContext.Parameters.Get("Version");
-            var dllPath = TestContext.Parameters.Get("DllPath");
-            var commonTestData = new RunSettingsTestData(versionString, dllPath);
-            return TestDataGenerator.GetTestCaseData(
-                commonTestData.Version,
-                knownFailuresRequested: false,
-                commonTestData.DllPath
-            );
-        }
-
         /// <summary>
         /// Gets TestCaseData for version specified in Test.runsettings
         /// TestCaseData contains snippet file name, version and test case name
         /// </summary>
-        public static IEnumerable<TestCaseData> ArbitraryDllTestData => GenerateTestDataForArbitraryDll();
+        public static IEnumerable<TestCaseData> ArbitraryDllTestData => TestDataGenerator.GetTestCaseData(new RunSettings(TestContext.Parameters));
 
         /// <summary>
         /// Represents test runs generated from test case data

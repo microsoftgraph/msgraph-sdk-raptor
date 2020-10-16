@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
   <TestRunParameters>
     <Parameter name="Version" value="---VersionPlaceholder---" />
     <Parameter name="DllPath" value="---DllPathPlaceholder---" />
+    <Parameter name="KnownFailuresRequested" value="---KnownFailuresRequestedPlaceholder---" />
   </TestRunParameters>
 </RunSettings>

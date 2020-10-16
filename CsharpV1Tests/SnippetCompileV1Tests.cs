@@ -14,7 +14,12 @@ namespace CsharpV1Tests
         /// Gets TestCaseData for V1
         /// TestCaseData contains snippet file name, version and test case name
         /// </summary>
-        public static IEnumerable<TestCaseData> TestDataV1 => TestDataGenerator.GetTestCaseData(Versions.V1);
+        public static IEnumerable<TestCaseData> TestDataV1 => TestDataGenerator.GetTestCaseData(
+            new RunSettings
+            {
+                Version = Versions.V1,
+                KnownFailuresRequested = false
+            });
 
         /// <summary>
         /// Represents test runs generated from test case data

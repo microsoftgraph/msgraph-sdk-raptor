@@ -14,7 +14,12 @@ namespace CsharpBetaTests
         /// Gets TestCaseData for Beta
         /// TestCaseData contains snippet file name, version and test case name
         /// </summary>
-        public static IEnumerable<TestCaseData> TestDataBeta => TestDataGenerator.GetTestCaseData(Versions.Beta);
+        public static IEnumerable<TestCaseData> TestDataBeta => TestDataGenerator.GetTestCaseData(
+            new RunSettings
+            {
+                Version = Versions.Beta,
+                KnownFailuresRequested = false
+            });
 
         /// <summary>
         /// Represents test runs generated from test case data
