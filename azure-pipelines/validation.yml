@@ -51,6 +51,7 @@ variables:
   metadataVersion: 'v1.0'
   metadataURL: 'https://graph.microsoft.com/stagingv1.0/`$metadata'
   runSettingsFile: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/CSharpArbitraryDllTests/Test.runsettings'
+  runKnownFailureTests: false
 
 steps:
 - checkout: microsoft-graph-explorer-api
@@ -210,6 +211,7 @@ steps:
   continueOnError: true
 
 - task: PowerShell@2
+  condition: $(runKnownFailureTests)
   displayName: 'Transform .runsettings file for known failures'
   inputs:
     targetType: inline
@@ -225,6 +227,7 @@ steps:
       Write-Host "-----------------------------"
 
 - task: DotNetCoreCLI@2
+  condition: $(runKnownFailureTests)
   displayName: 'Csharp Compilation Tests for Known Failures'
   inputs:
     command: 'test'
