@@ -185,7 +185,7 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: PowerShell@2
-  displayName: 'Transform .runsettings file'
+  displayName: 'Transform .runsettings file for passing tests'
   inputs:
     targetType: inline
     workingDirectory: '$(Build.SourcesDirectory)'
@@ -193,20 +193,40 @@ steps:
       $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
       Write-Host "Path to Microsoft.Graph.dll: $dllPath"
 
-      $runSettingsFile = (Get-ChildItem ./msgraph-sdk-raptor/ -Include Test.runsettings -Recurse).FullName
-      $runSettingsContent = Get-Content $runSettingsFile
-      $updatedRunSettingsContent = $runSettingsContent.Replace("---VersionPlaceholder---", "$(metadataVersion)").Replace("---DllPathPlaceholder---", "$dllPath")
-      $updatedRunSettingsContent > $runSettingsFile
+      $runSettingsPath = ".\msgraph-sdk-raptor\CSharpArbitraryDllTests\Test.runsettings"
+      & .\msgraph-sdk-raptor\CSharpArbitraryDllTests\transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "false" -DllPath "$dllPath" -RunSettingsPath $runSettingsPath
 
       Write-Host "--- Test.runsettings file ---"
-      Write-Host $updatedRunSettingsContent
+      Get-Content $runSettingsPath
       Write-Host "-----------------------------"
-
-      Write-Host "Path to .runsettings file: $runSettingsFile"
-      Write-Host "##vso[task.setvariable variable=runSettingsFile]$runSettingsFile"
 
 - task: DotNetCoreCLI@2
   displayName: 'Csharp Compilation Tests'
+  inputs:
+    command: 'test'
+    projects: '**/CSharpArbitraryDllTests.csproj'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(runSettingsFile)'
+    publishTestResults: false
+  continueOnError: true
+
+- task: PowerShell@2
+  displayName: 'Transform .runsettings file for known failures'
+  inputs:
+    targetType: inline
+    workingDirectory: '$(Build.SourcesDirectory)'
+    script: |
+      $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
+      Write-Host "Path to Microsoft.Graph.dll: $dllPath"
+
+      $runSettingsPath = ".\msgraph-sdk-raptor\CSharpArbitraryDllTests\Test.runsettings"
+      & .\msgraph-sdk-raptor\CSharpArbitraryDllTests\transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "true" -DllPath "$dllPath" -RunSettingsPath $runSettingsPath
+
+      Write-Host "--- Test.runsettings file ---"
+      Get-Content $runSettingsPath
+      Write-Host "-----------------------------"
+
+- task: DotNetCoreCLI@2
+  displayName: 'Csharp Compilation Tests for Known Failures'
   inputs:
     command: 'test'
     projects: '**/CSharpArbitraryDllTests.csproj'
