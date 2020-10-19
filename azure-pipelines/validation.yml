@@ -43,7 +43,6 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  apidoctorPath: 'apidoctor'
   generatorPath: 'MSGraph-SDK-Code-Generator'
   typewriterSolution: '$(generatorPath)/**/Typewriter.sln'
   apidoctorSolution: '$(apidoctorPath)/**/*.sln'
