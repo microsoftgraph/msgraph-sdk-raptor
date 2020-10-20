@@ -43,13 +43,10 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  generatorPath: 'MSGraph-SDK-Code-Generator'
-  typewriterSolution: '$(generatorPath)/**/Typewriter.sln'
-  apidoctorPath: apidoctor
-  apidoctorSolution: '$(apidoctorPath)/**/*.sln'
+  typewriterSolution: 'MSGraph-SDK-Code-Generator/**/Typewriter.sln'
+  apidoctorSolution: 'apidoctor/**/*.sln'
   snippetLanguages: 'C#' #'C#,JavaScript,Objective-C,Java'
   runSettingsFile: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/CSharpArbitraryDllTests/Test.runsettings'
-  runKnownFailureTests: false
 
 steps:
 - checkout: microsoft-graph-explorer-api
