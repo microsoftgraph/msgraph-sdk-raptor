@@ -189,7 +189,7 @@ steps:
   displayName: 'Create directories for test output'
   inputs:
     targetType: 'inline'
-    workingDirectory: $(Agent.ArtifactStagingDirectory)
+    workingDirectory: $(Build.ArtifactStagingDirectory)
     script: |
       $regularTestDirectory = "RegularTests"
       mkdir $regularTestDirectory
@@ -217,7 +217,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/CSharpArbitraryDllTests.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.ArtifactStagingDirectory)\RegularTests --settings $(runSettingsFile)'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)\RegularTests --settings $(runSettingsFile)'
     publishTestResults: false
   continueOnError: true
 
@@ -231,7 +231,7 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'VSTest'
-    searchFolder: '$(Agent.ArtifactStagingDirectory)\RegularTests'
+    searchFolder: '$(Build.ArtifactStagingDirectory)\RegularTests'
     testResultsFiles: '**/*.trx'
     testRunTitle: '[$(metadataVersion)] Raptor Regular Tests [Metadata:$(metadataURL)]'
   displayName: 'Publish Test Results for Regular Tests'
@@ -274,7 +274,7 @@ steps:
   condition: eq(variables['runKnownFailureTests'], true)
   inputs:
     testResultsFormat: 'VSTest'
-    searchFolder: '$(Agent.ArtifactStagingDirectory)\KnownFailures'
+    searchFolder: '$(Build.ArtifactStagingDirectory)\KnownFailures'
     testResultsFiles: '**/*.trx'
     testRunTitle: '[$(metadataVersion)] Raptor Known Failures [Metadata:$(metadataURL)]'
   displayName: 'Publish Test Results for Known Failures'
