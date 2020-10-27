@@ -3,8 +3,8 @@
 trigger: none
 pr: none
 schedules:
-- cron: "0 * * * *"
-  displayName: 'Run it every hour'
+- cron: "0 12 * * *"
+  displayName: 'Run Raptor everyday at noon'
   branches:
     include:
     - zengin/arbitraryDll
