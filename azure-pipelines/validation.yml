@@ -258,7 +258,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/CSharpArbitraryDllTests.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory)\KnownFailures --settings $(runSettingsFile)'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)\KnownFailures --settings $(runSettingsFile)'
     publishTestResults: false
   continueOnError: true
 
