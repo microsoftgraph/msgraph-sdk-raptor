@@ -171,12 +171,31 @@ steps:
       Move-Item $modelsDirectory $repoModelsDir
       Write-Host "Moved the models from $modelsDirectory into the local repo." -ForegroundColor Green
 
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish metadata files as artifact'
+  inputs:
+   PathtoPublish: '$(Build.SourcesDirectory)\metadata'
+   ArtifactName: 'metadata'
+   publishLocation: 'Container'
+
 - task: DotNetCoreCLI@2
   displayName: 'Build Microsoft.Graph.dll'
   inputs:
     command: 'build'
     projects: msgraph-sdk-dotnet/**/*.csproj
     arguments: '--configuration $(buildConfiguration)'
+
+- task: PowerShell@2
+  displayName: 'Create directories for test output'
+  inputs:
+    targetType: 'inline'
+    workingDirectory: $(Agent.ArtifactStagingDirectory)
+    script: |
+      $regularTestDirectory = "RegularTests"
+      mkdir $regularTestDirectory
+
+      $knownFailureTestDirectory = "KnownFailures"
+      mkdir $knownFailureTestDirectory
 
 - task: PowerShell@2
   displayName: 'Transform .runsettings file for passing tests'
@@ -198,9 +217,24 @@ steps:
   inputs:
     command: 'test'
     projects: '**/CSharpArbitraryDllTests.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(runSettingsFile)'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.ArtifactStagingDirectory)\RegularTests --settings $(runSettingsFile)'
     publishTestResults: false
   continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish test results as artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\RegularTests'
+    ArtifactName: 'RegularTests'
+    publishLocation: 'Container'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'VSTest'
+    searchFolder: '$(Agent.ArtifactStagingDirectory)\RegularTests'
+    testResultsFiles: '**/*.trx'
+    testRunTitle: '[$(metadataVersion)] Raptor Regular Tests [Metadata:$(metadataURL)]'
+  displayName: 'Publish Test Results for Regular Tests'
 
 - task: PowerShell@2
   condition: eq(variables['runKnownFailureTests'], true)
@@ -224,9 +258,26 @@ steps:
   inputs:
     command: 'test'
     projects: '**/CSharpArbitraryDllTests.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(runSettingsFile)'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory)\KnownFailures --settings $(runSettingsFile)'
     publishTestResults: false
   continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  condition: eq(variables['runKnownFailureTests'], true)
+  displayName: 'Publish known failure test results as artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\KnownFailures'
+    ArtifactName: 'KnownFailures'
+    publishLocation: 'Container'
+
+- task: PublishTestResults@2
+  condition: eq(variables['runKnownFailureTests'], true)
+  inputs:
+    testResultsFormat: 'VSTest'
+    searchFolder: '$(Agent.ArtifactStagingDirectory)\KnownFailures'
+    testResultsFiles: '**/*.trx'
+    testRunTitle: '[$(metadataVersion)] Raptor Known Failures [Metadata:$(metadataURL)]'
+  displayName: 'Publish Test Results for Known Failures'
 
 - task: PowerShell@2
   displayName: 'Set dll path for the .NET framework DLL for type summary generation'
@@ -245,19 +296,12 @@ steps:
   inputs:
     targetType: filePath
     filePath: '$(Build.SourcesDirectory)/msgraph-sdk-dotnet/scripts/generateTypeSummary.ps1'
-    arguments: '-dllPath $(dotNetFrameworkDllPath) -outputPath $(Build.ArtifactStagingDirectory)\Microsoft.Graph.txt'
+    arguments: '-dllPath $(dotNetFrameworkDllPath) -outputPath $(Build.ArtifactStagingDirectory)\typeSummary.txt'
   enabled: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish type summary as artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Microsoft.Graph.txt'
-    ArtifactName: 'dll'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\typeSummary.txt'
+    ArtifactName: 'TypeSummary'
     publishLocation: 'Container'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish metadata files as artifact'
-  inputs:
-   PathtoPublish: '$(Build.SourcesDirectory)\metadata'
-   ArtifactName: 'metadata'
-   publishLocation: 'Container'
