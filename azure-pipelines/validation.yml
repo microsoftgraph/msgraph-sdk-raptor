@@ -2,6 +2,13 @@
 
 trigger: none
 pr: none
+schedules:
+- cron: "0 * * * *"
+  displayName: 'Run it every hour'
+  branches:
+    include:
+    - zengin/arbitraryDll
+  always: true
 
 resources:
  repositories:
