@@ -1,0 +1,52 @@
+steps:
+- task: PowerShell@2
+  displayName: 'Create directories for test output'
+  inputs:
+    targetType: 'inline'
+    workingDirectory: $(Build.ArtifactStagingDirectory)
+    script: |
+      $knownFailureTestDirectory = "KnownFailures"
+      mkdir $knownFailureTestDirectory
+
+- task: PowerShell@2
+  condition: eq(variables['runKnownFailureTests'], true)
+  displayName: 'Transform .runsettings file for known failures'
+  inputs:
+    targetType: inline
+    workingDirectory: '$(Build.SourcesDirectory)'
+    script: |
+      $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
+      Write-Host "Path to Microsoft.Graph.dll: $dllPath"
+
+      & .\msgraph-sdk-raptor\CSharpArbitraryDllTests\transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "true" -DllPath "$dllPath" -RunSettingsPath "$(runSettingsFile)"
+
+      Write-Host "--- Test.runsettings file ---"
+      Get-Content "$(runSettingsFile)"
+      Write-Host "-----------------------------"
+
+- task: DotNetCoreCLI@2
+  condition: eq(variables['runKnownFailureTests'], true)
+  displayName: 'Csharp Compilation Tests for Known Failures'
+  inputs:
+    command: 'test'
+    projects: '**/CSharpArbitraryDllTests.csproj'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)\KnownFailures --settings $(runSettingsFile)'
+    publishTestResults: false
+  continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  condition: eq(variables['runKnownFailureTests'], true)
+  displayName: 'Publish known failure test results as artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\KnownFailures'
+    ArtifactName: 'KnownFailures'
+    publishLocation: 'Container'
+
+- task: PublishTestResults@2
+  condition: eq(variables['runKnownFailureTests'], true)
+  inputs:
+    testResultsFormat: 'VSTest'
+    searchFolder: '$(Build.ArtifactStagingDirectory)\KnownFailures'
+    testResultsFiles: '**/*.trx'
+    testRunTitle: '[$(metadataVersion)] Raptor Known Failures [Metadata:$(metadataURL)]'
+  displayName: 'Publish Test Results for Known Failures'

@@ -1,0 +1,48 @@
+steps:
+- task: PowerShell@2
+  displayName: 'Create directories for test output'
+  inputs:
+    targetType: 'inline'
+    workingDirectory: $(Build.ArtifactStagingDirectory)
+    script: |
+      $regularTestDirectory = "RegularTests"
+      mkdir $regularTestDirectory
+
+- task: PowerShell@2
+  displayName: 'Transform .runsettings file for passing tests'
+  inputs:
+    targetType: inline
+    workingDirectory: '$(Build.SourcesDirectory)'
+    script: |
+      $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
+      Write-Host "Path to Microsoft.Graph.dll: $dllPath"
+
+      & .\msgraph-sdk-raptor\CSharpArbitraryDllTests\transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "false" -DllPath "$dllPath" -RunSettingsPath "$(runSettingsFile)"
+
+      Write-Host "--- Test.runsettings file ---"
+      Get-Content "$(runSettingsFile)"
+      Write-Host "-----------------------------"
+
+- task: DotNetCoreCLI@2
+  displayName: 'Csharp Compilation Tests'
+  inputs:
+    command: 'test'
+    projects: '**/CSharpArbitraryDllTests.csproj'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)\RegularTests --settings $(runSettingsFile)'
+    publishTestResults: false
+  continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish test results as artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\RegularTests'
+    ArtifactName: 'RegularTests'
+    publishLocation: 'Container'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'VSTest'
+    searchFolder: '$(Build.ArtifactStagingDirectory)\RegularTests'
+    testResultsFiles: '**/*.trx'
+    testRunTitle: '[$(metadataVersion)] Raptor Regular Tests [Metadata:$(metadataURL)]'
+  displayName: 'Publish Test Results for Regular Tests'

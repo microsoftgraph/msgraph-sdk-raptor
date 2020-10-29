@@ -1,0 +1,37 @@
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Build snippet generator'
+  inputs:
+    command: 'build'
+    projects: 'microsoft-graph-explorer-api\CodeSnippetsReflection.App\CodeSnippetsReflection.App.csproj'
+    configuration: $(buildConfiguration)
+
+- task: NuGetToolInstaller@1
+  displayName: 'Install Nuget.exe'
+
+- task: NuGetCommand@2
+  displayName: 'Restore packages for apidoctor'
+  inputs:
+    restoreSolution: '$(apidoctorSolution)'
+
+- task: VSBuild@1
+  displayName: 'Build apidoctor'
+  inputs:
+    solution: '$(apidoctorSolution)'
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+
+- task: PowerShell@2
+  displayName: 'Generate snippets'
+  inputs:
+    workingDirectory: microsoft-graph-docs
+    targetType: 'inline'
+    script: |
+      # release folder can change based on .NET core version, so search recursively in bin folder
+      $snippetGeneratorPath = (Get-ChildItem $env:Build_SourcesDirectory\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin\Release *App.exe -Recurse).FullName
+      Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
+
+      $apidoctorPath = (Get-ChildItem $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin\Release apidoc.exe -Recurse).FullName
+      Write-Host "Path to apidoctor tool: $apidoctorPath"
+
+      & $apidoctorPath generate-snippets --ignore-warnings --path . --snippet-generator-path $snippetGeneratorPath --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe"
