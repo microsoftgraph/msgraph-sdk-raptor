@@ -53,16 +53,14 @@ parameters:
   type: string
   default: 'https://graph.microsoft.com/stagingv1.0/`$metadata'
 
-- name: metadataVersion
-  displayName: 'Metadata version, supported values: v1.0, beta'
-  type: string
-  default: 'v1.0'
-
 pool:
   vmImage: 'windows-latest' # to build ApiDoctor in .NET framework
 
 variables:
   - template: e2e-templates/variables.yml
+    parameters:
+      metadataURL: ${{ parameters.metadataURL }}
+      metadataVersion: 'v1.0'
 
 steps:
   - template: e2e-templates/checkouts.yml
