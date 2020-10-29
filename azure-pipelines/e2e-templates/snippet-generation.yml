@@ -4,7 +4,7 @@ steps:
   inputs:
     command: 'build'
     projects: 'microsoft-graph-explorer-api\CodeSnippetsReflection.App\CodeSnippetsReflection.App.csproj'
-    configuration: $(buildConfiguration)
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: NuGetToolInstaller@1
   displayName: 'Install Nuget.exe'
@@ -28,10 +28,12 @@ steps:
     targetType: 'inline'
     script: |
       # release folder can change based on .NET core version, so search recursively in bin folder
-      $snippetGeneratorPath = (Get-ChildItem $env:Build_SourcesDirectory\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin\Release *App.exe -Recurse).FullName
+      $snippetGeneratorBinDirectory = Join-Path $env:Build_SourcesDirectory\microsoft-graph-explorer-api\CodeSnippetsReflection.App\bin $(buildConfiguration)
+      $snippetGeneratorPath = (Get-ChildItem $snippetGeneratorBinDirectory *App.exe -Recurse).FullName
       Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
 
-      $apidoctorPath = (Get-ChildItem $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin\Release apidoc.exe -Recurse).FullName
+      $apidoctorBinDirectory = Join-Path $env:Build_SourcesDirectory\apidoctor\ApiDoctor.Console\bin $(buildConfiguration)
+      $apidoctorPath = (Get-ChildItem $apidoctorBinDirectory apidoc.exe -Recurse).FullName
       Write-Host "Path to apidoctor tool: $apidoctorPath"
 
       & $apidoctorPath generate-snippets --ignore-warnings --path . --snippet-generator-path $snippetGeneratorPath --lang $(snippetLanguages) --git-path "C:\Program Files\Git\bin\git.exe"
