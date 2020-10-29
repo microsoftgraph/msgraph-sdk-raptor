@@ -53,6 +53,9 @@ pool:
 
 variables:
   - template: e2e-templates/variables.yml
+    parameters:
+      metadataURL: 'https://graph.microsoft.com/stagingv1.0/`$metadata'
+      metadataVersion: 'v1.0'
 
 steps:
   - template: e2e-templates/checkouts.yml
