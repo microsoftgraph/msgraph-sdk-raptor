@@ -1,14 +1,3 @@
-parameters:
-  - name: metadataURL
-    displayName: 'URL for metadata for which SDK generation will happen:'
-    type: string
-    default: 'https://graph.microsoft.com/stagingv1.0/`$metadata'
-
-  - name: metadataVersion
-    displayName: 'Metadata version, supported values: v1.0, beta'
-    type: string
-    default: 'v1.0'
-
 variables:
   buildConfiguration: 'Release'
   typewriterSolution: 'MSGraph-SDK-Code-Generator/**/Typewriter.sln'
