@@ -132,6 +132,7 @@ public class GraphSDKTest
         {
             var linqPadQueriesDefaultFolder = Path.Join(
                     Environment.GetEnvironmentVariable("USERPROFILE"),
+                    "/OneDrive - Microsoft", // remove this if you are not syncing your Documents to OneDrive
                     "/Documents",
                     "/LINQPad Queries");
 
