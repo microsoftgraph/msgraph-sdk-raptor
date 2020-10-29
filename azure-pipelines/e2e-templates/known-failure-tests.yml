@@ -9,7 +9,6 @@ steps:
       mkdir $knownFailureTestDirectory
 
 - task: PowerShell@2
-  condition: eq(variables['runKnownFailureTests'], true)
   displayName: 'Transform .runsettings file for known failures'
   inputs:
     targetType: inline
@@ -25,7 +24,6 @@ steps:
       Write-Host "-----------------------------"
 
 - task: DotNetCoreCLI@2
-  condition: eq(variables['runKnownFailureTests'], true)
   displayName: 'Csharp Compilation Tests for Known Failures'
   inputs:
     command: 'test'
@@ -35,7 +33,6 @@ steps:
   continueOnError: true
 
 - task: PublishBuildArtifacts@1
-  condition: eq(variables['runKnownFailureTests'], true)
   displayName: 'Publish known failure test results as artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\KnownFailures'
@@ -43,7 +40,6 @@ steps:
     publishLocation: 'Container'
 
 - task: PublishTestResults@2
-  condition: eq(variables['runKnownFailureTests'], true)
   inputs:
     testResultsFormat: 'VSTest'
     searchFolder: '$(Build.ArtifactStagingDirectory)\KnownFailures'
