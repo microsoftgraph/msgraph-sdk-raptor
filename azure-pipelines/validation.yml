@@ -52,7 +52,7 @@ pool:
   vmImage: 'windows-latest' # to build ApiDoctor in .NET framework
 
 variables:
-  - template: variables.yml
+  - template: e2e-templates/variables.yml
 
 steps:
   - template: e2e-templates/checkouts.yml
