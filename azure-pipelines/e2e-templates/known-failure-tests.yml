@@ -1,5 +1,6 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 # Steps to run known failure tests
+# Running these tests can be useful to see if staging metadata (or any input metadata) has fixes for known issues
 
 steps:
 - task: PowerShell@2
