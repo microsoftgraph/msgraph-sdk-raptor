@@ -15,6 +15,7 @@ namespace TestsCommon
         public Versions Version { get; set; }
         public string DllPath { get; set; }
         public bool KnownFailuresRequested { get; set; }
+        public Languages Language { get; set; }
 
         public RunSettings() { }
 
@@ -28,6 +29,19 @@ namespace TestsCommon
             var versionString = parameters.Get("Version");
             var dllPath = parameters.Get("DllPath");
             var knownFailuresRequested = parameters.Get("KnownFailuresRequested");
+            Language = parameters.Get("Language").ToUpperInvariant() switch
+            {
+                "CSHARP" => Languages.CSharp,
+                "C#" => Languages.CSharp,
+                "JAVA" => Languages.Java,
+                "JAVASCRIPT" => Languages.JavaScript,
+                "JS" => Languages.JavaScript,
+                "OBJC" => Languages.ObjC,
+                "OBJECTIVEC" => Languages.ObjC,
+                "OBJECTIVE-C" => Languages.ObjC,
+                _ => Languages.CSharp
+            };
+
             if (!File.Exists(dllPath))
             {
                 throw new ArgumentException("File specified with DllPath in Test.runsettings doesn't exist!");

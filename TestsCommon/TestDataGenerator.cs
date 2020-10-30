@@ -513,6 +513,7 @@ namespace TestsCommon
                 throw new ArgumentNullException(nameof(runSettings));
             }
 
+            var language = runSettings.Language;
             var version = runSettings.Version;
             var documentationLinks = GetDocumentationLinks(version, language);
             var knownIssues = KnownIssues.GetIssues(language);

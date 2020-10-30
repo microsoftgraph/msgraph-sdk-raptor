@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+# repository checkout steps for end to end validation pipelines
+
 steps:
   - checkout: microsoft-graph-explorer-api
     displayName: checkout GE api

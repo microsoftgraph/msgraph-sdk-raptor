@@ -26,7 +26,7 @@ namespace CSharpArbitraryDllTests
         /// <param name="version">Docs version (e.g. V1, Beta)</param>
         [Test]
         [TestCaseSource(typeof(SnippetCompileArbitraryDllTests), nameof(ArbitraryDllTestData))]
-        public void Test(CsharpTestData testData)
+        public void Test(LanguageTestData testData)
         {
             CSharpTestRunner.Run(testData);
         }

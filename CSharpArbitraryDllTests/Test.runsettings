@@ -4,5 +4,6 @@
     <Parameter name="Version" value="---VersionPlaceholder---" />
     <Parameter name="DllPath" value="---DllPathPlaceholder---" />
     <Parameter name="KnownFailuresRequested" value="---KnownFailuresRequestedPlaceholder---" />
+    <Parameter name="Language" value="---LanguagePlaceHolder---" />
   </TestRunParameters>
 </RunSettings>

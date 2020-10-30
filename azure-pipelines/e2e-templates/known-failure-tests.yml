@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+# Steps to run known failure tests
+
 steps:
 - task: PowerShell@2
   displayName: 'Create directories for test output'
@@ -17,7 +20,7 @@ steps:
       $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
       Write-Host "Path to Microsoft.Graph.dll: $dllPath"
 
-      & .\msgraph-sdk-raptor\CSharpArbitraryDllTests\transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "true" -DllPath "$dllPath" -RunSettingsPath "$(runSettingsFile)"
+      & .\msgraph-sdk-raptor\CSharpArbitraryDllTests\transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "true" -DllPath "$dllPath" -Language "CSharp" -RunSettingsPath "$(runSettingsFile)"
 
       Write-Host "--- Test.runsettings file ---"
       Get-Content "$(runSettingsFile)"

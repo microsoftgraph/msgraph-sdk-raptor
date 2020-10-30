@@ -12,7 +12,13 @@ namespace JavaV1KnownFailureTests
         /// Gets TestCaseData for V1 known failures
         /// TestCaseData contains snippet file name, version and test case name
         /// </summary>
-        public static IEnumerable<TestCaseData> TestDataV1 => TestDataGenerator.GetTestCaseData(Versions.V1, Languages.Java, knownFailuresRequested: true);
+        public static IEnumerable<TestCaseData> TestDataV1 => TestDataGenerator.GetTestCaseData(
+            new RunSettings
+            {
+                Version = Versions.V1,
+                Language = Languages.Java,
+                KnownFailuresRequested = true
+            });
 
         /// <summary>
         /// Represents test runs generated from test case data
