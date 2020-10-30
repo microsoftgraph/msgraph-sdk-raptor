@@ -52,7 +52,7 @@ parameters:
 - name: metadataURL
   displayName: 'URL for metadata for which SDK generation will happen:'
   type: string
-  default: 'https://graph.microsoft.com/stagingbeta/`$metadata' # back tick is the escape character because this is ultimately consumed in Powershell
+  default: 'https://graph.microsoft.com/stagingbeta/$metadata'
 
 pool:
   vmImage: 'windows-latest' # to build ApiDoctor in .NET framework
