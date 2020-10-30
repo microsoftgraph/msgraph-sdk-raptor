@@ -42,7 +42,7 @@ namespace TestsCommon
                 _ => Languages.CSharp
             };
 
-            if (!File.Exists(dllPath))
+            if (Language == Languages.CSharp && !File.Exists(dllPath))
             {
                 throw new ArgumentException("File specified with DllPath in Test.runsettings doesn't exist!");
             }

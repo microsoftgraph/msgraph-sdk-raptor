@@ -18,7 +18,7 @@ steps:
   displayName: 'Transform metadata, run Typewriter and update models'
   inputs:
     targetType: filePath
-    filePath: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/scripts/generateModels.ps1'
+    filePath: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/scripts/generateCSharpModels.ps1'
   env:
     BuildConfiguration: $(buildConfiguration)
     MetadataURL: $(metadataURL)
