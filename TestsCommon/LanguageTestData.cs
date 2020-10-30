@@ -2,7 +2,7 @@
 
 namespace TestsCommon
 {
-    public class CsharpTestData
+    public class LanguageTestData
     {
         /// <summary>
         /// Docs version e.g. V1 or Beta

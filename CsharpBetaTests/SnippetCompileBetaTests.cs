@@ -18,6 +18,7 @@ namespace CsharpBetaTests
             new RunSettings
             {
                 Version = Versions.Beta,
+                Language = Languages.CSharp,
                 KnownFailuresRequested = false
             });
 
@@ -29,7 +30,7 @@ namespace CsharpBetaTests
         /// <param name="version">Docs version (e.g. V1, Beta)</param>
         [Test]
         [TestCaseSource(typeof(SnippetCompileBetaTests), nameof(TestDataBeta))]
-        public void Test(CsharpTestData testData)
+        public void Test(LanguageTestData testData)
         {
             CSharpTestRunner.Run(testData);
         }

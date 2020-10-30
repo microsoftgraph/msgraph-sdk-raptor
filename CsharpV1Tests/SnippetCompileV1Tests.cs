@@ -18,6 +18,7 @@ namespace CsharpV1Tests
             new RunSettings
             {
                 Version = Versions.V1,
+                Language = Languages.CSharp,
                 KnownFailuresRequested = false
             });
 
@@ -29,7 +30,7 @@ namespace CsharpV1Tests
         /// <param name="version">Docs version (e.g. V1, Beta)</param>
         [Test]
         [TestCaseSource(typeof(SnippetCompileV1Tests), nameof(TestDataV1))]
-        public void Test(CsharpTestData testData)
+        public void Test(LanguageTestData testData)
         {
             CSharpTestRunner.Run(testData);
         }

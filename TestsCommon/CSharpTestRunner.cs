@@ -55,22 +55,7 @@ public class GraphSDKTest
         /// </summary>
         private static readonly Regex RegExp = new Regex(Pattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
-        /// <summary>
-        /// Embeds C# snippet from docs repo into a compilable template
-        /// </summary>
-        /// <param name="snippet">code snippet from docs repo</param>
-        /// <returns>
-        /// C# snippet embedded into compilable template
-        /// </returns>
-        private static string ConcatBaseTemplateWithSnippet(string snippet)
-        {
-            // there are mixture of line endings, namely \r\n and \n, normalize that into \r\n
-            string codeToCompile = SDKShellTemplate
-                       .Replace("//insert-code-here", snippet)
-                       .Replace("\r\n", "\n").Replace("\n", "\r\n");
-
-            return codeToCompile;
-        }
+        
 
         /// <summary>
         /// 1. Fetches snippet from docs repo
@@ -79,14 +64,14 @@ public class GraphSDKTest
         /// 4. Attempts to compile and reports errors if there is any
         /// </summary>
         /// <param name="testData">Test data containing information such as snippet file name</param>
-        public static void Run(CsharpTestData testData)
+        public static void Run(LanguageTestData testData)
         {
             if (testData == null)
             {
                 throw new ArgumentNullException(nameof(testData));
             }
 
-            var fullPath = Path.Join(GraphDocsDirectory.GetCsharpSnippetsDirectory(testData.Version), testData.FileName);
+            var fullPath = Path.Join(GraphDocsDirectory.GetSnippetsDirectory(testData.Version, Languages.CSharp), testData.FileName);
             Assert.IsTrue(File.Exists(fullPath), "Snippet file referenced in documentation is not found!");
 
             var fileContent = File.ReadAllText(fullPath);
@@ -99,7 +84,7 @@ public class GraphSDKTest
                 .Replace("\t", "    ")                      // do not use tabs
                 .Replace("\r\n\r\n\r\n", "\r\n\r\n");       // do not have two consecutive empty lines
 
-            var codeToCompile = ConcatBaseTemplateWithSnippet(codeSnippetFormatted);
+            var codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(codeSnippetFormatted, SDKShellTemplate);
 
             // Compile Code
             var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
@@ -128,7 +113,7 @@ public class GraphSDKTest
         /// </summary>
         /// <param name="testData">test data</param>
         /// <param name="codeSnippetFormatted">code snippet</param>
-        private static void WriteLinqFile(CsharpTestData testData, string codeSnippetFormatted)
+        private static void WriteLinqFile(LanguageTestData testData, string codeSnippetFormatted)
         {
             var linqPadQueriesDefaultFolder = Path.Join(
                     Environment.GetEnvironmentVariable("USERPROFILE"),

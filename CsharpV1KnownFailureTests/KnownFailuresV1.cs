@@ -18,6 +18,7 @@ namespace CsharpV1KnownFailureTests
             new RunSettings
             {
                 Version = Versions.V1,
+                Language = Languages.CSharp,
                 KnownFailuresRequested = true
             });
 
@@ -29,7 +30,7 @@ namespace CsharpV1KnownFailureTests
         /// <param name="version">Docs version (e.g. V1, Beta)</param>
         [Test]
         [TestCaseSource(typeof(KnownFailuresV1), nameof(TestDataV1))]
-        public void Test(CsharpTestData testData)
+        public void Test(LanguageTestData testData)
         {
             CSharpTestRunner.Run(testData);
         }

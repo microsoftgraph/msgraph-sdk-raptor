@@ -1,0 +1,37 @@
+parameters:
+  projectFileName: JavaV1Tests
+  runName: 'V1 Java Snippet Compilation Tests'
+steps:
+- checkout: microsoft-graph-docs
+  clean: true
+  fetchDepth: 1
+  persistCredentials: true
+
+- checkout: self
+  clean: true
+  fetchDepth: 1
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: msgraph-sdk-raptor/**/${{ parameters.projectFileName }}.csproj
+    arguments: '--configuration $(buildConfiguration)'
+  displayName: 'Build Projects'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/${{ parameters.projectFileName }}.csproj'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory)'
+    publishTestResults: false
+  displayName: '${{ parameters.projectFileName }} Compilation Tests'
+  continueOnError: true
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFormat: 'VSTest'
+    searchFolder: '$(Agent.TempDirectory)'
+    testResultsFiles: '**/*.trx'
+    testRunTitle: '${{ parameters.runName }}'
+  displayName: 'Publish Test Results'

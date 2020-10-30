@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
 trigger: none # disable triggers based on commits.
+name: 'V1 C# Snippet Compilation Tests'
 
 resources:
  repositories:
@@ -17,36 +18,7 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- checkout: microsoft-graph-docs
-  clean: true
-  fetchDepth: 1
-  persistCredentials: true
-
-- checkout: self
-  clean: true
-  fetchDepth: 1
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: msgraph-sdk-raptor/**/*.csproj
-    arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build Projects'
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/CsharpV1Tests.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory)'
-    publishTestResults: false
-  displayName: 'Csharp V1 Compilation Tests'
-  continueOnError: true
-
-- task: PublishTestResults@2
-  condition: succeededOrFailed()
-  inputs:
-    testResultsFormat: 'VSTest'
-    searchFolder: '$(Agent.TempDirectory)'
-    testResultsFiles: '**/*.trx'
-    testRunTitle: 'V1 C# Snippet Compilation Tests $(testRunTitle)'
-  displayName: 'Publish Test Results'
+- template: compile-run-tests-template.yml
+  parameters:
+    projectFileName: CsharpV1Tests
+    runName: 'V1 C# Snippet Compilation Tests $(testRunTitle)'

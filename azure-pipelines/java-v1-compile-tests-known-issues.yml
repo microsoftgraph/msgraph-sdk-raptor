@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
 trigger: none # disable triggers based on commits.
-name: 'V1 C# Snippet Compilation Tests - Known Issues'
+name: 'V1 Java Snippet Compilation Tests - Known Issues'
 
 resources:
  repositories:
@@ -12,13 +12,16 @@ resources:
      ref: master
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false'
 
 steps:
+- script: gradle --version
+# to avoid having the welcome message and preload some things
 - template: compile-run-tests-template.yml
   parameters:
-    projectFileName: CsharpV1KnownFailureTests
-    runName: 'V1 C# Snippet Compilation Tests - Known Issues $(testRunTitle)'
+    projectFileName: JavaV1KnownFailureTests
+    runName: 'V1 Java Snippet Compilation Tests - Known Issues $(testRunTitle)'
