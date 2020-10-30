@@ -8,7 +8,7 @@ schedules:
   displayName: 'Daily Staging Beta Validation Pipeline'
   branches:
     include:
-    - zengin/arbitraryDll
+    - dev
   always: true
 
 resources:
