@@ -70,10 +70,6 @@ namespace TestsCommon
             " See https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/296";
         private const string SnippetGenerationCreateAsyncSupport = "Snippet generation doesn't use CreateAsync" +
             " See https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/301";
-        private const string SnippetGenerationTypeHint = "Type hint is missing in null assignments" +
-            " See https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/297";
-        private const string SnippetGenerationReferenceCreation = "Reference creation should use id instead of full object" +
-            " See https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/300";
         private const string SnippetGenerationRequestObjectDisambiguation = "Snippet generation should rename objects that end with Request to end with RequestObject" +
             " See https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/298";
         #endregion
@@ -139,16 +135,6 @@ namespace TestsCommon
         private static string GetMethodWrongMessage(string docsMethod, string expectedMethod)
         {
             return HttpSnippetWrong + $": Docs has HTTP method {docsMethod}, it should be {expectedMethod}";
-        }
-
-        /// <summary>
-        /// Constructs error message where metadata needs to define a type
-        /// </summary>
-        /// <param name="typeName">type neme that needs to defined</param>
-        /// <returns>String representation of metadata missing type definition error</returns>
-        private static string GetTypeNotDefinedMessage(string typeName)
-        {
-            return MetadataWrong + $": {typeName} type is not defined in metadata.";
         }
 
         /// <summary>
@@ -247,7 +233,6 @@ namespace TestsCommon
                 { $"update-workforceintegration-{lng}-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + ": workforceintegration id is needed in the url.") },
                 { $"worksheet-range-{lng}-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(POST, GET)) },
                 { $"get-channel-messages-delta-1-{lng}-V1-compiles", new KnownIssue(Metadata, "Delta function is not declared") },
-                { $"create-printer-{lng}-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationTypeHint) },
                 { $"post-privilegedroleassignmentrequest-{lng}-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationRequestObjectDisambiguation) },
                 { $"create-b2cuserflow-from-b2cuserflows-identityprovider-{lng}-Beta-compiles", new KnownIssue(SnippetGeneration, "Snippet Generation needs casting support for *CollectionWithReferencesPage. See details at: https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/327") },
                 {$"update-b2xuserflows-identityprovider-{lng}-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
@@ -362,8 +347,6 @@ namespace TestsCommon
                 { "reportroot-getm365appusercountdetail-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
                 { "reportroot-getm365appusercounts-csv-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
                 { "reportroot-getm365appusercounts-json-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
-                { "synchronizationschema-parseexpression-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationTypeHint) },
-                { "tablerowcollection-add-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationTypeHint) },
                 { "team-put-schedule-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationCreateAsyncSupport) },
                 { "unfollow-site-csharp-Beta-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 { "unfollow-site-csharp-V1-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
