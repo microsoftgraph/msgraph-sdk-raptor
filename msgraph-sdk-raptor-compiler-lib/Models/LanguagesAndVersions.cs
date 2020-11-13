@@ -13,6 +13,11 @@ namespace MsGraphSDKSnippetsCompiler.Models
         ObjC
     }
 
+    public static class LanguagesExtension
+    {
+        public static string AsString(this Languages language) => language.ToString().ToLowerInvariant();
+    }
+
     /// <summary>
     /// Microsoft Graph Documetation Versions
     /// </summary>

@@ -10,30 +10,8 @@ using System.Text.RegularExpressions;
 
 namespace TestsCommon
 {
-    public class KnownIssue
-    {
-        /// <summary>
-        /// owner of known issue
-        /// This field is used to categorize known test failures, so that we can redirect issues faster
-        /// </summary>
-        public string Owner { get; set; }
-
-        /// <summary>
-        /// known issue message
-        /// </summary>
-        public string Message { get; set; }
-
-        /// <summary>
-        /// known issue constructor
-        /// </summary>
-        /// <param name="owner">owner of known issue</param>
-        /// <param name="message">known issue message</param>
-        public KnownIssue(string owner, string message)
-        {
-            Owner = owner;
-            Message = message;
-        }
-    }
+    // Owner is used to categorize known test failures, so that we can redirect issues faster
+    public record KnownIssue (string Owner, string Message);
 
     public static class KnownIssues
     {
@@ -141,14 +119,10 @@ namespace TestsCommon
         /// Returns a mapping of issues of which the source comes from service/documentation/metadata and are common accross langauges
         /// </summary>
         /// <param name="language">language to generate the exception from</param>
-        /// <param name="versionEnum">version to get the known issues for</param>
         /// <returns>mapping of issues of which the source comes from service/documentation/metadata and are common accross langauges</returns>
-        public static Dictionary<string, KnownIssue> GetCommonIssues(Languages language, Versions versionEnum)
+        public static Dictionary<string, KnownIssue> GetCommonIssues(Languages language)
         {
-#pragma warning disable CA1308 // Normalize strings to uppercase
-            var lng = language.ToString().ToLowerInvariant();
-#pragma warning restore CA1308 // Normalize strings to uppercase
-            var version = versionEnum == Versions.V1 ? "V1" : "Beta";
+            var lng = language.AsString();
             return new Dictionary<string, KnownIssue>()
             {
                 { $"convert-team-from-group-{lng}-V1-compiles", new KnownIssue(HTTP, "isFavoriteByDefault is only available in Beta. https://github.com/microsoftgraph/microsoft-graph-docs/issues/10145") },
@@ -580,7 +554,7 @@ namespace TestsCommon
                 Languages.CSharp => GetCSharpIssues(version),
                 Languages.Java => GetJavaIssues(version),
                 _ => new Dictionary<string, KnownIssue>(),
-            }).Union(GetCommonIssues(language, version)).ToDictionary(x => x.Key, x => x.Value);
+            }).Union(GetCommonIssues(language)).ToDictionary(x => x.Key, x => x.Value);
         }
     }
     /// <summary>
@@ -598,9 +572,7 @@ namespace TestsCommon
             var documentationLinks = new Dictionary<string, string>();
             var documentationDirectory = GraphDocsDirectory.GetDocumentationDirectory(version);
             var files = Directory.GetFiles(documentationDirectory);
-#pragma warning disable CA1308 // Normalize strings to uppercase
-            var languageName = language.ToString().ToLowerInvariant();
-#pragma warning restore CA1308 // Normalize strings to uppercase
+            var languageName = language.AsString();
             var SnippetLinkPattern = @$"includes\/snippets\/{languageName}\/(.*)\-{languageName}\-snippets\.md";
             var SnippetLinkRegex = new Regex(SnippetLinkPattern, RegexOptions.Compiled);
             foreach (var file in files)

@@ -10,13 +10,13 @@ namespace TestsCommon
     /// <summary>
     /// Converts a runsettings file into an object after validating settings
     /// </summary>
-    public class RunSettings
+    public record RunSettings
     {
-        public Versions Version { get; set; }
-        public string DllPath { get; set; }
-        public bool KnownFailuresRequested { get; set; }
-        public Languages Language { get; set; }
-        public string JavaCoreVersion { get; set; } = "1.0.5";
+        public Versions Version { get; init; }
+        public string DllPath { get; init; }
+        public bool KnownFailuresRequested { get; init; }
+        public Languages Language { get; init; }
+        public string JavaCoreVersion { get; init; } = "1.0.5";
         private string _javaLibVersion;
         public string JavaLibVersion
         {
@@ -32,7 +32,7 @@ namespace TestsCommon
                 _javaLibVersion = value;
             }
         }
-        public string JavaPreviewLibPath { get; set; }
+        public string JavaPreviewLibPath { get; init; }
         private const string dashdash = "---";
         public RunSettings() { }
 
@@ -72,17 +72,13 @@ namespace TestsCommon
                 Version = VersionString.GetVersion(versionString);
             if (!string.IsNullOrEmpty(knownFailuresRequested) && !knownFailuresRequested.Contains(dashdash))
                 KnownFailuresRequested = bool.Parse(knownFailuresRequested);
-            InitJavaParameters(parameters);
-        }
 
-        private void InitJavaParameters(TestParameters parameters)
-        {
             JavaCoreVersion = InitializeParameter(parameters, nameof(JavaCoreVersion)) ?? JavaCoreVersion;
             JavaLibVersion = InitializeParameter(parameters, nameof(JavaLibVersion)); // we don't have the Graph version information just yet as it could be provided later with parameter initizaliation
             JavaPreviewLibPath = InitializeParameter(parameters, nameof(JavaPreviewLibPath)) ?? JavaPreviewLibPath;
         }
 
-        private string InitializeParameter(TestParameters parameters, string parameterName)
+        private static string InitializeParameter(TestParameters parameters, string parameterName)
         {
             var value = parameters.Get(parameterName);
 

@@ -77,27 +77,17 @@ namespace MsGraphSDKSnippetsCompiler
                 metadataReferences.Add(MetadataReference.CreateFromFile(Path.Combine(graphAssemblyPathBeta, "Microsoft.Graph.Beta.dll")));
             }
            
-            CSharpCompilation compilation = CSharpCompilation.Create(
+            var compilation = CSharpCompilation.Create(
                assemblyName,
                syntaxTrees: new[] { syntaxTree },
                references: metadataReferences,
                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            EmitResult emitResult = GetEmitResult(compilation);
+            using var memoryStream = new MemoryStream();
+            var emitResult = compilation.Emit(memoryStream);
             CompilationResultsModel results = GetCompilationResults(emitResult);
 
             return results;
-        }
-
-        /// <summary>
-        ///     Gets the result of the Compilation.Emit method.
-        /// </summary>
-        /// <param name="compilation">Immutable respresentation of a single invocation of the compiler</param>
-        private EmitResult GetEmitResult(CSharpCompilation compilation)
-        {
-            using MemoryStream memoryStream = new MemoryStream();
-            EmitResult emitResult = compilation.Emit(memoryStream);
-            return emitResult;
         }
 
         /// <summary>
@@ -106,27 +96,12 @@ namespace MsGraphSDKSnippetsCompiler
         /// <param name="emitResult">The result of the Compilation.Emit method.</param>
         private CompilationResultsModel GetCompilationResults(EmitResult emitResult)
         {
-            CompilationResultsModel compilationResultsModel = new CompilationResultsModel();
+            // We are only interested with warnings and errors hence the diagnostics filter
+            var failures = emitResult.Success
+                ? null
+                : emitResult.Diagnostics.Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
 
-            if (!emitResult.Success)
-            {
-                // We are only interested with warnings and errors hence the diagnostics filter
-                IEnumerable<Microsoft.CodeAnalysis.Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
-                    diagnostic.IsWarningAsError ||
-                    diagnostic.Severity == DiagnosticSeverity.Error);
-
-                compilationResultsModel.IsSuccess = false;
-                compilationResultsModel.Diagnostics = failures;
-                compilationResultsModel.MarkdownFileName = _markdownFileName;
-            }
-            else
-            {
-                compilationResultsModel.IsSuccess = true;
-                compilationResultsModel.Diagnostics = null;             
-                compilationResultsModel.MarkdownFileName = _markdownFileName;
-            }
-
-            return compilationResultsModel;
+            return new CompilationResultsModel(emitResult.Success, failures, _markdownFileName);
         }
     }
 }

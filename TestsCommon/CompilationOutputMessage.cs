@@ -9,54 +9,13 @@ namespace TestsCommon
     /// <summary>
     /// String represenation of compilation errors
     /// </summary>
-    public class CompilationOutputMessage
+    /// <param name="Model">Compilation result</param>
+    /// <param name="Code">Code that was attempted to be compiled</param>
+    /// <param name="DocsLink">documentation page where the snippet is shown</param>
+    /// <param name="KnownIssueMessage">message for known issue</param>
+    /// <param name="IsKnownIssue">whether issue is known</param>
+    public record CompilationOutputMessage (CompilationResultsModel Model, string Code, string DocsLink, string KnownIssueMessage, bool IsKnownIssue)
     {
-        /// <summary>
-        /// Compilation result
-        /// </summary>
-        private readonly CompilationResultsModel Model;
-
-        /// <summary>
-        /// Code that was attempted to be compiled
-        /// </summary>
-        private readonly string Code;
-
-        /// <summary>
-        /// Docs page where the snippet is shown
-        /// </summary>
-        private readonly string DocsLink;
-
-        /// <summary>
-        /// Message for known issue
-        /// </summary>
-        private readonly string KnownIssueMessage;
-
-        /// <summary>
-        /// Whether the issue is known or not
-        /// </summary>
-        private readonly bool IsKnownIssue;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="model">Compilation result</param>
-        /// <param name="code">Code that was attempted to be compiled</param>
-        /// <param name="docsLink">documentation page where the snippet is shown</param>
-        /// <param name="knownIssueMessage">message for known issue</param>
-        public CompilationOutputMessage(
-            CompilationResultsModel model,
-            string code,
-            string docsLink,
-            string knownIssueMessage,
-            bool isKnownIssue)
-        {
-            Model = model;
-            Code = code;
-            DocsLink = docsLink;
-            KnownIssueMessage = knownIssueMessage;
-            IsKnownIssue = isKnownIssue;
-        }
-
         /// <summary>
         /// String representation of compilation result
         /// </summary>

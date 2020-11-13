@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -84,7 +83,7 @@ application {
         private static readonly Lazy<int> currentExcutionFolder = new Lazy<int>(() => new Random().Next(0, int.MaxValue));
         private static readonly object versionLock = new { };
 
-        private static void setCurrentlyConfiguredVersion (Versions version)
+        private static void SetCurrentlyConfiguredVersion (Versions version)
         {// we don't want to overwrite the build.gradle for each test, this prevents gradle from caching things and slows down build time
             lock(versionLock) {
                 currentlyConfiguredVersion = version;
@@ -107,7 +106,7 @@ application {
             if (!currentlyConfiguredVersion.HasValue || currentlyConfiguredVersion.Value != version)
             {
                 InitializeProjectStructure(version, rootPath).GetAwaiter().GetResult();
-                setCurrentlyConfiguredVersion(version);
+                SetCurrentlyConfiguredVersion(version);
             }
             File.WriteAllText(Path.Combine(sourceFileDirectory, "App.java"), codeSnippet); //could be async
             using var javacProcess = new Process
@@ -127,12 +126,11 @@ application {
                 javacProcess.Kill(true);
             var stdOutput = javacProcess.StandardOutput.ReadToEnd(); //could be async
             var stdErr = javacProcess.StandardError.ReadToEnd(); //could be async
-            return new CompilationResultsModel
-            {
-                MarkdownFileName = _markdownFileName,
-                IsSuccess = hasExited && stdOutput.Contains("BUILD SUCCESSFUL"),
-                Diagnostics = GetDiagnosticsFromStdErr(stdOutput, stdErr, hasExited)
-            };
+            return new CompilationResultsModel(
+                hasExited && stdOutput.Contains("BUILD SUCCESSFUL"),
+                GetDiagnosticsFromStdErr(stdOutput, stdErr, hasExited),
+                _markdownFileName
+            );
         }
 
         private const string errorsSuffix = "FAILURE";
@@ -140,7 +138,7 @@ application {
         private static readonly Regex doubleLineReturnCleanupRegex = new Regex(@"\n{2,}", RegexOptions.Compiled | RegexOptions.Multiline);
         private static readonly Regex errorCountCleanupRegex = new Regex(@"\d+ error", RegexOptions.Compiled);
         private static readonly Regex errorMessageCaptureRegex = new Regex(@":(?<linenumber>\d+):(?<message>[^\/\\]+)", RegexOptions.Compiled | RegexOptions.Multiline);
-        private List<Diagnostic> GetDiagnosticsFromStdErr(string stdOutput, string stdErr, bool hasExited)
+        private static List<Diagnostic> GetDiagnosticsFromStdErr(string stdOutput, string stdErr, bool hasExited)
         {
             var result = new List<Diagnostic>();
             if(stdErr.Contains(errorsSuffix))
@@ -211,7 +209,7 @@ application {
             CreateDirectoryStructure(rootPath, testFileSubDirectories);
         }
 
-        private void CreateDirectoryStructure(string rootPath, string[] subdirectoriesNames)
+        private static void CreateDirectoryStructure(string rootPath, string[] subdirectoriesNames)
         {
             var dirsAsList = subdirectoriesNames.ToList();
             dirsAsList.ForEach(name =>

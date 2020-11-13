@@ -15,7 +15,7 @@ namespace TestsCommon
         /// <summary>
         /// Represents where the snippets are stored. Expected to refer to a single directory for each assembly.
         /// </summary>
-        private static string SnippetsDirectory = null;
+        private static string SnippetsDirectory;
 
         /// <summary>
         /// Sets snippets directory only once and refers to the string if it is already set
@@ -34,7 +34,7 @@ namespace TestsCommon
             }
 
             var msGraphDocsRepoLocation = GetSourcesDirectory();
-            SnippetsDirectory = Path.Join(msGraphDocsRepoLocation, $@"microsoft-graph-docs{Path.DirectorySeparatorChar}api-reference{Path.DirectorySeparatorChar}{new VersionString(version)}{Path.DirectorySeparatorChar}includes{Path.DirectorySeparatorChar}snippets{Path.DirectorySeparatorChar}{language.ToString().ToLowerInvariant()}");
+            SnippetsDirectory = Path.Join(msGraphDocsRepoLocation, $@"microsoft-graph-docs{Path.DirectorySeparatorChar}api-reference{Path.DirectorySeparatorChar}{new VersionString(version)}{Path.DirectorySeparatorChar}includes{Path.DirectorySeparatorChar}snippets{Path.DirectorySeparatorChar}{language.AsString()}");
 
             return SnippetsDirectory;
         }
