@@ -622,18 +622,16 @@ namespace TestsCommon
                    let knownIssue = isKnownIssue ? knownIssues[knownIssueLookupKey] : null
                    let knownIssueMessage = knownIssue?.Message ?? string.Empty
                    let owner = knownIssue?.Owner ?? string.Empty
-                   let testCaseData = new LanguageTestData
-                   {
-                       Version = version,
-                       IsKnownIssue = isKnownIssue,
-                       KnownIssueMessage = knownIssueMessage,
-                       DocsLink = docsLink,
-                       FileName = fileName,
-                       DllPath = runSettings.DllPath,
-                       JavaCoreVersion = runSettings.JavaCoreVersion,
-                       JavaLibVersion = runSettings.JavaLibVersion,
-                       JavaPreviewLibPath = runSettings.JavaPreviewLibPath,
-                   }
+                   let testCaseData = new LanguageTestData(
+                       version,
+                       isKnownIssue,
+                       knownIssueMessage,
+                       docsLink,
+                       fileName,
+                       runSettings.DllPath,
+                       runSettings.JavaCoreVersion,
+                       runSettings.JavaLibVersion,
+                       runSettings.JavaPreviewLibPath)
                    where !(isKnownIssue ^ runSettings.KnownFailuresRequested) // select known issues if requested
                    select new TestCaseData(testCaseData).SetName(testName).SetProperty("Owner", owner);
         }
