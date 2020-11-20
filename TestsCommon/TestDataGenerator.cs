@@ -448,6 +448,7 @@ namespace TestsCommon
                 {"passwordauthenticationmethod-resetpassword-systemgenerated-java-Beta-compiles", new KnownIssue(SDK, "Missing method in SDK generation https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/318") },
                 {"passwordauthenticationmethod-resetpassword-adminprovided-java-Beta-compiles", new KnownIssue(SDK, "Missing method in SDK generation https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/318") },
                 {"user-upgrade-teamsapp-java-Beta-compiles", new KnownIssue(SDK, "Missing method in SDK generation https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/318") },
+                {"printjob-redirect-java-Beta-compiles", new KnownIssue(SDK, "Missing method in SDK generation https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/318") },
 
 
                 {$"get-deleteditems-java-{version}-compiles", new KnownIssue(SnippetGeneration, "Missing support for odata cast https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/361") },
@@ -486,6 +487,8 @@ namespace TestsCommon
                 {$"upload-via-put-id-java-{version}-compiles", new KnownIssue(SnippetGeneration, "Missing support for content: https://github.com/microsoftgraph/microsoft-graph-explorer-api/issues/371") },
 
                 {"create-printer-java-Beta-compiles", new KnownIssue(SnippetGeneration, "Parameters with null values are not accounted for as action parameters") },
+                {"call-answer-app-hosted-media-java-Beta-compiles", new KnownIssue(SnippetGeneration, "Parameters with null values are not accounted for as action parameters") },
+                {"call-answer-java-Beta-compiles", new KnownIssue(SnippetGeneration, "Parameters with null values are not accounted for as action parameters") },
 
                 {"get-group-java-Beta-compiles", new KnownIssue(TestGeneration, "Imports need to be deduplicated for namespaces") },
                 {"get-set-java-Beta-compiles", new KnownIssue(TestGeneration, "Imports need to be deduplicated for namespaces") },
@@ -508,6 +511,7 @@ namespace TestsCommon
                 {"educationsubmission-return-java-Beta-compiles", new KnownIssue(SnippetGeneration, "Reserved keyword usage") },
                 {"tablecolumncollection-add-java-Beta-compiles", new KnownIssue(SnippetGeneration, "Tries to instantiate a primite??") },
                 {"group-evaluatedynamicmembership-java-Beta-compiles", new KnownIssue(SnippetGeneration, "Double Quotes not escaped") },
+                {"get-joinedteams-java-Beta-compiles", new KnownIssue(SnippetGeneration, "Wrong page type in use") },
                 {"create-educationrubric-from-educationuser-java-Beta-compiles", new KnownIssue(TestGeneration, "Code truncated???") },
 
                 {"securescorecontrolprofiles-update-java-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + ": A list of SecureScoreControlStateUpdate objects should be provided instead of placeholder string.") },
