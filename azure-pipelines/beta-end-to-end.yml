@@ -22,7 +22,7 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/apidoctor
-     ref: generate-snippets
+     ref: master
    - repository: microsoft-graph-explorer-api
      type: github
      endpoint: microsoftgraph
