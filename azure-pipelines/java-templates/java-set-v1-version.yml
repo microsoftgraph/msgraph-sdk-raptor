@@ -5,8 +5,8 @@ steps:
     targetType: inline
     script: |
       $webResponse = Invoke-WebRequest "https://api.bintray.com/search/packages/maven?q=com.microsoft.graph:microsoft-graph" -UseBasicParsing
-      $responseContent = webResponse.Content | ConvertFrom-Json
-      $serviceLibraryVersion = $result.latest_version
+      $responseContent = $webResponse.Content | ConvertFrom-Json
+      $serviceLibraryVersion = $responseContent.latest_version
 
       Write-Host "Java V1 Service Library Version: $serviceLibraryVersion"
       Write-Host "##vso[task.setvariable variable=serviceLibraryVersion]$serviceLibraryVersion"
