@@ -25,7 +25,7 @@ steps:
   parameters:
     projectFileName: JavaV1Tests
     javaPreviewLibPath: ''
-    javaLibVersion: $serviceLibraryVersion
+    javaLibVersion: $(serviceLibraryVersion)
 - template: compile-run-tests-template.yml
   parameters:
     projectFileName: JavaV1Tests
