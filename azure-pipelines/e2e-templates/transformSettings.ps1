@@ -67,6 +67,7 @@ $mapping.Add("JavaPreviewLibPath", $JavaPreviewLibPath)
 
 [xml]$settings = Get-Content $RunSettingsPath
 $settings.RunSettings.TestRunParameters.Parameter | % {
+    Write-Host "Setting $($_.name) to $($mapping[$_.name])"
     $_.value = $mapping[$_.name];
 }
 
