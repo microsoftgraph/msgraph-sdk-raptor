@@ -1,12 +1,13 @@
 parameters:
   projectFileName: JavaV1Tests
   javaPreviewLibPath: ''
+  javaLibVersion: ''
 steps:
 - task: PowerShell@2
   inputs:
     targetType: 'filePath'
     filePath: $(Build.SourcesDirectory)/msgraph-sdk-raptor/azure-pipelines/e2e-templates/transformSettings.ps1
-    arguments: '-JavaPreviewLibPath $Env:JavaPreviewLibPath -Language "Java" -RunSettingsPath $env:RunSettingsPath'
+    arguments: '-JavaPreviewLibPath $env:JavaPreviewLibPath -Language "Java" -RunSettingsPath $env:RunSettingsPath -JavaLibVersion $env:javaLibVersion'
   env:
     RunSettingsPath: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
     JavaPreviewLibPath: ${{ parameters.javaPreviewLibPath}}
