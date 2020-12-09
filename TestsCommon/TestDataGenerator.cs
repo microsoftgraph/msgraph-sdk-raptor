@@ -116,8 +116,6 @@ namespace TestsCommon
             var lng = language.AsString();
             return new Dictionary<string, KnownIssue>()
             {
-                { $"convert-team-from-group-{lng}-V1-compiles", new KnownIssue(HTTP, "isFavoriteByDefault is only available in Beta. https://github.com/microsoftgraph/microsoft-graph-docs/issues/10145") },
-                { $"convert-team-from-non-standard2-{lng}-V1-compiles", new KnownIssue(HTTP, "isFavoriteByDefault is only available in Beta. https://github.com/microsoftgraph/microsoft-graph-docs/issues/10145") },
                 { $"call-transfer-{lng}-V1-compiles", new KnownIssue(Metadata, "v1 metadata doesn't have endpointType for invitationParticipantInfo") },
                 { $"call-updatemetadata-{lng}-Beta-compiles", new KnownIssue(Metadata, "updateMetadata doesn't exist in metadata") },
                 { $"create-acceptedsender-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "acceptedSender")) },
