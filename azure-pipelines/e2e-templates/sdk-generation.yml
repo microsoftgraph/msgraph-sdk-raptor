@@ -2,17 +2,12 @@
 # Steps to generate a Microsoft.Graph.dll from given metadata
 
 steps:
-- task: NuGetCommand@2
-  displayName: 'Restore packages for Typewriter tool'
-  inputs:
-    restoreSolution: '$(typewriterSolution)'
-
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   displayName: 'Build Typewriter'
   inputs:
-    solution: '$(typewriterSolution)'
-    platform: 'Any CPU'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    projects: '$(typewriterSolution)'
+    arguments: '--configuration $(buildConfiguration)'
 
 - pwsh: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/scripts/generateCSharpModels.ps1'
   displayName: 'Transform metadata, run Typewriter and update models'

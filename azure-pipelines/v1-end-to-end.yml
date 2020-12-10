@@ -65,9 +65,9 @@ variables:
 
 steps:
   - template: e2e-templates/checkouts.yml
+  - template: common-templates/use-dotnet-sdk.yml
   - template: e2e-templates/sdk-generation.yml
   - template: e2e-templates/snippet-generation.yml
-  - template: common-templates/use-dotnet-sdk.yml
   - template: e2e-templates/regular-tests.yml
   - ${{ if eq(parameters.shouldRunKnownFailures, true) }}:
     - template: e2e-templates/known-failure-tests.yml

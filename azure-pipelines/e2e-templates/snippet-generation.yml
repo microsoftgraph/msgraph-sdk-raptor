@@ -2,11 +2,6 @@
 # Steps to generate snippets
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Install dotnet core SDK'
-  inputs:
-    version: 5.x
-
 - task: DotNetCoreCLI@2
   displayName: 'Build snippet generator'
   inputs:
