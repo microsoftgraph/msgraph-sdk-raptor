@@ -20,10 +20,12 @@ variables:
 steps:
 - template: java-templates/java-prepare.yml
 - template: common-templates/checkout.yml
+- template: java-templates/java-set-v1-version.yml
 - template: java-templates/java-replace-local-path.yml
   parameters:
     projectFileName: JavaV1Tests
     javaPreviewLibPath: ''
+    javaLibVersion: $(serviceLibraryVersion)
 - template: compile-run-tests-template.yml
   parameters:
     projectFileName: JavaV1Tests
