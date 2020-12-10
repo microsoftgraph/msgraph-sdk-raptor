@@ -1,11 +1,8 @@
 steps:
 - checkout: msgraph-sdk-java
   clean: true
-- task: PowerShell@2
-  inputs:
-    targetType: 'filePath'
-    filePath: $(Build.SourcesDirectory)/msgraph-sdk-raptor/azure-pipelines/java-templates/replace-core-reference.ps1
-    workingDirectory: '$(Build.SourcesDirectory)/msgraph-sdk-java'
+- pwsh: $(Build.SourcesDirectory)/msgraph-sdk-raptor/azure-pipelines/java-templates/replace-core-reference.ps1
+  workingDirectory: '$(Build.SourcesDirectory)/msgraph-sdk-java'
   env:
     CORE_PATH: '$(Build.SourcesDirectory)/msgraph-sdk-java-core'
   displayName: 'Replace reference to core'

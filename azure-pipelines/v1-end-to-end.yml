@@ -55,7 +55,7 @@ parameters:
   default: 'https://graph.microsoft.com/stagingv1.0/$metadata'
 
 pool:
-  vmImage: 'windows-latest' # to build ApiDoctor in .NET framework
+  vmImage: 'ubuntu-latest'
 
 variables:
   - template: e2e-templates/variables.yml

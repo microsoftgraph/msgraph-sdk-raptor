@@ -3,50 +3,45 @@
 # Running these tests can be useful to see if staging metadata (or any input metadata) has fixes for known issues
 
 steps:
-- task: PowerShell@2
+- pwsh: |
+    $knownFailureTestDirectory = "KnownFailures"
+    mkdir $knownFailureTestDirectory
   displayName: 'Create directories for test output'
-  inputs:
-    targetType: 'inline'
-    workingDirectory: $(Build.ArtifactStagingDirectory)
-    script: |
-      $knownFailureTestDirectory = "KnownFailures"
-      mkdir $knownFailureTestDirectory
+  workingDirectory: $(Build.ArtifactStagingDirectory)
 
-- task: PowerShell@2
+- pwsh: |
+    $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
+    Write-Host "Path to Microsoft.Graph.dll: $dllPath"
+
+    & ./msgraph-sdk-raptor/azure-pipelines/e2e-templates/transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "true" -DllPath "$dllPath" -Language "CSharp" -RunSettingsPath "$(runSettingsFile)"
+
+    Write-Host "--- Test.runsettings file ---"
+    Get-Content "$(runSettingsFile)"
+    Write-Host "-----------------------------"
   displayName: 'Transform .runsettings file for known failures'
-  inputs:
-    targetType: inline
-    workingDirectory: '$(Build.SourcesDirectory)'
-    script: |
-      $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
-      Write-Host "Path to Microsoft.Graph.dll: $dllPath"
-
-      & .\msgraph-sdk-raptor\azure-pipelines\e2e-templates\transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "true" -DllPath "$dllPath" -Language "CSharp" -RunSettingsPath "$(runSettingsFile)"
-
-      Write-Host "--- Test.runsettings file ---"
-      Get-Content "$(runSettingsFile)"
-      Write-Host "-----------------------------"
+  workingDirectory: '$(Build.SourcesDirectory)'
+      
 
 - task: DotNetCoreCLI@2
   displayName: 'Csharp Compilation Tests for Known Failures'
   inputs:
     command: 'test'
     projects: '**/CSharpArbitraryDllTests.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)\KnownFailures --settings $(runSettingsFile)'
+    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)/KnownFailures --settings $(runSettingsFile)'
     publishTestResults: false
   continueOnError: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish known failure test results as artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\KnownFailures'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/KnownFailures'
     ArtifactName: 'KnownFailures'
     publishLocation: 'Container'
 
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'VSTest'
-    searchFolder: '$(Build.ArtifactStagingDirectory)\KnownFailures'
+    searchFolder: '$(Build.ArtifactStagingDirectory)/KnownFailures'
     testResultsFiles: '**/*.trx'
     testRunTitle: '[$(metadataVersion)] Raptor Known Failures [Metadata:$(metadataURL)]'
   displayName: 'Publish Test Results for Known Failures'
