@@ -23,11 +23,11 @@ steps:
 
 - pwsh: |
     # release folder can change based on .NET core version, so search recursively in bin folder
-    $snippetGeneratorBinDirectory = Join-Path $env:Build_SourcesDirectory/microsoft-graph-explorer-api/CodeSnippetsReflection.App/bin $(buildConfiguration)
+    $snippetGeneratorBinDirectory = Join-Path $env:BUILD_SOURCESDIRECTORY/microsoft-graph-explorer-api/CodeSnippetsReflection.App/bin $(buildConfiguration)
     $snippetGeneratorPath = (Get-ChildItem $snippetGeneratorBinDirectory *App.exe -Recurse).FullName
     Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
 
-    $apidoctorBinDirectory = Join-Path $env:Build_SourcesDirectory/apidoctor/ApiDoctor.Console/bin $(buildConfiguration)
+    $apidoctorBinDirectory = Join-Path $env:BUILD_SOURCESDIRECTORY/apidoctor/ApiDoctor.Console/bin $(buildConfiguration)
     $apidoctorPath = (Get-ChildItem $apidoctorBinDirectory apidoc.exe -Recurse).FullName
     Write-Host "Path to apidoctor tool: $apidoctorPath"
 
