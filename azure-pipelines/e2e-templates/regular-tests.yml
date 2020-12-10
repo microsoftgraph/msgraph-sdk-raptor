@@ -12,7 +12,7 @@ steps:
     $dllPath = (Get-ChildItem ./msgraph-sdk-dotnet/ -Include Microsoft.Graph.dll -Recurse | Where-Object { $_.FullName.Contains("netcoreapp") }).FullName
     Write-Host "Path to Microsoft.Graph.dll: $dllPath"
 
-    & ./msgraph-sdk-raptor/azure-pipelines/e2e-templates/transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "false" -DllPath "$dllPath" -Language "CSharp" -RunSettingsPath "$(runSettingsFile)"
+    ./msgraph-sdk-raptor/azure-pipelines/e2e-templates/transformSettings.ps1 -Version "$(metadataVersion)" -KnownFailuresRequested "false" -DllPath "$dllPath" -Language "CSharp" -RunSettingsPath "$(runSettingsFile)"
 
     Write-Host "--- Test.runsettings file ---"
     Get-Content "$(runSettingsFile)"
