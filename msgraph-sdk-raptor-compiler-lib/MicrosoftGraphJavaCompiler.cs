@@ -81,14 +81,6 @@ application {
 
         private static Versions? currentlyConfiguredVersion;
         private static readonly Lazy<int> currentExcutionFolder = new Lazy<int>(() => new Random().Next(0, int.MaxValue));
-        private static readonly object versionLock = new { };
-
-        private static void SetCurrentlyConfiguredVersion (Versions version)
-        {// we don't want to overwrite the build.gradle for each test, this prevents gradle from caching things and slows down build time
-            lock(versionLock) {
-                currentlyConfiguredVersion = version;
-            }
-        }
 
         public MicrosoftGraphJavaCompiler(string markdownFileName, string previewLibPath, string javaLibVersion, string javaCoreVersion)
         {
@@ -101,13 +93,11 @@ application {
         {
             var tempPath = Path.Combine(Path.GetTempPath(), "msgraph-sdk-raptor");
             Directory.CreateDirectory(tempPath);
-            var rootPath = Path.Combine(tempPath, "java" + currentExcutionFolder.Value);
+            var rootPath = Path.Combine(tempPath, "java" + currentExcutionFolder.Value, Guid.NewGuid().ToString());
             var sourceFileDirectory = Path.Combine(new string[] { rootPath }.Union(testFileSubDirectories).ToArray());
-            if (!currentlyConfiguredVersion.HasValue || currentlyConfiguredVersion.Value != version)
-            {
-                InitializeProjectStructure(version, rootPath).GetAwaiter().GetResult();
-                SetCurrentlyConfiguredVersion(version);
-            }
+
+            InitializeProjectStructure(version, rootPath).GetAwaiter().GetResult();
+
             File.WriteAllText(Path.Combine(sourceFileDirectory, "App.java"), codeSnippet); //could be async
             using var javacProcess = new Process
             {
@@ -126,6 +116,13 @@ application {
                 javacProcess.Kill(true);
             var stdOutput = javacProcess.StandardOutput.ReadToEnd(); //could be async
             var stdErr = javacProcess.StandardError.ReadToEnd(); //could be async
+
+            var config = AppSettings.Config();
+            if (bool.Parse(config.GetSection("DeleteJavaTempDirectory").Value))
+            {
+                Directory.Delete(rootPath, true);
+            }
+
             return new CompilationResultsModel(
                 hasExited && stdOutput.Contains("BUILD SUCCESSFUL"),
                 GetDiagnosticsFromStdErr(stdOutput, stdErr, hasExited),
