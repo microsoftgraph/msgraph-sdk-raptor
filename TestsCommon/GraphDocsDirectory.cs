@@ -56,7 +56,7 @@ namespace TestsCommon
         /// Gets git source directory
         /// </summary>
         /// <returns>
-        /// 1. For local runs, the directory specified in AppSettings file with LocalRootGitDirectory
+        /// 1. For local runs, the directory specified in AppSettings file with DocsRepoCheckoutDirectory
         /// 2. For cloud runs, BUILD_SOURCESDIRECTORY
         /// </returns>
         private static string GetSourcesDirectory()
@@ -65,12 +65,12 @@ namespace TestsCommon
             var isLocalRun = bool.Parse(config.GetSection("IsLocalRun").Value);
 
             var msGraphDocsRepoLocation = isLocalRun
-                ? config.GetSection("LocalRootGitDirectory").Value
+                ? config.GetSection("DocsRepoCheckoutDirectory").Value
                 : Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY");
 
             if (!Directory.Exists(msGraphDocsRepoLocation))
             {
-                throw new FileNotFoundException("If you are running this locally, please set IsLocalRun=true with a valid LocalRootGitDirectory");
+                throw new FileNotFoundException("If you are running this locally, please set IsLocalRun=true with a valid DocsRepoCheckoutDirectory");
             }
 
             return msGraphDocsRepoLocation;
