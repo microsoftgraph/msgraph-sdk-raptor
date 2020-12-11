@@ -9,7 +9,7 @@ $typewriterPath = Join-Path $typewriterDirectory "Typewriter"
 Write-Host "Path to typewriter tool: $typewriterPath"
 
 # download metadata
-$metadataDir = Join-Path $env:AGENT_TEMPDIRECTORY "metadata"
+$metadataDir = Join-Path $env:BUILD_SOURCESDIRECTORY "metadata"
 mkdir $metadataDir
 $metadataFile = Join-Path $metadataDir "metadata.xml"
 Invoke-WebRequest -Uri $env:MetadataURL -OutFile $metadataFile
