@@ -2,29 +2,21 @@
 # steps for generating type summary for Microsoft.Graph.dll that was built as part of end to end validation pipelines
 
 steps:
-- task: PowerShell@2
+- pwsh: |
+    $allGeneratedDlls = Get-ChildItem $dir -Include Microsoft.Graph.dll -Recurse
+    $dotNetFrameworkDll = $allGeneratedDlls | Where-Object { !$_.FullName.Contains("obj") -and !$_.FullName.Contains("netstandard") }
+    $dotNetFrameworkDllPath = $dotNetFrameworkDll.FullName
+    Write-Host "Path to Microsoft.Graph.dll (.NET Framework): $dotNetFrameworkDllPath"
+    Write-Host "##vso[task.setvariable variable=dotNetFrameworkDllPath]$dotNetFrameworkDllPath"
   displayName: 'Set dll path for the .NET framework DLL for type summary generation'
-  inputs:
-    targetType: inline
-    workingDirectory: '$(Build.SourcesDirectory)'
-    script: |
-      $allGeneratedDlls = Get-ChildItem $dir -Include Microsoft.Graph.dll -Recurse
-      $dotNetFrameworkDll = $allGeneratedDlls | Where-Object { !$_.FullName.Contains("obj") -and !$_.FullName.Contains("netstandard") }
-      $dotNetFrameworkDllPath = $dotNetFrameworkDll.FullName
-      Write-Host "Path to Microsoft.Graph.dll (.NET Framework): $dotNetFrameworkDllPath"
-      Write-Host "##vso[task.setvariable variable=dotNetFrameworkDllPath]$dotNetFrameworkDllPath"
+  workingDirectory: '$(Build.SourcesDirectory)'
 
-- task: PowerShell@2
+- pwsh: '$(Build.SourcesDirectory)/msgraph-sdk-dotnet/scripts/generateTypeSummary.ps1 -dllPath $(dotNetFrameworkDllPath) -outputPath $(Build.ArtifactStagingDirectory)/typeSummary.txt'
   displayName: 'Generate type summary'
-  inputs:
-    targetType: filePath
-    filePath: '$(Build.SourcesDirectory)/msgraph-sdk-dotnet/scripts/generateTypeSummary.ps1'
-    arguments: '-dllPath $(dotNetFrameworkDllPath) -outputPath $(Build.ArtifactStagingDirectory)\typeSummary.txt'
-  enabled: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish type summary as artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\typeSummary.txt'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/typeSummary.txt'
     ArtifactName: 'TypeSummary'
     publishLocation: 'Container'

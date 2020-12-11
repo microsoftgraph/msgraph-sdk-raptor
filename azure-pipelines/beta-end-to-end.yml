@@ -55,7 +55,7 @@ parameters:
   default: 'https://graph.microsoft.com/stagingbeta/$metadata'
 
 pool:
-  vmImage: 'windows-latest' # to build ApiDoctor in .NET framework
+  vmImage: 'ubuntu-latest'
 
 variables:
   - template: e2e-templates/variables.yml
@@ -65,9 +65,9 @@ variables:
 
 steps:
   - template: e2e-templates/checkouts.yml
+  - template: common-templates/use-dotnet-sdk.yml
   - template: e2e-templates/sdk-generation.yml
   - template: e2e-templates/snippet-generation.yml
-  - template: common-templates/use-dotnet-sdk.yml
   - template: e2e-templates/regular-tests.yml
   - ${{ if eq(parameters.shouldRunKnownFailures, true) }}:
     - template: e2e-templates/known-failure-tests.yml
