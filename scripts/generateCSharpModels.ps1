@@ -2,9 +2,9 @@
 
 # set output and typewriter executable path
 $outputPath = Join-Path $env:BUILD_SOURCESDIRECTORY "output"
-Write-Host "Path to typewriter.exe output $outputPath"
+Write-Host "Path to typewriter output $outputPath"
 
-$typewriterPath = (Join-Path (Join-Path $env:BUILD_SOURCESDIRECTORY/MSGraph-SDK-Code-Generator/src/Typewriter/bin/ $env:BuildConfiguration) Typewriter.exe)
+$typewriterPath = Join-Path $env:BUILD_SOURCESDIRECTORY "MSGraph-SDK-Code-Generator" "src" "Typewriter" "bin" $env:BuildConfiguration "net5.0" "Typewriter"
 Write-Host "Path to typewriter tool: $typewriterPath"
 
 # download metadata
