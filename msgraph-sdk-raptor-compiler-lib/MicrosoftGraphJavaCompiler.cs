@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MsGraphSDKSnippetsCompiler
@@ -121,11 +123,38 @@ application {
                 },
             };
             javacProcess.Start();
+            var stdOuputSB = new StringBuilder();
+            var stdErrSB = new StringBuilder();
+            using var outputWaitHandle = new AutoResetEvent(false);
+            using var errorWaitHandle = new AutoResetEvent(false);
+            javacProcess.OutputDataReceived += (sender, e) => {
+                if (e.Data == null)
+                {
+                    outputWaitHandle.Set();
+                }
+                else
+                {
+                    stdOuputSB.Append(e.Data);
+                }
+            };
+            javacProcess.ErrorDataReceived += (sender, e) =>
+            {
+                if (e.Data == null)
+                {
+                    errorWaitHandle.Set();
+                }
+                else
+                {
+                    stdErrSB.Append(e.Data);
+                }
+            };
+            javacProcess.BeginOutputReadLine();
+            javacProcess.BeginErrorReadLine();
             var hasExited = javacProcess.WaitForExit(20000);
             if (!hasExited)
                 javacProcess.Kill(true);
-            var stdOutput = javacProcess.StandardOutput.ReadToEnd(); //could be async
-            var stdErr = javacProcess.StandardError.ReadToEnd(); //could be async
+            var stdOutput = stdOuputSB.ToString();
+            var stdErr = stdErrSB.ToString();
             return new CompilationResultsModel(
                 hasExited && stdOutput.Contains("BUILD SUCCESSFUL"),
                 GetDiagnosticsFromStdErr(stdOutput, stdErr, hasExited),
