@@ -128,7 +128,7 @@ application {
             using var outputWaitHandle = new AutoResetEvent(false);
             using var errorWaitHandle = new AutoResetEvent(false);
             javacProcess.OutputDataReceived += (sender, e) => {
-                if (e.Data == null)
+                if (string.IsNullOrEmpty(e.Data))
                 {
                     outputWaitHandle.Set();
                 }
@@ -139,7 +139,7 @@ application {
             };
             javacProcess.ErrorDataReceived += (sender, e) =>
             {
-                if (e.Data == null)
+                if (string.IsNullOrEmpty(e.Data))
                 {
                     errorWaitHandle.Set();
                 }
