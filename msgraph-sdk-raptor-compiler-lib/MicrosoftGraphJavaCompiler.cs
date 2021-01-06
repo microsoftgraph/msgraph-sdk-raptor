@@ -122,7 +122,6 @@ application {
                     WorkingDirectory = rootPath,
                 },
             };
-            javacProcess.Start();
             var stdOuputSB = new StringBuilder();
             var stdErrSB = new StringBuilder();
             using var outputWaitHandle = new AutoResetEvent(false);
@@ -148,6 +147,7 @@ application {
                     stdErrSB.Append(e.Data);
                 }
             };
+            javacProcess.Start();
             javacProcess.BeginOutputReadLine();
             javacProcess.BeginErrorReadLine();
             var hasExited = javacProcess.WaitForExit(20000);
