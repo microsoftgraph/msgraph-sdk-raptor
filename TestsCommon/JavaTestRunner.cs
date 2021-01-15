@@ -25,9 +25,11 @@ import com.microsoft.graph.core.GraphServiceClient;";
         private const string SDKShellTemplate = @"package com.microsoft.graph.raptor;
 --imports--
 import com.microsoft.graph.http.IHttpRequest;
-import java.util.*;
-import java.time.*;
+import java.time.OffsetDateTime;
 import java.io.InputStream;
+import java.util.UUID;	
+import java.util.Base64;	
+import java.util.EnumSet;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import com.google.gson.JsonPrimitive;
