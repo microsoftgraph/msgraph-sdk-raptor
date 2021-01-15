@@ -25,6 +25,7 @@ import com.microsoft.graph.core.GraphServiceClient;";
         private const string SDKShellTemplate = @"package com.microsoft.graph.raptor;
 --imports--
 import com.microsoft.graph.http.IHttpRequest;
+import java.util.LinkedList;
 import java.time.OffsetDateTime;
 import java.io.InputStream;
 import java.util.UUID;	
