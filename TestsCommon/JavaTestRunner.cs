@@ -26,6 +26,7 @@ import com.microsoft.graph.core.GraphServiceClient;";
 --imports--
 import com.microsoft.graph.http.IHttpRequest;
 import java.util.LinkedList;
+import java.time.OffsetDateTime;
 import java.io.InputStream;
 import java.util.UUID;
 import java.util.Base64;
@@ -42,7 +43,7 @@ import com.microsoft.graph.models.extensions.*;
 import com.microsoft.graph.requests.extensions.*;
 import com.microsoft.graph.models.generated.*;
 import com.microsoft.graph.options.*;
-import com.microsoft.graph.serializer.CalendarSerializer;
+import com.microsoft.graph.serializer.*;
 public class App
 {
     public static void main(String[] args) throws Exception
