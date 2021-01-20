@@ -4,11 +4,12 @@ $buildAndDependencyFilesDistinct = (Test-Path -Path $dependenciesFilePath);
 if($buildAndDependencyFilesDistinct -eq $false) {
     $dependenciesFilePath = $buildFilePath
 } 
-$buildContent = Get-Content -Path $buildFilePath -Raw;
 $dependenciesContent = Get-Content -Path $dependenciesFilePath -Raw;
 $dependenciesContent = $dependenciesContent -replace "api 'com\.microsoft\.graph:microsoft-graph-core:\d\.\d\.\d(?:-SNAPSHOT)?'", "implementation name: 'msgraph-sdk-java-core'";
 $flatDirRef = "mavenCentral()`r`n    flatDir {`r`n        dirs '$Env:CORE_PATH/build/libs'`r`n    }"
-if($buildAndDependencyFilesDistinct -eq $false) {
+if($buildAndDependencyFilesDistinct -eq $true) {
+    $buildContent = Get-Content -Path $buildFilePath -Raw;
+} else {
     $buildContent = $dependenciesContent
 }
 $buildContent = $buildContent -replace "mavenCentral\(\)", $flatDirRef
