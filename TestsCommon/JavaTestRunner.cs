@@ -2,10 +2,8 @@
 using MsGraphSDKSnippetsCompiler.Models;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -14,11 +12,12 @@ namespace TestsCommon
     public static class JavaTestRunner
     {
         private const string importsCurrent = @"import com.microsoft.graph.authentication.IAuthenticationProvider;
-import com.microsoft.graph.models.extensions.IGraphServiceClient;
-import com.microsoft.graph.requests.extensions.GraphServiceClient;";
+import com.microsoft.graph.models.extensions.*;
+import com.microsoft.graph.requests.extensions.*;
+import com.microsoft.graph.models.generated.*;";
         private const string importsVNext = @"import com.microsoft.graph.httpcore.*;
-import com.microsoft.graph.core.IGraphServiceClient;
-import com.microsoft.graph.core.GraphServiceClient;";
+import com.microsoft.graph.requests.*;
+import com.microsoft.graph.models.*;";
         /// <summary>
         /// template to compile snippets in
         /// </summary>
@@ -39,9 +38,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import okhttp3.Request;
 import com.microsoft.graph.core.*;
-import com.microsoft.graph.models.extensions.*;
-import com.microsoft.graph.requests.extensions.*;
-import com.microsoft.graph.models.generated.*;
 import com.microsoft.graph.options.*;
 import com.microsoft.graph.serializer.*;
 public class App
