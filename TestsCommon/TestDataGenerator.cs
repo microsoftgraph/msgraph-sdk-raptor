@@ -469,6 +469,32 @@ namespace TestsCommon
         /// </returns>
         public static IEnumerable<TestCaseData> GetTestCaseData(RunSettings runSettings)
         {
+            return from testData in GetLanguageTestData(runSettings)
+                   where !(testData.IsKnownIssue ^ runSettings.KnownFailuresRequested) // select known issues if requested
+                   select new TestCaseData(testData).SetName(testData.TestName).SetProperty("Owner", testData.TestName);
+        }
+
+        /// <summary>
+        /// For each snippet file creates a test case which takes the file name and version as reference
+        /// Test case name is also set to to unique name based on file name
+        /// </summary>
+        /// <param name="runSettings">Test run settings</param>
+        /// <returns>
+        /// TestCaseData to be consumed by C# execution tests
+        /// </returns>
+        public static IEnumerable<TestCaseData> GetExecutionTestData(RunSettings runSettings)
+        {
+            return from testData in GetLanguageTestData(runSettings)
+                   let fullPath = Path.Join(GraphDocsDirectory.GetSnippetsDirectory(testData.Version, runSettings.Language), testData.FileName)
+                   let fileContent = File.ReadAllText(fullPath)
+                   let executionTestData = new ExecutionTestData(testData, fileContent)
+                   where !testData.IsKnownIssue // select compiling tests
+                   && fileContent.Contains("GetAsync()") // select only the get tests
+                   select new TestCaseData(executionTestData).SetName(testData.TestName).SetProperty("Owner", testData.TestName);
+        }
+
+        private static IEnumerable<LanguageTestData> GetLanguageTestData(RunSettings runSettings)
+        {
             if (runSettings == null)
             {
                 throw new ArgumentNullException(nameof(runSettings));
@@ -489,18 +515,18 @@ namespace TestsCommon
                    let knownIssue = isKnownIssue ? knownIssues[knownIssueLookupKey] : null
                    let knownIssueMessage = knownIssue?.Message ?? string.Empty
                    let owner = knownIssue?.Owner ?? string.Empty
-                   let testCaseData = new LanguageTestData(
-                       version,
-                       isKnownIssue,
-                       knownIssueMessage,
-                       docsLink,
-                       fileName,
-                       runSettings.DllPath,
-                       runSettings.JavaCoreVersion,
-                       runSettings.JavaLibVersion,
-                       runSettings.JavaPreviewLibPath)
-                   where !(isKnownIssue ^ runSettings.KnownFailuresRequested) // select known issues if requested
-                   select new TestCaseData(testCaseData).SetName(testName).SetProperty("Owner", owner);
+                   select new LanguageTestData(
+                           version,
+                           isKnownIssue,
+                           knownIssueMessage,
+                           docsLink,
+                           fileName,
+                           runSettings.DllPath,
+                           runSettings.JavaCoreVersion,
+                           runSettings.JavaLibVersion,
+                           runSettings.JavaPreviewLibPath,
+                           testName,
+                           owner);
         }
     }
 }

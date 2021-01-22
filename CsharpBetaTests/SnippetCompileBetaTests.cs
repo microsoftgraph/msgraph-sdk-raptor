@@ -32,7 +32,7 @@ namespace CsharpBetaTests
         [TestCaseSource(typeof(SnippetCompileBetaTests), nameof(TestDataBeta))]
         public void Test(LanguageTestData testData)
         {
-            CSharpTestRunner.Run(testData);
+            CSharpTestRunner.Compile(testData);
         }
     }
 }

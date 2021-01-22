@@ -25,7 +25,7 @@ namespace CSharpArbitraryDllTests
         [TestCaseSource(typeof(SnippetCompileArbitraryDllTests), nameof(ArbitraryDllTestData))]
         public void Test(LanguageTestData testData)
         {
-            CSharpTestRunner.Run(testData);
+            CSharpTestRunner.Compile(testData);
         }
     }
 }

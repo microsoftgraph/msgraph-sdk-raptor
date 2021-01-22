@@ -24,6 +24,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 // Disambiguate colliding namespaces
 using DayOfWeek = Microsoft.Graph.DayOfWeek;
@@ -32,12 +33,8 @@ using KeyValuePair = Microsoft.Graph.KeyValuePair;
 
 public class GraphSDKTest
 {
-    private IAuthenticationProvider authProvider = null;
-
-    private async void Main()
+    public async Task Main(IAuthenticationProvider authProvider)
     {
-        authProvider = AuthenticationProvider.GetIAuthenticationProvider();
-
         #region msgraphsnippets
         //insert-code-here
         #endregion
@@ -55,7 +52,7 @@ public class GraphSDKTest
         /// </summary>
         private static readonly Regex RegExp = new Regex(Pattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
-        
+
 
         /// <summary>
         /// 1. Fetches snippet from docs repo
@@ -64,7 +61,7 @@ public class GraphSDKTest
         /// 4. Attempts to compile and reports errors if there is any
         /// </summary>
         /// <param name="testData">Test data containing information such as snippet file name</param>
-        public static void Run(LanguageTestData testData)
+        public static void Compile(LanguageTestData testData)
         {
             if (testData == null)
             {
@@ -75,6 +72,105 @@ public class GraphSDKTest
             Assert.IsTrue(File.Exists(fullPath), "Snippet file referenced in documentation is not found!");
 
             var fileContent = File.ReadAllText(fullPath);
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(fileContent);
+
+            // Compile Code
+            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
+            var compilationResultsModel = microsoftGraphCSharpCompiler.CompileSnippet(codeToCompile, testData.Version);
+
+            var compilationOutputMessage = new CompilationOutputMessage(compilationResultsModel, codeToCompile, testData.DocsLink, testData.KnownIssueMessage, testData.IsKnownIssue);
+            EvaluateCompilationResult(compilationResultsModel, testData, codeSnippetFormatted, compilationOutputMessage);
+
+            Assert.Pass();
+        }
+
+        /// <summary>
+        /// 1. Fetches snippet from docs repo
+        /// 2. Asserts that there is one and only one snippet in the file
+        /// 3. Wraps snippet with compilable template
+        /// 4. Attempts to compile and reports errors if there is any
+        /// </summary>
+        /// <param name="executionTestData">Test data containing information such as snippet file name</param>
+        public static void Execute(ExecutionTestData executionTestData)
+        {
+            if (executionTestData == null)
+            {
+                throw new ArgumentNullException(nameof(executionTestData));
+            }
+
+            var testData = executionTestData.LanguageTestData;
+
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(executionTestData.FileContent, CaptureUriAndHeadersInException);
+
+            // Compile Code
+            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
+            var executionResultsModel = microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version);
+            var compilationOutputMessage = new CompilationOutputMessage(
+                executionResultsModel.CompilationResult,
+                codeToCompile,
+                testData.DocsLink,
+                testData.KnownIssueMessage,
+                testData.IsKnownIssue);
+
+            EvaluateCompilationResult(executionResultsModel.CompilationResult, testData, codeSnippetFormatted, compilationOutputMessage);
+
+            if (!executionResultsModel.Success)
+            {
+                Assert.Fail($"{compilationOutputMessage}{Environment.NewLine}{executionResultsModel.ExceptionMessage}");
+            }
+
+            Assert.Pass(compilationOutputMessage.ToString());
+        }
+
+        private static void EvaluateCompilationResult(CompilationResultsModel compilationResult, LanguageTestData testData, string codeSnippetFormatted, CompilationOutputMessage compilationOutputMessage)
+        {
+            if (!compilationResult.IsSuccess)
+            {
+                // environment variable for sources directory is defined only for cloud runs
+                var config = AppSettings.Config();
+                if (bool.Parse(config.GetSection("IsLocalRun").Value)
+                    && bool.Parse(config.GetSection("GenerateLinqPadOutputInLocalRun").Value))
+                {
+                    WriteLinqFile(testData, codeSnippetFormatted);
+                }
+
+                Assert.Fail($"{compilationOutputMessage}");
+            }
+        }
+
+        private static string CaptureUriAndHeadersInException(string codeToCompile)
+        {
+            var resultVariablePattern = "var ([a-zA-Z0-9]+) = await graphClient";
+            string resultVariable = null;
+            try
+            {
+                resultVariable = Regex.Match(codeToCompile, resultVariablePattern).Groups[1].Value;
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("result variable is not found!" + Environment.NewLine + e.Message);
+            }
+
+            codeToCompile = codeToCompile.Replace("await graphClient", "graphClient")
+                .Replace(".GetAsync();", $@".GetHttpRequestMessage();
+
+        var uri = {resultVariable}.RequestUri;
+        var headers = {resultVariable}.Headers;
+        {resultVariable}.Method = HttpMethod.Get;
+        try
+        {{
+            await graphClient.HttpProvider.SendAsync({resultVariable});
+        }}
+        catch (Exception e)
+        {{
+            throw new Exception($""Request URI: {{uri}}{{Environment.NewLine}}Request Headers:{{Environment.NewLine}}{{headers}}"", e);
+        }}");
+
+            return codeToCompile;
+        }
+
+        private static (string, string) GetCodeToCompile(string fileContent, Func<string, string> postTransform = null)
+        {
             var match = RegExp.Match(fileContent);
             Assert.IsTrue(match.Success, "Csharp snippet file is not in expected format!");
 
@@ -86,26 +182,12 @@ public class GraphSDKTest
 
             var codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(codeSnippetFormatted, SDKShellTemplate);
 
-            // Compile Code
-            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
-            var compilationResultsModel = microsoftGraphCSharpCompiler.CompileSnippet(codeToCompile, testData.Version);
-
-            if (compilationResultsModel.IsSuccess)
+            if (postTransform == null)
             {
-                Assert.Pass();
+                return (codeToCompile, codeSnippetFormatted);
             }
 
-            var compilationOutputMessage = new CompilationOutputMessage(compilationResultsModel, codeToCompile, testData.DocsLink, testData.KnownIssueMessage, testData.IsKnownIssue);
-
-            // environment variable for sources directory is defined only for cloud runs
-            var config = AppSettings.Config();
-            if (bool.Parse(config.GetSection("IsLocalRun").Value)
-                && bool.Parse(config.GetSection("GenerateLinqPadOutputInLocalRun").Value))
-            {
-                WriteLinqFile(testData, codeSnippetFormatted);
-            }
-
-            Assert.Fail($"{compilationOutputMessage}");
+            return (postTransform(codeToCompile), codeSnippetFormatted);
         }
 
         /// <summary>
