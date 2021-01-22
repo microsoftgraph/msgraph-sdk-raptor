@@ -138,8 +138,8 @@ public class GraphSDKTest
             var linqFilePath = Path.Join(linqDirectory, testData.FileName.Replace(".md", ".linq"));
 
             const string LinqTemplateStart = "<Query Kind=\"Statements\">";
-            const string LinqTemplateEnd =
-@"
+            string LinqTemplateEnd =
+@$"
   <Namespace>DayOfWeek = Microsoft.Graph.DayOfWeek</Namespace>
   <Namespace>KeyValuePair = Microsoft.Graph.KeyValuePair</Namespace>
   <Namespace>Microsoft.Graph</Namespace>
@@ -147,9 +147,8 @@ public class GraphSDKTest
   <Namespace>System.Threading.Tasks</Namespace>
   <Namespace>TimeOfDay = Microsoft.Graph.TimeOfDay</Namespace>
 </Query>
-
-IAuthenticationProvider authProvider  = null;
-";
+// {testData.DocsLink}{(testData.IsKnownIssue ? (Environment.NewLine + "/* " + testData.KnownIssueMessage + " */") : string.Empty)}
+IAuthenticationProvider authProvider  = null;";
 
             File.WriteAllText(linqFilePath,
                 LinqTemplateStart
