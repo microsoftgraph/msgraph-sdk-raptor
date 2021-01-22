@@ -1,0 +1,7 @@
+steps:
+  - pwsh: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/scripts/transformAppSettings.ps1 -TenantID $(TenantID) -ClientID $(ClientID) -ClientSecret $(ClientSecret)'
+    workingDirectory: 'msgraph-sdk-raptor'
+    displayName: 'Transform app settings with the secrets'
+
+  - pwsh: |
+    Get-Content $env:BUILD_SOURCESDIRECTORY/msgraph-sdk-raptor/msgraph-sdk-raptor-compiler-lib/appsettings.json
