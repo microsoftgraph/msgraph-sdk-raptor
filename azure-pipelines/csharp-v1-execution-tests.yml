@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
 trigger: none # disable triggers based on commits.
-name: 'V1 C# Snippet Compilation Tests'
+name: 'V1 C# Snippet Execution Tests'
 
 resources:
  repositories:

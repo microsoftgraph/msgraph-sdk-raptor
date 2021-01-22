@@ -4,4 +4,4 @@ steps:
     displayName: 'Transform app settings with the secrets'
 
   - pwsh: |
-    Get-Content $env:BUILD_SOURCESDIRECTORY/msgraph-sdk-raptor/msgraph-sdk-raptor-compiler-lib/appsettings.json
+      Get-Content $env:BUILD_SOURCESDIRECTORY/msgraph-sdk-raptor/msgraph-sdk-raptor-compiler-lib/appsettings.json
