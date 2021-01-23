@@ -1,0 +1,27 @@
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+
+trigger: none # disable triggers based on commits.
+name: 'Beta C# Snippet Execution Tests'
+
+resources:
+ repositories:
+   - repository: microsoft-graph-docs
+     type: github
+     endpoint: microsoftgraph
+     name: microsoftgraph/microsoft-graph-docs
+     ref: master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- template: common-templates/checkout.yml
+- template: common-templates/transform-app-settings.yml
+- template: compile-run-tests-template.yml
+  parameters:
+    projectFileName: CsharpBetaExecutionTests
+    runName: 'Beta C# Snippet Execution Tests $(testRunTitle)'
+    testType: 'Execution'
