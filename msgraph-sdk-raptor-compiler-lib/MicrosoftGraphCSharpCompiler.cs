@@ -120,8 +120,6 @@ namespace MsGraphSDKSnippetsCompiler
                     var clientId = config.GetSection("ClientID").Value;
 
                     dynamic instance = assembly.CreateInstance("GraphSDKTest");
-
-                    var me = true;
                     IAuthenticationProvider authProvider;
 
                     var tenantId = config.GetSection("TenantID").Value;
