@@ -5,3 +5,4 @@ steps:
 
   - pwsh: |
       Get-Content $env:BUILD_SOURCESDIRECTORY/msgraph-sdk-raptor/msgraph-sdk-raptor-compiler-lib/appsettings.json
+    displayName: 'Show app settings'
