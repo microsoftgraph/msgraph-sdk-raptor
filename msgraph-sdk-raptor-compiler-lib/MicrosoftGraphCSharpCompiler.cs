@@ -17,6 +17,7 @@ using System.Net.Http;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace MsGraphSDKSnippetsCompiler
 {
@@ -139,6 +140,10 @@ namespace MsGraphSDKSnippetsCompiler
                 catch (AggregateException ae)
                 {
                     exceptionMessage = ae.InnerException.Message + Environment.NewLine + ae.InnerException.InnerException.Message;
+                    if (!bool.Parse(AppSettings.Config().GetSection("IsLocalRun").Value))
+                    {
+                        exceptionMessage = Regex.Replace(exceptionMessage, "Authorization: Bearer .*", "Authorization: Bearer <token>");
+                    }
                 }
             }
 
