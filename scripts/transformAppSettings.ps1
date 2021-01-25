@@ -2,9 +2,9 @@ param(
     [bool]$IsLocalRun = $false,
     [bool]$GenerateLinqPadOutputInLocalRun = $false,
     [string]$DocsRepoCheckoutDirectory = "C:/github",
-    [string]$TenantID,
-    [string]$ClientID,
-    [string]$ClientSecret
+   [Parameter(Mandatory=$true)][string]$TenantID,
+    [Parameter(Mandatory=$true)][string]$ClientID,
+    [Parameter(Mandatory=$true)][string]$ClientSecret
 )
 
 $json = @{
