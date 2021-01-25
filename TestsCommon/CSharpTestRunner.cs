@@ -44,15 +44,23 @@ public class GraphSDKTest
         /// <summary>
         /// matches csharp snippet from C# snippets markdown output
         /// </summary>
-        private const string Pattern = @"```csharp(.*)```";
+        private const string CSharpSnippetPattern = @"```csharp(.*)```";
 
         /// <summary>
         /// compiled version of the C# markdown regular expression
         /// uses Singleline so that (.*) matches new line characters as well
         /// </summary>
-        private static readonly Regex RegExp = new Regex(Pattern, RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly Regex CSharpSnippetRegex = new Regex(CSharpSnippetPattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
+        /// <summary>
+        /// matches result variable name from code snippets
+        /// </summary>
+        private const string ResultVariablePattern = "var ([a-zA-Z0-9]+) = await graphClient";
 
+        /// <summary>
+        /// compiled version of the regex matching result variable name from code snippets
+        /// </summary>
+        private static readonly Regex ResultVariableRegex = new Regex(ResultVariablePattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
         /// <summary>
         /// 1. Fetches snippet from docs repo
@@ -140,11 +148,10 @@ public class GraphSDKTest
 
         private static string CaptureUriAndHeadersInException(string codeToCompile)
         {
-            var resultVariablePattern = "var ([a-zA-Z0-9]+) = await graphClient";
             string resultVariable = null;
             try
             {
-                resultVariable = Regex.Match(codeToCompile, resultVariablePattern).Groups[1].Value;
+                resultVariable = ResultVariableRegex.Match(codeToCompile).Groups[1].Value;
             }
             catch (Exception e)
             {
@@ -171,7 +178,7 @@ public class GraphSDKTest
 
         private static (string, string) GetCodeToCompile(string fileContent, Func<string, string> postTransform = null)
         {
-            var match = RegExp.Match(fileContent);
+            var match = CSharpSnippetRegex.Match(fileContent);
             Assert.IsTrue(match.Success, "Csharp snippet file is not in expected format!");
 
             var codeSnippetFormatted = match.Groups[1].Value

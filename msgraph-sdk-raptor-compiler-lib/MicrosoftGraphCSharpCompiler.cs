@@ -65,7 +65,7 @@ namespace MsGraphSDKSnippetsCompiler
             };
 
             //Use the right Microsoft Graph Version
-            if (_dllPath != null && _dllPath != string.Empty)
+            if (!string.IsNullOrEmpty(_dllPath))
             {
                 if (!System.IO.File.Exists(_dllPath))
                 {
@@ -87,7 +87,8 @@ namespace MsGraphSDKSnippetsCompiler
                assemblyName,
                syntaxTrees: new[] { syntaxTree },
                references: metadataReferences,
-               options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+               options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                                .WithOptimizationLevel(OptimizationLevel.Release));
 
             var (emitResult, assembly) = GetEmitResult(compilation);
             CompilationResultsModel results = GetCompilationResults(emitResult);
