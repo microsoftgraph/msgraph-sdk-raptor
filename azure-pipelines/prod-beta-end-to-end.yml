@@ -1,0 +1,27 @@
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+# contains an end to end validation pipeline using C# compilation tests for PROD beta metadata
+
+trigger: none
+pr: none
+schedules:
+- cron: "0 12 * * *" # everyday at noon
+  displayName: 'Daily PROD Beta Validation Pipeline'
+  branches:
+    include:
+    - dev
+  always: true
+
+extends:
+  template: e2e-templates/resources.yml
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - template: e2e-templates/variables.yml
+    parameters:
+      metadataURL: 'https://graph.microsoft.com/beta/$metadata'
+      metadataVersion: 'beta'
+
+steps:
+  - template: e2e-templates/steps.yml
