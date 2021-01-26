@@ -2,7 +2,7 @@ param(
     [bool]$IsLocalRun = $false,
     [bool]$GenerateLinqPadOutputInLocalRun = $false,
     [string]$DocsRepoCheckoutDirectory = "C:/github",
-   [Parameter(Mandatory=$true)][string]$TenantID,
+    [Parameter(Mandatory=$true)][string]$TenantID,
     [Parameter(Mandatory=$true)][string]$ClientID,
     [Parameter(Mandatory=$true)][string]$ClientSecret
 )
