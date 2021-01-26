@@ -29,6 +29,13 @@ namespace MsGraphSDKSnippetsCompiler
         private readonly string _markdownFileName;
         private readonly string _dllPath;
 
+        /// for hiding bearer token
+        private const string AuthHeaderPattern = "Authorization: Bearer .*";
+        private const string AuthHeaderReplacement = "Authorization: Bearer <token>";
+        private static readonly Regex AuthHeaderRegex = new Regex(AuthHeaderPattern, RegexOptions.Compiled);
+
+        private const string DefaultAuthScope = "https://graph.microsoft.com/.default";
+
         public MicrosoftGraphCSharpCompiler(string markdownFileName, string dllPath)
         {
             _markdownFileName = markdownFileName;
@@ -130,7 +137,7 @@ namespace MsGraphSDKSnippetsCompiler
                         .WithTenantId(tenantId)
                         .WithClientSecret(clientSecret)
                         .Build();
-                    authProvider = new ClientCredentialProvider(confidentialClientApp, "https://graph.microsoft.com/.default");
+                    authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
 
                     var task = instance.Main(authProvider) as Task;
                     task.Wait();
@@ -141,7 +148,7 @@ namespace MsGraphSDKSnippetsCompiler
                     exceptionMessage = ae.InnerException.Message + Environment.NewLine + ae.InnerException.InnerException.Message;
                     if (!bool.Parse(AppSettings.Config().GetSection("IsLocalRun").Value))
                     {
-                        exceptionMessage = Regex.Replace(exceptionMessage, "Authorization: Bearer .*", "Authorization: Bearer <token>");
+                        exceptionMessage = AuthHeaderRegex.Replace(exceptionMessage, AuthHeaderReplacement);
                     }
                 }
             }
