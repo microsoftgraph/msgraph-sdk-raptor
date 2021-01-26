@@ -25,10 +25,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JavaV1KnownFailureTests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JavaBetaKnownFailureTests", "JavaBetaKnownFailureTests\JavaBetaKnownFailureTests.csproj", "{B96E4BBA-697D-4B7D-80B5-4DBE2D0A4757}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpV1ExecutionTests", "CsharpV1ExecutionTests\CsharpV1ExecutionTests.csproj", "{B9785BF3-EAC8-4881-B428-D6868BB3AD9A}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C5324E4B-456A-46FE-99B4-63FEA5A026B9}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsharpBetaExecutionTests", "CsharpBetaExecutionTests\CsharpBetaExecutionTests.csproj", "{295FB66C-5A96-4FDE-BB01-38E3DC91AD87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +84,14 @@ Global
 		{B96E4BBA-697D-4B7D-80B5-4DBE2D0A4757}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B96E4BBA-697D-4B7D-80B5-4DBE2D0A4757}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B96E4BBA-697D-4B7D-80B5-4DBE2D0A4757}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9785BF3-EAC8-4881-B428-D6868BB3AD9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9785BF3-EAC8-4881-B428-D6868BB3AD9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9785BF3-EAC8-4881-B428-D6868BB3AD9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9785BF3-EAC8-4881-B428-D6868BB3AD9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{295FB66C-5A96-4FDE-BB01-38E3DC91AD87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{295FB66C-5A96-4FDE-BB01-38E3DC91AD87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{295FB66C-5A96-4FDE-BB01-38E3DC91AD87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{295FB66C-5A96-4FDE-BB01-38E3DC91AD87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

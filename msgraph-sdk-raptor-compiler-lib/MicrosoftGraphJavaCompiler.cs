@@ -162,6 +162,11 @@ application {
             );
         }
 
+        public async Task<ExecutionResultsModel> ExecuteSnippet(string codeSnippet, Versions version)
+        {
+            throw new NotImplementedException("not yet implemented for Java");
+        }
+
         private const string errorsSuffix = "FAILURE";
         private static readonly Regex notesFilterRegex = new Regex(@"^Note:\s[^\n]*$", RegexOptions.Compiled | RegexOptions.Multiline);
         private static readonly Regex doubleLineReturnCleanupRegex = new Regex(@"\n{2,}", RegexOptions.Compiled | RegexOptions.Multiline);

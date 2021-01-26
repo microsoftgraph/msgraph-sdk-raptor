@@ -32,7 +32,7 @@ namespace CsharpV1Tests
         [TestCaseSource(typeof(SnippetCompileV1Tests), nameof(TestDataV1))]
         public void Test(LanguageTestData testData)
         {
-            CSharpTestRunner.Run(testData);
+            CSharpTestRunner.Compile(testData);
         }
     }
 }

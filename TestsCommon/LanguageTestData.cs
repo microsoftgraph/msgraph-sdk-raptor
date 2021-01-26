@@ -23,5 +23,11 @@ namespace TestsCommon
         string DllPath,
         string JavaCoreVersion,
         string JavaLibVersion,
-        string JavaPreviewLibPath);
+        string JavaPreviewLibPath,
+        string TestName,
+        string Owner);
+
+    public record ExecutionTestData(
+        LanguageTestData LanguageTestData,
+        string FileContent);
 }
