@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using MsGraphSDKSnippetsCompiler.Models;
 using NUnit.Framework;
 using TestsCommon;
@@ -28,9 +29,9 @@ namespace CsharpBetaExecutionTests
         /// <param name="version">Docs version (e.g. V1, Beta)</param>
         [Test]
         [TestCaseSource(typeof(SnippetExecutionBetaTests), nameof(TestDataBeta))]
-        public void Test(ExecutionTestData testData)
+        public async Task Test(ExecutionTestData testData)
         {
-            CSharpTestRunner.Execute(testData);
+            await CSharpTestRunner.Execute(testData);
         }
     }
 }

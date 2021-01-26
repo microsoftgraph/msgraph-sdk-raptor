@@ -162,7 +162,7 @@ application {
             );
         }
 
-        public ExecutionResultsModel ExecuteSnippet(string codeSnippet, Versions version)
+        public async Task<ExecutionResultsModel> ExecuteSnippet(string codeSnippet, Versions version)
         {
             throw new NotImplementedException("not yet implemented for Java");
         }

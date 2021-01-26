@@ -114,7 +114,7 @@ namespace MsGraphSDKSnippetsCompiler
         /// </summary>
         /// <param name="codeSnippet">The code snippet to be compiled.</param>
         /// <returns>CompilationResultsModel</returns>
-        public ExecutionResultsModel ExecuteSnippet(string codeSnippet, Versions version)
+        public async Task<ExecutionResultsModel> ExecuteSnippet(string codeSnippet, Versions version)
         {
             var (compilationResult, assembly) = CompileSnippetAndGetAssembly(codeSnippet, version);
 
@@ -139,13 +139,12 @@ namespace MsGraphSDKSnippetsCompiler
                         .Build();
                     authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
 
-                    var task = instance.Main(authProvider) as Task;
-                    task.Wait();
+                    await (instance.Main(authProvider) as Task);
                     success = true;
                 }
-                catch (AggregateException ae)
+                catch (Exception e)
                 {
-                    exceptionMessage = ae.InnerException.Message + Environment.NewLine + ae.InnerException.InnerException.Message;
+                    exceptionMessage = e.Message + Environment.NewLine + e.InnerException.Message;
                     if (!bool.Parse(AppSettings.Config().GetSection("IsLocalRun").Value))
                     {
                         exceptionMessage = AuthHeaderRegex.Replace(exceptionMessage, AuthHeaderReplacement);

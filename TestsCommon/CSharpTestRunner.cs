@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace TestsCommon
 {
@@ -99,7 +100,7 @@ public class GraphSDKTest
         /// 4. Attempts to compile and reports errors if there is any
         /// </summary>
         /// <param name="executionTestData">Test data containing information such as snippet file name</param>
-        public static void Execute(ExecutionTestData executionTestData)
+        public async static Task Execute(ExecutionTestData executionTestData)
         {
             if (executionTestData == null)
             {
@@ -112,7 +113,7 @@ public class GraphSDKTest
 
             // Compile Code
             var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
-            var executionResultsModel = microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version);
+            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version);
             var compilationOutputMessage = new CompilationOutputMessage(
                 executionResultsModel.CompilationResult,
                 codeToCompile,
