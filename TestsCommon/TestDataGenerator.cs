@@ -471,7 +471,7 @@ namespace TestsCommon
         {
             return from testData in GetLanguageTestData(runSettings)
                    where !(testData.IsKnownIssue ^ runSettings.KnownFailuresRequested) // select known issues if requested
-                   select new TestCaseData(testData).SetName(testData.TestName).SetProperty("Owner", testData.TestName);
+                   select new TestCaseData(testData).SetName(testData.TestName).SetProperty("Owner", testData.Owner);
         }
 
         /// <summary>
@@ -490,7 +490,7 @@ namespace TestsCommon
                    let executionTestData = new ExecutionTestData(testData, fileContent)
                    where !testData.IsKnownIssue // select compiling tests
                    && fileContent.Contains("GetAsync()") // select only the get tests
-                   select new TestCaseData(executionTestData).SetName(testData.TestName).SetProperty("Owner", testData.TestName);
+                   select new TestCaseData(executionTestData).SetName(testData.TestName).SetProperty("Owner", testData.Owner);
         }
 
         private static IEnumerable<LanguageTestData> GetLanguageTestData(RunSettings runSettings)
