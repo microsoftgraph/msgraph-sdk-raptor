@@ -49,7 +49,7 @@ pool:
 variables:
   - template: e2e-templates/variables.yml
     parameters:
-      metadataURL: 'https://graph.microsoft.com/beta/$metadata'
+      metadataURL: 'https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/beta_metadata.xml'
       metadataVersion: 'beta'
 
 steps:
