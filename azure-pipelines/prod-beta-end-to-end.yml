@@ -1,11 +1,11 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
-# contains an end to end validation pipeline using C# compilation tests for staging V1 metadata
+# contains an end to end validation pipeline using C# compilation tests for PROD beta metadata
 
 trigger: none
 pr: none
 schedules:
 - cron: "0 12 * * *" # everyday at noon
-  displayName: 'Daily Staging V1 Validation Pipeline'
+  displayName: 'Daily PROD Beta Validation Pipeline'
   branches:
     include:
     - dev
@@ -32,7 +32,7 @@ resources:
       type: github
       endpoint: microsoftgraph
       name: microsoftgraph/MSGraph-SDK-Code-Generator
-      ref: master
+      ref: dev
     - repository: msgraph-sdk-dotnet
       type: github
       endpoint: microsoftgraph
@@ -43,27 +43,14 @@ resources:
       endpoint: microsoftgraph
       name: microsoftgraph/msgraph-metadata
 
-parameters:
-- name: shouldRunKnownFailures
-  displayName: 'Should we run known failure tests?'
-  type: boolean
-  default: true
-
-- name: metadataURL
-  displayName: 'URL for metadata for which SDK generation will happen:'
-  type: string
-  default: 'https://graph.microsoft.com/stagingv1.0/$metadata'
-
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   - template: e2e-templates/variables.yml
     parameters:
-      metadataURL: ${{ parameters.metadataURL }}
-      metadataVersion: 'v1.0'
+      metadataURL: 'https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/master/beta_metadata.xml'
+      metadataVersion: 'beta'
 
 steps:
   - template: e2e-templates/steps.yml
-    parameters:
-      shouldRunKnownFailures: ${{ parameters.shouldRunKnownFailures }}
