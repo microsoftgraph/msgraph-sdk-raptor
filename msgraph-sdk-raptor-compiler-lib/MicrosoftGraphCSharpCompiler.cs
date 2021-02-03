@@ -214,6 +214,8 @@ namespace MsGraphSDKSnippetsCompiler
             var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
 
             var securePassword = new SecureString();
+
+            // convert plain password into a secure string.
             password.ToList().ForEach(c => securePassword.AppendChar(c));
 
             try
@@ -223,8 +225,8 @@ namespace MsGraphSDKSnippetsCompiler
             }
             catch (Exception e)
             {
-                var PrefixLength = "https://graph.microsoft.com/".Length;
-                var scopeShortNames = scopes.Select(s => s[PrefixLength..]).ToArray();
+                var prefixLength = "https://graph.microsoft.com/".Length;
+                var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
                 throw new AggregateException(new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e));
             }
         }

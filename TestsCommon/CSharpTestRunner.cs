@@ -186,7 +186,8 @@ public class GraphSDKTest
         /// Modifies snippet to return HttpRequestMessage object so that we can extract the generated URL
         /// </summary>
         /// <param name="codeSnippet">code snippet</param>
-        /// <returns>Code snippet that returns an HttpRequstMessage</returns>
+        /// <returns>Code snippet that returns an HttpRequestMessage</returns>
+
         private static string ReturnHttpRequestMessage(string codeSnippet)
         {
             string resultVariable = null;
