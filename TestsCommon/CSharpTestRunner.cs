@@ -40,6 +40,11 @@ public class GraphSDKTest
         //insert-code-here
         #endregion
     }
+
+    public HttpRequestMessage GetRequestMessage(IAuthenticationProvider authProvider)
+    {
+        //return-request-message
+    }
 }";
 
         /// <summary>
@@ -113,7 +118,7 @@ public class GraphSDKTest
 
             // Compile Code
             var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
-            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version);
+            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version).ConfigureAwait(false);
             var compilationOutputMessage = new CompilationOutputMessage(
                 executionResultsModel.CompilationResult,
                 codeToCompile,
@@ -177,6 +182,33 @@ public class GraphSDKTest
             return codeToCompile;
         }
 
+        /// <summary>
+        /// Modifies snippet to return HttpRequestMessage object so that we can extract the generated URL
+        /// </summary>
+        /// <param name="codeSnippet">code snippet</param>
+        /// <returns>Code snippet that returns an HttpRequestMessage</returns>
+
+        private static string ReturnHttpRequestMessage(string codeSnippet)
+        {
+            string resultVariable = null;
+            try
+            {
+                resultVariable = ResultVariableRegex.Match(codeSnippet).Groups[1].Value;
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("result variable is not found!" + Environment.NewLine + e.Message);
+            }
+
+            codeSnippet = codeSnippet.Replace("await graphClient", "graphClient")
+                .Replace(".GetAsync();", $@".GetHttpRequestMessage();
+
+        return {resultVariable};");
+
+            return codeSnippet;
+        }
+
+
         private static (string, string) GetCodeToCompile(string fileContent, Func<string, string> postTransform = null)
         {
             var match = CSharpSnippetRegex.Match(fileContent);
@@ -189,6 +221,10 @@ public class GraphSDKTest
                 .Replace("\r\n\r\n\r\n", "\r\n\r\n");       // do not have two consecutive empty lines
 
             var codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(codeSnippetFormatted, SDKShellTemplate);
+
+            // have another tranformation to insert GetRequestMessage method
+            codeToCompile = codeToCompile.Replace("//return-request-message", "//insert-code-here");
+            codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
 
             if (postTransform == null)
             {
