@@ -19,8 +19,8 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Security;
-using System.Net;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace MsGraphSDKSnippetsCompiler
 {
@@ -129,7 +129,7 @@ namespace MsGraphSDKSnippetsCompiler
                 {
                     var requiresDelegatedPermissions = RequiresDelegatedPermissions(codeSnippet);
                     var config = AppSettings.Config();
-                    var clientId = config.GetSection("ClientID").Value;
+                    var clientId = GetNonEmptyValue(config, "ClientID");
 
                     dynamic instance = assembly.CreateInstance("GraphSDKTest");
                     IAuthenticationProvider authProvider;
@@ -137,12 +137,12 @@ namespace MsGraphSDKSnippetsCompiler
                     if (requiresDelegatedPermissions)
                     {
                         // delegated permissions
-                        HttpRequestMessage httpRequestMessage = instance.GetRequestMessage(null);
-                        var scopes = GetScopes(httpRequestMessage);
-                        var authority = config.GetSection("Authority").Value;
-                        var username = config.GetSection("Username").Value;
-                        var password = config.GetSection("Password").Value;
-                        var token = GetATokenForGraph(clientId, authority, username, password, scopes).ConfigureAwait(false).GetAwaiter().GetResult();
+                        using var httpRequestMessage = instance.GetRequestMessage(null);
+                        var scopes = await GetScopes(httpRequestMessage);
+                        var authority = GetNonEmptyValue(config, "Authority");
+                        var username = GetNonEmptyValue(config, "Username");
+                        var password = GetNonEmptyValue(config, "Password");
+                        var token = await GetATokenForGraph(clientId, authority, username, password, scopes).ConfigureAwait(false);
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
                             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -151,8 +151,8 @@ namespace MsGraphSDKSnippetsCompiler
                     else
                     {
                         // application permissions
-                        var tenantId = config.GetSection("TenantID").Value;
-                        var clientSecret = config.GetSection("ClientSecret").Value;
+                        var tenantId = GetNonEmptyValue(config, "TenantID");
+                        var clientSecret = GetNonEmptyValue(config, "ClientSecret");
                         IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
                             .Create(clientId)
                             .WithTenantId(tenantId)
@@ -166,7 +166,8 @@ namespace MsGraphSDKSnippetsCompiler
                 }
                 catch (Exception e)
                 {
-                    exceptionMessage = e.Message + Environment.NewLine + e.InnerException.Message;
+                    var innerExceptionMessage = e.InnerException?.Message ?? string.Empty;
+                    exceptionMessage = e.Message + Environment.NewLine + innerExceptionMessage;
                     if (!bool.Parse(AppSettings.Config().GetSection("IsLocalRun").Value))
                     {
                         exceptionMessage = AuthHeaderRegex.Replace(exceptionMessage, AuthHeaderReplacement);
@@ -182,7 +183,7 @@ namespace MsGraphSDKSnippetsCompiler
         /// </summary>
         /// <param name="httpRequestMessage"></param>
         /// <returns></returns>
-        static string[] GetScopes(HttpRequestMessage httpRequestMessage)
+        static async Task<string[]> GetScopes(HttpRequestMessage httpRequestMessage)
         {
             var path = httpRequestMessage.RequestUri.LocalPath;
             var versionSegmentLength = "/v1.0".Length;
@@ -191,13 +192,17 @@ namespace MsGraphSDKSnippetsCompiler
                 path = path[versionSegmentLength..];
             }
 
-            var webClient = new WebClient();
-            webClient.Headers.Add("Accept-Language", "en-US");
-            var url = $"https://graphexplorerapi.azurewebsites.net/permissions?requesturl={path}&method={httpRequestMessage.Method}";
-            var responseString = webClient.DownloadString(url);
-            var json = JsonSerializer.Deserialize<Scope[]>(responseString);
+            using var httpClient = new HttpClient();
 
-            return json.ToList().Select(x => "https://graph.microsoft.com/" + x.value).ToArray();
+            using var scopesRequest = new HttpRequestMessage(HttpMethod.Get, $"https://graphexplorerapi.azurewebsites.net/permissions?requesturl={path}&method={httpRequestMessage.Method}");
+            scopesRequest.Headers.Add("Accept-Language", "en-US");
+
+            using var response = await httpClient.SendAsync(scopesRequest).ConfigureAwait(false);
+            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var scopes = JsonSerializer.Deserialize<Scope[]>(responseString);
+
+            return scopes.ToList().Select(x => $"https://graph.microsoft.com/{ x.value }").ToArray();
         }
 
         /// <summary>
@@ -213,7 +218,7 @@ namespace MsGraphSDKSnippetsCompiler
         {
             var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
 
-            var securePassword = new SecureString();
+            using var securePassword = new SecureString();
 
             // convert plain password into a secure string.
             password.ToList().ForEach(c => securePassword.AppendChar(c));
@@ -227,7 +232,7 @@ namespace MsGraphSDKSnippetsCompiler
             {
                 var prefixLength = "https://graph.microsoft.com/".Length;
                 var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
-                throw new AggregateException(new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e));
+                throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
             }
         }
 
@@ -276,6 +281,23 @@ namespace MsGraphSDKSnippetsCompiler
             return codeSnippet.Contains("graphClient.Me") ||
                 codeSnippet.Contains("graphClient.Education.Me") ||
                 codeSnippet.Contains("graphClient.Users[\"");
+        }
+
+        /// <summary>
+        /// Extracts the configuration value, throws if empty string
+        /// </summary>
+        /// <param name="config">configuration</param>
+        /// <param name="key">lookup key</param>
+        /// <returns>non-empty configuration value if found</returns>
+        private static string GetNonEmptyValue(IConfigurationRoot config, string key)
+        {
+            var value = config.GetSection(key).Value;
+            if (value == string.Empty)
+            {
+                throw new Exception($"Value for {key} is not found in appsettings.json");
+            }
+
+            return value;
         }
     }
 }

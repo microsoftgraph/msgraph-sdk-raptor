@@ -118,7 +118,7 @@ public class GraphSDKTest
 
             // Compile Code
             var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
-            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version);
+            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version).ConfigureAwait(false);
             var compilationOutputMessage = new CompilationOutputMessage(
                 executionResultsModel.CompilationResult,
                 codeToCompile,
