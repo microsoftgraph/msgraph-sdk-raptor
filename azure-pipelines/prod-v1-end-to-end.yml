@@ -53,4 +53,5 @@ variables:
       metadataVersion: 'v1.0'
 
 steps:
+  - template: common-templates/allow-only-scheduled-runs.yml
   - template: e2e-templates/steps.yml
