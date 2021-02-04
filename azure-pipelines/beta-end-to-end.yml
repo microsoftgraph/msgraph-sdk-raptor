@@ -23,10 +23,10 @@ resources:
       endpoint: microsoftgraph
       name: microsoftgraph/apidoctor
       ref: master
-    - repository: microsoft-graph-explorer-api
+    - repository: microsoft-graph-devx-api
       type: github
       endpoint: microsoftgraph
-      name: microsoftgraph/microsoft-graph-explorer-api
+      name: microsoftgraph/microsoft-graph-devx-api
       ref: dev
     - repository: MSGraph-SDK-Code-Generator
       type: github
