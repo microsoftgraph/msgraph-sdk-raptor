@@ -36,14 +36,12 @@ public class GraphSDKTest
 {
     public async Task Main(IAuthenticationProvider authProvider)
     {
-        #region msgraphsnippets
         //insert-code-here
-        #endregion
     }
 
     public HttpRequestMessage GetRequestMessage(IAuthenticationProvider authProvider)
     {
-        //return-request-message
+        return null; //return-request-message
     }
 }";
 
@@ -114,7 +112,7 @@ public class GraphSDKTest
 
             var testData = executionTestData.LanguageTestData;
 
-            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(executionTestData.FileContent, CaptureUriAndHeadersInException);
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToExecute(executionTestData.FileContent);
 
             // Compile Code
             var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
@@ -208,8 +206,28 @@ public class GraphSDKTest
             return codeSnippet;
         }
 
+        /// <summary>
+        /// Gets code to be executed
+        /// </summary>
+        /// <param name="fileContent">snippet file content</param>
+        /// <returns>code to be executed</returns>
+        private static (string, string) GetCodeToExecute(string fileContent)
+        {
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(fileContent);
 
-        private static (string, string) GetCodeToCompile(string fileContent, Func<string, string> postTransform = null)
+            // have another tranformation to insert GetRequestMessage method
+            codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");
+            codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
+
+            return (CaptureUriAndHeadersInException(codeToCompile), codeSnippetFormatted);
+        }
+
+        /// <summary>
+        /// Gets code to be compiled
+        /// </summary>
+        /// <param name="fileContent">snippet file content</param>
+        /// <returns>code to be compiled</returns>
+        private static (string, string) GetCodeToCompile(string fileContent)
         {
             var match = CSharpSnippetRegex.Match(fileContent);
             Assert.IsTrue(match.Success, "Csharp snippet file is not in expected format!");
@@ -217,21 +235,16 @@ public class GraphSDKTest
             var codeSnippetFormatted = match.Groups[1].Value
                 .Replace("\r\n", "\r\n        ")            // add indentation to match with the template
                 .Replace("\r\n        \r\n", "\r\n\r\n")    // remove indentation added to empty lines
-                .Replace("\t", "    ")                      // do not use tabs
-                .Replace("\r\n\r\n\r\n", "\r\n\r\n");       // do not have two consecutive empty lines
+                .Replace("\t", "    ");                     // do not use tabs
+
+            while (codeSnippetFormatted.Contains("\r\n\r\n"))
+            {
+                codeSnippetFormatted = codeSnippetFormatted.Replace("\r\n\r\n", "\r\n"); // do not have empty lines for shorter error messages
+            }
 
             var codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(codeSnippetFormatted, SDKShellTemplate);
 
-            // have another tranformation to insert GetRequestMessage method
-            codeToCompile = codeToCompile.Replace("//return-request-message", "//insert-code-here");
-            codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
-
-            if (postTransform == null)
-            {
-                return (codeToCompile, codeSnippetFormatted);
-            }
-
-            return (postTransform(codeToCompile), codeSnippetFormatted);
+            return (codeToCompile, codeSnippetFormatted);
         }
 
         /// <summary>
