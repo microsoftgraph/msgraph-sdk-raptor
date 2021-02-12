@@ -1,6 +1,6 @@
 steps:
   - pwsh: |
-      if ($env:Build_Reason -ne 'Schedule')
+      if ($env:BUILD_REASON -ne 'Schedule')
       {
         Write-Error "Only scheduled runs are allowed in this pipeline!"
       }
