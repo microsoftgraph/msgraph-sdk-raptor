@@ -14,10 +14,9 @@
   You can also specify optional outputPath if you don't want in-place update
   PS C:\> applyReadOnlyPermissionsToManifest.ps1 -manifestPath <path_to_manifest> -outputPath <path_to_output>
 .NOTES
-  Manifest file can be downloaded from Azure Portal -> Application -> Manifest
-  On the same Manifest page, you can upload the manifest file modified with this script
-  When you switch back to API Permissions page, you will see that all read-only
-  Microsoft.Graph permissions will be given to your application
+  Manifest file can be downloaded from Azure Portal -> Application -> Manifest.
+  On the same Manifest page, you can upload the manifest file modified with this script.
+  When you switch back to API Permissions page, you will see that all read-only Microsoft.Graph permissions will be given to your application.
   For admin consent, you will still need to click on "Grant admin consent for Contoso" button.
 #>
 
