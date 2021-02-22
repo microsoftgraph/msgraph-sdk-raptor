@@ -13,6 +13,9 @@
 
   You can also specify optional outputPath if you don't want in-place update
   PS C:\> applyReadOnlyPermissionsToManifest.ps1 -manifestPath <path_to_manifest> -outputPath <path_to_output>
+
+  The last optional parameter is permissionFileUri where you can specify a different permission file URI
+  PS C:\> applyReadOnlyPermissionsToManifest.ps1 -manifestPath <path_to_manifest> -permissionFileUri <custom_permission_file_url>
 .NOTES
   Manifest file can be downloaded from Azure Portal -> Application -> Manifest.
   On the same Manifest page, you can upload the manifest file modified with this script.
@@ -23,7 +26,8 @@
 Param(
   [Parameter(Mandatory)]
   [string]$manifestPath,
-  [string]$outputPath
+  [string]$outputPath,
+  [string]$permissionFileUri = "https://raw.githubusercontent.com/microsoftgraph/microsoft-graph-devx-content/dev/permissions/permissions-descriptions.json"
 )
 
 if (-not (Test-Path $manifestPath))
@@ -42,15 +46,16 @@ if (!$manifest.requiredResourceAccess.resourceAppId)
 }
 
 # fetch permissions from microsoft-graph-devx-content
-$permissionsFile = "https://raw.githubusercontent.com/microsoftgraph/microsoft-graph-devx-content/dev/permissions/permissions-descriptions.json"
-$permissions = (Invoke-WebRequest -Uri $permissionsFile -UseBasicParsing).Content | ConvertFrom-Json
+$permissions = (Invoke-WebRequest -Uri $permissionFileUri -UseBasicParsing).Content | ConvertFrom-Json
 
 # filter read only permissions
-$readOnlyDelegatedPermissions = $permissions.delegatedScopesList |
-  Where-Object { $_.value.Contains("Read") -and !$_.value.Contains("Write") }
+function filterReadOnly ($permissionList)
+{
+  $permissionList | Where-Object { $_.value.Contains("Read") -and !$_.value.Contains("Write") }
+}
 
-$readOnlyApplicationPermissions = $permissions.applicationScopesList |
-  Where-Object { $_.value.Contains("Read") -and !$_.value.Contains("Write") }
+$readOnlyDelegatedPermissions = filterReadOnly $permissions.delegatedScopesList
+$readOnlyApplicationPermissions = filterReadOnly $permissions.applicationScopesList
 
 # these IDs are not known to the Microsoft.Graph permissions list. It errors in Azure Portal
 $unknownIds = "d8e4ec18-f6c0-4620-8122-c8b1f2bf400e","2f3e6f8c-093b-4c57-a58b-ba5ce494a169" # AgreementAcceptance.Read.All Agreement.Read.All
