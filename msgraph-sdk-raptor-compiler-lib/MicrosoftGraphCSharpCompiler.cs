@@ -46,7 +46,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics. 
+        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics.
         /// </summary>
         /// <param name="codeSnippet">The code snippet to be compiled.</param>
         /// <returns>CompilationResultsModel</returns>
@@ -113,7 +113,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics. 
+        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics.
         /// </summary>
         /// <param name="codeSnippet">The code snippet to be compiled.</param>
         /// <returns>CompilationResultsModel</returns>
@@ -202,7 +202,11 @@ namespace MsGraphSDKSnippetsCompiler
 
             var scopes = JsonSerializer.Deserialize<Scope[]>(responseString);
 
-            return scopes.ToList().Select(x => $"https://graph.microsoft.com/{ x.value }").ToArray();
+            return scopes
+                .ToList()
+                .Where(x => x.value.Contains("Read") && !x.value.Contains("Write"))
+                .Select(x => $"https://graph.microsoft.com/{ x.value }")
+                .ToArray();
         }
 
         /// <summary>
@@ -257,7 +261,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        ///     Checks whether the EmitResult is successfull and returns an instance of CompilationResultsModel. 
+        ///     Checks whether the EmitResult is successfull and returns an instance of CompilationResultsModel.
         /// </summary>
         /// <param name="emitResult">The result of the Compilation.Emit method.</param>
         private CompilationResultsModel GetCompilationResults(EmitResult emitResult)
