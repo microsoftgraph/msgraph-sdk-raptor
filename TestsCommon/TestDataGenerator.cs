@@ -55,6 +55,8 @@ namespace TestsCommon
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
         private const string EnumsAreNotHandled = "Handling of enums is not correct" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/482";
+        private const string SameBlockNames = "Same block names indeterministic snippet generation" +
+            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/463";
         #endregion
 
         #region Needs analysis
@@ -242,16 +244,14 @@ namespace TestsCommon
                 { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, RegularPropertiesAreNotHandled) },
                 { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, RegularPropertiesAreNotHandled) },
                 { "put-b2cuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, RegularPropertiesAreNotHandled) },
-
                 { "create-connectorgroup-from-connector-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "authenticationmethodsroot-usersregisteredbymethod-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
                 { "authenticationmethodsroot-usersregisteredbyfeature-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
-                { "create-externalitem-from-connections-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "create-userflowlanguageconfiguration-from--csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
-
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-csharp-Beta-compiles", new KnownIssue(HttpSnippetWrong, "Need @odata.type for abstract type in JSON. https://github.com/microsoftgraph/microsoft-graph-docs/issues/11770") },
-
                 { "delete-userflowlanguagepage-csharp-Beta-compiles", new KnownIssue(SDK, StreamRequestDoesNotSupportDelete) },
+                { "get-endpoints-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SameBlockNames) },
+                { "update-accesspackageassignmentpolicy-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
             };
         }
         /// <summary>
