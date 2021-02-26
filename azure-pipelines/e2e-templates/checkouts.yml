@@ -11,6 +11,8 @@ steps:
       displayName: checkout GE api
       fetchDepth: 1
       persistCredentials: true
+
+  - ${{ if eq(parameters.shouldRunSnippetGeneration, true) }}:
     - checkout: apidoctor
       displayName: checkout apidoctor
       fetchDepth: 1
