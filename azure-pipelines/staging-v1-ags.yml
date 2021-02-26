@@ -56,3 +56,4 @@ steps:
   - template: e2e-templates/steps.yml
     parameters:
       shouldRunKnownFailures: false
+      shouldRunSnippetGeneration: false
