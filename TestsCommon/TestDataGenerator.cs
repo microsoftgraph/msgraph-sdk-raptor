@@ -51,7 +51,8 @@ namespace TestsCommon
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/301";
         private const string SnippetGenerationRequestObjectDisambiguation = "Snippet generation should rename objects that end with Request to end with RequestObject" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/298";
-        private const string RegularPropertiesAreNotHandled = "We should build a custom request with URL as this is not supported in SDK. " +
+        private const string StructuralPropertiesAreNotHandled = "We don't generate request builders for URL navigation to structural properties." +
+            " We should build a custom request with URL as this is not supported in SDK." +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
         private const string EnumsAreNotHandled = "Handling of enums is not correct" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/482";
@@ -240,10 +241,10 @@ namespace TestsCommon
                 { "update-trustframeworkkeyset-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "update-synchronizationschema-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "update-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "Multiline string is not escaping quotes. https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/484") },
-                { "put-b2cuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, RegularPropertiesAreNotHandled) },
-                { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, RegularPropertiesAreNotHandled) },
-                { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, RegularPropertiesAreNotHandled) },
-                { "put-b2cuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, RegularPropertiesAreNotHandled) },
+                { "put-b2cuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+                { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+                { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+                { "put-b2cuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
                 { "create-connectorgroup-from-connector-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "authenticationmethodsroot-usersregisteredbymethod-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
                 { "authenticationmethodsroot-usersregisteredbyfeature-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
