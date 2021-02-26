@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
-using MsGraphSDKSnippetsCompiler.Models;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using MsGraphSDKSnippetsCompiler.Models;
+using NUnit.Framework;
 
 namespace TestsCommon
 {
@@ -24,6 +24,7 @@ namespace TestsCommon
         private const string MissingContentProperty = "IReportRootGetM365AppPlatformUserCountsRequestBuilder is missing Content property";
         private const string PutAsyncIsNotSupported = "PutAsync methods are not auto generated.\r\n"
             + "https://github.com/microsoftgraph/msgraph-sdk-dotnet/issues/844";
+        private const string StreamRequestDoesNotSupportDelete = "Stream requests only support PUT and GET.";
 
         #endregion
 
@@ -39,19 +40,28 @@ namespace TestsCommon
         #endregion
 
         #region Metadata Preprocessing Issues
-        private const string ProposedNewTimeIsDropped = "Metadata preprocessing is dropping `ProposedNewTime`." +
-            " See https://github.com/microsoftgraph/msgraph-metadata/issues/21";
+        private const string EventActionsShouldNotBeReordered = "There is a reorder rule in XSLT. It should be removed" +
+            " See https://github.com/microsoftgraph/msgraph-metadata/pull/64";
         #endregion
 
         #region Snipppet Generation Issues
-        private const string SnippetGenerationFlattens = "Snippet generation flattens the nested Odata queries." +
-            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/287";
         private const string SnippetGenerationAdditionalData = "Open types should use additional data for non-existent properties." +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/296";
         private const string SnippetGenerationCreateAsyncSupport = "Snippet generation doesn't use CreateAsync" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/301";
         private const string SnippetGenerationRequestObjectDisambiguation = "Snippet generation should rename objects that end with Request to end with RequestObject" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/298";
+        private const string StructuralPropertiesAreNotHandled = "We don't generate request builders for URL navigation to structural properties." +
+            " We should build a custom request with URL as this is not supported in SDK." +
+            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
+        private const string EnumsAreNotHandled = "Handling of enums is not correct" +
+            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/482";
+        private const string SameBlockNames = "Same block names indeterministic snippet generation" +
+            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/463";
+        #endregion
+
+        #region Needs analysis
+        private const string NeedsAnalysisText = "This is a consistently failing test, the root cause is not yet identified";
         #endregion
 
         #region Test Owner values (to categorize results in Azure DevOps)
@@ -63,6 +73,7 @@ namespace TestsCommon
         private const string MetadataPreprocessing = nameof(MetadataPreprocessing);
         private const string SnippetGeneration = nameof(SnippetGeneration);
         private const string TestGeneration = nameof(TestGeneration);
+        private const string NeedsAnalysis = nameof(NeedsAnalysis);
         #endregion
 
         #region HTTP methods
@@ -118,7 +129,6 @@ namespace TestsCommon
             {
                 { $"call-transfer-{lng}-V1-compiles", new KnownIssue(Metadata, "v1 metadata doesn't have endpointType for invitationParticipantInfo") },
                 { $"call-updatemetadata-{lng}-Beta-compiles", new KnownIssue(Metadata, "updateMetadata doesn't exist in metadata") },
-                { $"create-acceptedsender-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "acceptedSender")) },
                 { $"create-certificatebasedauthconfiguration-from-certificatebasedauthconfiguration-{lng}-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
                 { $"create-directoryobject-from-featurerolloutpolicy-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo"))},
                 { $"create-directoryobject-from-orgcontact-{lng}-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
@@ -129,11 +139,9 @@ namespace TestsCommon
                 { $"create-internalsponsor-from-connectedorganization-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("connectedOrganization", "internalSponsor")) },
                 { $"create-onpremisesagentgroup-from-publishedresource-{lng}-Beta-compiles", new KnownIssue(HTTP, RefShouldBeRemoved) },
                 { $"create-reference-attachment-with-post-{lng}-V1-compiles", new KnownIssue(HTTP, GetPropertyNotFoundMessage("ReferenceAttachment", "SourceUrl, ProviderType, Permission and IsFolder")) },
-                { $"create-rejectedsender-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "rejectedSender")) },
                 { $"create-team-post-full-payload-{lng}-Beta-compiles", new KnownIssue(HTTP, "name should be displayName on teamsTab objects") },
                 { $"create-tokenlifetimepolicy-from-application-{lng}-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
                 { $"delete-acceptedsenders-from-group-{lng}-V1-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "acceptedSender")) },
-                { $"delete-alloweduser-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("printer", "allowedUsers")) },
                 { $"delete-directoryobject-from-featurerolloutpolicy-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo")) },
                 { $"delete-educationrubric-from-educationassignment-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("educationAssignment", "rubric"))},
                 { $"delete-externalsponsor-from-connectedorganization-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("connectedOrganization", "externalSponsor")) },
@@ -141,8 +149,12 @@ namespace TestsCommon
                 { $"delete-permission-{lng}-Beta-compiles", new KnownIssue(HTTP, "HTTP sample needs to remove `root` from the URL") },
                 { $"delete-publishedresource-{lng}-Beta-compiles", new KnownIssue(HTTP, RefShouldBeRemoved) },
                 { $"directoryobject-delta-{lng}-Beta-compiles", new KnownIssue(Metadata, "Delta is not defined on directoryObject, but on user and group") },
-                { $"event-decline-{lng}-Beta-compiles", new KnownIssue(MetadataPreprocessing, ProposedNewTimeIsDropped) },
-                { $"event-tentativelyaccept-{lng}-Beta-compiles", new KnownIssue(MetadataPreprocessing, ProposedNewTimeIsDropped) },
+                { $"event-accept-{lng}-Beta-compiles", new KnownIssue(MetadataPreprocessing, EventActionsShouldNotBeReordered) },
+                { $"event-decline-{lng}-Beta-compiles", new KnownIssue(MetadataPreprocessing, EventActionsShouldNotBeReordered) },
+                { $"event-tentativelyaccept-{lng}-Beta-compiles", new KnownIssue(MetadataPreprocessing, EventActionsShouldNotBeReordered) },
+                { $"event-accept-{lng}-V1-compiles", new KnownIssue(MetadataPreprocessing, EventActionsShouldNotBeReordered) },
+                { $"event-decline-{lng}-V1-compiles", new KnownIssue(MetadataPreprocessing, EventActionsShouldNotBeReordered) },
+                { $"event-tentativelyaccept-{lng}-V1-compiles", new KnownIssue(MetadataPreprocessing, EventActionsShouldNotBeReordered) },
                 { $"get-endpoint-{lng}-V1-compiles", new KnownIssue(HTTP, "This is only available in Beta") },
                 { $"get-endpoints-{lng}-V1-compiles", new KnownIssue(HTTP, "This is only available in Beta") },
                 { $"get-identityriskevent-{lng}-Beta-compiles", new KnownIssue(HTTP, IdentityRiskEvents) },
@@ -175,7 +187,6 @@ namespace TestsCommon
                 {$"update-b2xuserflows-identityprovider-{lng}-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 {$"update-b2cuserflows-identityprovider-{lng}-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 {$"create-connector-from-connectorgroup-{lng}-Beta-compiles", new KnownIssue(SDK, "Missing method") },
-                {$"get-document-value-{lng}-Beta-compiles", new KnownIssue(Metadata, "HasStream missing") },
                 {$"shift-get-{lng}-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/11521") },
                 {$"shift-get-{lng}-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/11521") },
             };
@@ -194,38 +205,21 @@ namespace TestsCommon
                 { "call-transfer-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationAdditionalData) },
                 { "create-b2xuserflow-from-b2xuserflows-identityproviders-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "Snippet Generation needs casting support for *CollectionWithReferencesPage. See details at: https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/327") },
                 { "create-schema-from-connection-async-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationCreateAsyncSupport) },
-                { "follow-site-csharp-Beta-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
-                { "follow-site-csharp-V1-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
+                {$"follow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 { "get-android-count-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-count-group-only-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-count-group-only-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-count-only-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-count-only-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-count-user-only-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-count-user-only-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-group-transitivemembers-count-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-group-transitivemembers-count-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-opentypeextension-3-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
-                { "get-opentypeextension-3-csharp-V1-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
-                { "get-phone-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-phone-count-csharp-V1-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-pr-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-pr-count-csharp-V1-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-rooms-in-roomlist-csharp-Beta-compiles", new KnownIssue(SDK, "SDK doesn't generate type segment in OData URL. https://microsoftgraph.visualstudio.com/Graph%20Developer%20Experiences/_workitems/edit/4997") },
-                { "get-rooms-in-roomlist-csharp-V1-compiles", new KnownIssue(SDK, "SDK doesn't generate type segment in OData URL. https://microsoftgraph.visualstudio.com/Graph%20Developer%20Experiences/_workitems/edit/4997") },
-                { "get-singlevaluelegacyextendedproperty-1-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
-                { "get-singlevaluelegacyextendedproperty-1-csharp-V1-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
-                { "get-team-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-team-count-csharp-V1-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-tier-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-tier-count-csharp-V1-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-user-memberof-count-only-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported) },
-                { "get-user-memberof-count-only-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
+                {$"get-count-group-only-csharp-{version}-compiles", new KnownIssue(SDK, CountIsNotSupported) },
+                {$"get-count-only-csharp-{version}-compiles", new KnownIssue(SDK, CountIsNotSupported) },
+                {$"get-count-user-only-csharp-{version}-compiles", new KnownIssue(SDK, CountIsNotSupported) },
+                {$"get-group-transitivemembers-count-csharp-{version}-compiles", new KnownIssue(SDK, CountIsNotSupported) },
+                {$"get-phone-count-csharp-{version}-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
+                {$"get-pr-count-csharp-{version}-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
+                {$"get-rooms-in-roomlist-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't generate type segment in OData URL. https://microsoftgraph.visualstudio.com/Graph%20Developer%20Experiences/_workitems/edit/4997") },
+                {$"get-team-count-csharp-{version}-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
+                {$"get-tier-count-csharp-{version}-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
+                {$"get-user-memberof-count-only-csharp-{version}-compiles", new KnownIssue(SDK, CountIsNotSupported) },
                 { "get-video-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-wa-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-wa-count-csharp-V1-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-web-count-csharp-Beta-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
-                { "get-web-count-csharp-V1-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
+                {$"get-wa-count-csharp-{version}-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
+                {$"get-web-count-csharp-{version}-compiles", new KnownIssue(SDK, SearchHeaderIsNotSupported) },
                 { "put-privilegedrolesettings-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationCreateAsyncSupport) },
                 { "put-regionalandlanguagesettings-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationCreateAsyncSupport) },
                 { "reportroot-getm365appplatformusercounts-csv-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
@@ -235,11 +229,8 @@ namespace TestsCommon
                 { "reportroot-getm365appusercounts-csv-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
                 { "reportroot-getm365appusercounts-json-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
                 { "team-put-schedule-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationCreateAsyncSupport) },
-                { "unfollow-site-csharp-Beta-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
-                { "unfollow-site-csharp-V1-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
+                {$"unfollow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 { "update-organizationalbrandingproperties-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
-                { "update-page-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "See issue: https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/288") },
-                { "update-page-csharp-V1-compiles", new KnownIssue(SnippetGeneration, "See issue: https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/288") },
                 {$"timeoff-put-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 {$"timeoffreason-put-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 {$"schedule-put-schedulinggroups-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
@@ -249,6 +240,19 @@ namespace TestsCommon
                 { "update-phoneauthenticationmethod-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "update-trustframeworkkeyset-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "update-synchronizationschema-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
+                { "update-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "Multiline string is not escaping quotes. https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/484") },
+                { "put-b2cuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+                { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+                { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+                { "put-b2cuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+                { "create-connectorgroup-from-connector-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "authenticationmethodsroot-usersregisteredbymethod-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
+                { "authenticationmethodsroot-usersregisteredbyfeature-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
+                { "create-userflowlanguageconfiguration-from--csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-csharp-Beta-compiles", new KnownIssue(HttpSnippetWrong, "Need @odata.type for abstract type in JSON. https://github.com/microsoftgraph/microsoft-graph-docs/issues/11770") },
+                { "delete-userflowlanguagepage-csharp-Beta-compiles", new KnownIssue(SDK, StreamRequestDoesNotSupportDelete) },
+                { "get-endpoints-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SameBlockNames) },
+                { "update-accesspackageassignmentpolicy-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
             };
         }
         /// <summary>
@@ -286,10 +290,8 @@ namespace TestsCommon
                 {$"unfollow-site-java-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 {$"follow-site-java-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 {$"workbookrange-visibleview-java-{version}-compiles", new KnownIssue(SDK, FeatureNotSupported) },
-                {$"update-page-java-{version}-compiles", new KnownIssue(SnippetGeneration, "See issue: https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/288") },
-                {$"get-singlevaluelegacyextendedproperty-1-java-{version}-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
+                {$"update-page-java-{version}-compiles", new KnownIssue(SnippetGeneration, "See issue: https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/428") },
                 {$"get-rooms-in-roomlist-java-{version}-compiles", new KnownIssue(SDK, "SDK doesn't generate type segment in OData URL. https://microsoftgraph.visualstudio.com/Graph%20Developer%20Experiences/_workitems/edit/4997") },
-                {$"get-opentypeextension-3-java-{version}-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationFlattens) },
 
                 {$"get-securescore-java-{version}-compiles", new KnownIssue(SDK, "Path had wrong casing in SDK due to an error in the metadata") },
                 {$"get-securescorecontrolprofile-java-{version}-compiles", new KnownIssue(SDK, "Path had wrong casing in SDK due to an error in the metadata") },
@@ -399,6 +401,10 @@ namespace TestsCommon
                 {"create-educationrubric-from-educationuser-java-Beta-compiles", new KnownIssue(TestGeneration, "Code truncated???") },
 
                 {"securescorecontrolprofiles-update-java-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + ": A list of SecureScoreControlStateUpdate objects should be provided instead of placeholder string.") },
+
+                {"create-acceptedsender-java-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                {"create-rejectedsender-java-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                {"get-document-value-java-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
             };
         }
         /// <summary>
