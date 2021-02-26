@@ -9,7 +9,7 @@ parameters:
 steps:
   - template: checkouts.yml
     parameters:
-      shouldRunSnippetGeneration: {{ parameters.shouldRunSnippetGeneration }}
+      shouldRunSnippetGeneration: ${{ parameters.shouldRunSnippetGeneration }}
   - template: ../common-templates/use-dotnet-sdk.yml
   - template: sdk-generation.yml
   - ${{ if eq(parameters.shouldRunSnippetGeneration, true) }}:
