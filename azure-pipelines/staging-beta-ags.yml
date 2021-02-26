@@ -37,6 +37,7 @@ resources:
       endpoint: microsoftgraph
       name: microsoftgraph/msgraph-metadata
 
+parameters:
 - name: metadataURL
   displayName: 'URL for metadata for which SDK generation will happen:'
   type: string
