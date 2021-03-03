@@ -17,23 +17,20 @@ resources:
      name: microsoftgraph/microsoft-graph-docs
      ref: master
 
+pool:
+  vmImage: 'ubuntu-latest'
+
 variables:
   buildConfiguration: 'Release'
 
-jobs:
-- job: CompileJavaBetaSnippets
-  displayName: 'Beta Java Snippet Compilation Tests'
-  pool: MsGraphDevXAzureAgents
-  timeoutInMinutes: 120
-
-  steps:
-  - template: java-templates/java-prepare.yml
-  - template: common-templates/checkout.yml
-  - template: java-templates/java-replace-local-path.yml
-    parameters:
-      projectFileName: JavaBetaTests
-      javaPreviewLibPath: ''
-  - template: compile-run-tests-template.yml
-    parameters:
-      projectFileName: JavaBetaTests
-      runName: 'Beta Java Snippet Compilation Tests $(testRunTitle)'
+steps:
+- template: java-templates/java-prepare.yml
+- template: common-templates/checkout.yml
+- template: java-templates/java-replace-local-path.yml
+  parameters:
+    projectFileName: JavaBetaTests
+    javaPreviewLibPath: ''
+- template: compile-run-tests-template.yml
+  parameters:
+    projectFileName: JavaBetaTests
+    runName: 'Beta Java Snippet Compilation Tests $(testRunTitle)'
