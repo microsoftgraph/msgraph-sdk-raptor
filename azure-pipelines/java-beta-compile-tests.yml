@@ -25,7 +25,7 @@ variables:
 jobs:
   - job: CompileJavaBetaSnippets
     displayName: 'Beta Java Snippet Compilation Tests'
-    pool: 'ubuntu self hosted'
+    pool: 'MsGraphBuildAgentsLinux'
     timeoutInMinutes: 120
 
     steps:
