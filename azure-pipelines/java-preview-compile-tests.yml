@@ -15,7 +15,7 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
-     ref: master
+     ref: main
    - repository: msgraph-sdk-java
      type: github
      endpoint: microsoftgraph

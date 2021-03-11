@@ -15,9 +15,7 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
-     ref: master
-
-
+     ref: main
 
 variables:
   buildConfiguration: 'Release'

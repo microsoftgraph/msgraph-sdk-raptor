@@ -18,7 +18,7 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
-     ref: master
+     ref: main
 
 pool:
   vmImage: 'ubuntu-latest'
