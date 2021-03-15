@@ -22,6 +22,7 @@ import com.microsoft.graph.http.IHttpRequest;
 import java.util.LinkedList;
 import java.time.OffsetDateTime;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.UUID;
 import java.util.Base64;
 import java.util.EnumSet;
