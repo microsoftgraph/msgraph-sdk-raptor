@@ -63,7 +63,7 @@ application {
 repositories {
     jcenter()
     jcenter{
-        	url 'https://oss.jfrog.org/artifactory/oss-snapshot-local'
+        	url 'https://oss.sonatype.org/content/repositories/snapshots'
 	}
 }
 dependencies {
@@ -187,13 +187,13 @@ application {
                 result.AddRange(errorMessageCaptureRegex
                                             .Matches(diagnosticsToParse)
                                             .Select(x => new { message = x.Groups["message"].Value, linenumber = int.Parse(x.Groups["linenumber"].Value) })
-                                            .Select(x => Diagnostic.Create(new DiagnosticDescriptor("JAVA1001", 
+                                            .Select(x => Diagnostic.Create(new DiagnosticDescriptor("JAVA1001",
                                                                                 "Error during Java compilation",
                                                                                 x.message,
                                                                                 "JAVA1001: 'Java.Language'",
                                                                                 DiagnosticSeverity.Error,
                                                                                 true),
-                                                                            Location.Create("App.java", 
+                                                                            Location.Create("App.java",
                                                                                 new TextSpan(0, 5),
                                                                                 new LinePositionSpan(
                                                                                     new LinePosition(x.linenumber, 0),
