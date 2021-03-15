@@ -27,7 +27,7 @@ namespace MsGraphSDKSnippetsCompiler
     id 'application'
 }
 repositories {
-    jcenter()
+    mavenCentral()
     flatDir {
         dirs '--path--/msgraph-sdk-java-core/build/libs'
         dirs '--path--/msgraph-sdk-java/build/libs'
@@ -46,7 +46,7 @@ application {
     id 'application'
 }
 repositories {
-    jcenter()
+    mavenCentral()
 }
 dependencies {
     --deps--
@@ -61,8 +61,8 @@ application {
     id 'application'
 }
 repositories {
-    jcenter()
-    jcenter{
+    maventCentral()
+    maven {
         	url 'https://oss.sonatype.org/content/repositories/snapshots'
 	}
 }
