@@ -11,22 +11,18 @@ namespace TestsCommon
 {
     public static class JavaTestRunner
     {
-        private const string importsCurrent = @"import com.microsoft.graph.authentication.IAuthenticationProvider;
-import com.microsoft.graph.models.extensions.*;
-import com.microsoft.graph.requests.extensions.*;
-import com.microsoft.graph.models.generated.*;";
-        private const string importsVNext = @"import com.microsoft.graph.httpcore.*;
-import com.microsoft.graph.requests.*;
-import com.microsoft.graph.models.*;";
         /// <summary>
         /// template to compile snippets in
         /// </summary>
         private const string SDKShellTemplate = @"package com.microsoft.graph.raptor;
---imports--
+import com.microsoft.graph.httpcore.*;
+import com.microsoft.graph.requests.*;
+import com.microsoft.graph.models.*;
 import com.microsoft.graph.http.IHttpRequest;
 import java.util.LinkedList;
 import java.time.OffsetDateTime;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.UUID;
 import java.util.Base64;
 import java.util.EnumSet;
@@ -36,10 +32,12 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.concurrent.CompletableFuture;
 import okhttp3.Request;
 import com.microsoft.graph.core.*;
 import com.microsoft.graph.options.*;
 import com.microsoft.graph.serializer.*;
+import com.microsoft.graph.authentication.*;
 public class App
 {
     public static void main(String[] args) throws Exception
@@ -50,13 +48,8 @@ public class App
 }";
         private const string authProviderCurrent = @"        final IAuthenticationProvider authProvider = new IAuthenticationProvider() {
             @Override
-            public void authenticateRequest(IHttpRequest request) {
-            }
-        };";
-        private const string authProvidervNext = @"        final ICoreAuthenticationProvider authProvider = new ICoreAuthenticationProvider() {
-            @Override
-            public Request authenticateRequest(Request request) {
-                return request;
+            public CompletableFuture<String> getAuthorizationTokenAsync(final URL requestUrl) {
+                return CompletableFuture.completedFuture("""");
             }
         };";
         /// <summary>
@@ -99,8 +92,7 @@ public class App
                 .Replace("\r\n\r\n\r\n", "\r\n\r\n");       // do not have two consecutive empty lines
             var isCurrentSdk = string.IsNullOrEmpty(testData.JavaPreviewLibPath);
             var codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(codeSnippetFormatted, SDKShellTemplate
-                                                                            .Replace("--auth--",  isCurrentSdk ? authProviderCurrent: authProvidervNext)
-                                                                            .Replace("--imports--", isCurrentSdk ? importsCurrent: importsVNext));
+                                                                            .Replace("--auth--", authProviderCurrent));
 
             // Compile Code
             var microsoftGraphCSharpCompiler = new MicrosoftGraphJavaCompiler(testData.FileName, testData.JavaPreviewLibPath, testData.JavaLibVersion, testData.JavaCoreVersion);
@@ -113,7 +105,7 @@ public class App
                 if (compilationResultsModel.IsSuccess)
                 {
                     Assert.Pass();
-                } 
+                }
                 else if(compilationResultsModel.Diagnostics.Any(x => x.GetMessage().Contains("Starting a Gradle Daemon")))
                 {//the JVM takes time to start making the first test to be run to be flaky, this is a workaround
                     jvmRetryAttmptsLeft--;
