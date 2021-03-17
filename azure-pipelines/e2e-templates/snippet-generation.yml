@@ -6,7 +6,7 @@ steps:
   displayName: 'Build snippet generator'
   inputs:
     command: 'build'
-    projects: 'microsoft-graph-explorer-api/CodeSnippetsReflection.App/CodeSnippetsReflection.App.csproj'
+    projects: 'microsoft-graph-devx-api/CodeSnippetsReflection.App/CodeSnippetsReflection.App.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
@@ -18,7 +18,7 @@ steps:
 
 - pwsh: |
     # release folder can change based on .NET core version, so search recursively in bin folder
-    $snippetGeneratorBinDirectory = Join-Path $env:BUILD_SOURCESDIRECTORY/microsoft-graph-explorer-api/CodeSnippetsReflection.App/bin $(buildConfiguration)
+    $snippetGeneratorBinDirectory = Join-Path $env:BUILD_SOURCESDIRECTORY/microsoft-graph-devx-api/CodeSnippetsReflection.App/bin $(buildConfiguration)
     $snippetGeneratorPath = (Get-ChildItem $snippetGeneratorBinDirectory *App -Recurse).FullName
     Write-Host "Path to snippet generator tool: $snippetGeneratorPath"
 

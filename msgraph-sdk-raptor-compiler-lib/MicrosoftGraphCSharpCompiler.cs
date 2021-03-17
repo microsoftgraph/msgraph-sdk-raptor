@@ -17,6 +17,9 @@ using System.Runtime.Loader;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Security;
+using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace MsGraphSDKSnippetsCompiler
 {
@@ -42,7 +45,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics. 
+        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics.
         /// </summary>
         /// <param name="codeSnippet">The code snippet to be compiled.</param>
         /// <returns>CompilationResultsModel</returns>
@@ -110,7 +113,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics. 
+        ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics.
         /// </summary>
         /// <param name="codeSnippet">The code snippet to be compiled.</param>
         /// <returns>CompilationResultsModel</returns>
@@ -124,27 +127,47 @@ namespace MsGraphSDKSnippetsCompiler
             {
                 try
                 {
+                    var requiresDelegatedPermissions = RequiresDelegatedPermissions(codeSnippet);
                     var config = AppSettings.Config();
-                    var clientId = config.GetSection("ClientID").Value;
+                    var clientId = GetNonEmptyValue(config, "ClientID");
 
                     dynamic instance = assembly.CreateInstance("GraphSDKTest");
                     IAuthenticationProvider authProvider;
 
-                    var tenantId = config.GetSection("TenantID").Value;
-                    var clientSecret = config.GetSection("ClientSecret").Value;
-                    IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
-                        .Create(clientId)
-                        .WithTenantId(tenantId)
-                        .WithClientSecret(clientSecret)
-                        .Build();
-                    authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
+                    if (requiresDelegatedPermissions)
+                    {
+                        // delegated permissions
+                        using var httpRequestMessage = instance.GetRequestMessage(null);
+                        var scopes = await GetScopes(httpRequestMessage);
+                        var authority = GetNonEmptyValue(config, "Authority");
+                        var username = GetNonEmptyValue(config, "Username");
+                        var password = GetNonEmptyValue(config, "Password");
+                        var token = await GetATokenForGraph(clientId, authority, username, password, scopes).ConfigureAwait(false);
+                        authProvider = new DelegateAuthenticationProvider(async request =>
+                        {
+                            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                        });
+                    }
+                    else
+                    {
+                        // application permissions
+                        var tenantId = GetNonEmptyValue(config, "TenantID");
+                        var clientSecret = GetNonEmptyValue(config, "ClientSecret");
+                        IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
+                            .Create(clientId)
+                            .WithTenantId(tenantId)
+                            .WithClientSecret(clientSecret)
+                            .Build();
+                        authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
+                    }
 
                     await (instance.Main(authProvider) as Task);
                     success = true;
                 }
                 catch (Exception e)
                 {
-                    exceptionMessage = e.Message + Environment.NewLine + e.InnerException.Message;
+                    var innerExceptionMessage = e.InnerException?.Message ?? string.Empty;
+                    exceptionMessage = e.Message + Environment.NewLine + innerExceptionMessage;
                     if (!bool.Parse(AppSettings.Config().GetSection("IsLocalRun").Value))
                     {
                         exceptionMessage = AuthHeaderRegex.Replace(exceptionMessage, AuthHeaderReplacement);
@@ -154,6 +177,69 @@ namespace MsGraphSDKSnippetsCompiler
 
             return new ExecutionResultsModel(compilationResult, success, exceptionMessage);
         }
+
+        /// <summary>
+        /// Calls DevX Api to get required premissions
+        /// </summary>
+        /// <param name="httpRequestMessage"></param>
+        /// <returns></returns>
+        static async Task<string[]> GetScopes(HttpRequestMessage httpRequestMessage)
+        {
+            var path = httpRequestMessage.RequestUri.LocalPath;
+            var versionSegmentLength = "/v1.0".Length;
+            if (path.StartsWith("/v1.0") || path.StartsWith("/beta"))
+            {
+                path = path[versionSegmentLength..];
+            }
+
+            using var httpClient = new HttpClient();
+
+            using var scopesRequest = new HttpRequestMessage(HttpMethod.Get, $"https://graphexplorerapi.azurewebsites.net/permissions?requesturl={path}&method={httpRequestMessage.Method}");
+            scopesRequest.Headers.Add("Accept-Language", "en-US");
+
+            using var response = await httpClient.SendAsync(scopesRequest).ConfigureAwait(false);
+            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var scopes = JsonSerializer.Deserialize<Scope[]>(responseString);
+
+            return scopes
+                .ToList()
+                .Where(x => x.value.Contains("Read") && !x.value.Contains("Write"))
+                .Select(x => $"https://graph.microsoft.com/{ x.value }")
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Acquires a token for given context
+        /// </summary>
+        /// <param name="clientId">Client ID of the application</param>
+        /// <param name="authority">token authority, such as: https://login.microsoftonline.com/contoso.onmicrosoft.com</param>
+        /// <param name="username">username of the user for which the token is requested</param>
+        /// <param name="password">password of the user for which the token is requested</param>
+        /// <param name="scopes">requested scopes in the token</param>
+        /// <returns>token for the given context</returns>
+        static async Task<string> GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
+        {
+            var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
+
+            using var securePassword = new SecureString();
+
+            // convert plain password into a secure string.
+            password.ToList().ForEach(c => securePassword.AppendChar(c));
+
+            try
+            {
+                var result = await app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
+                return result.AccessToken;
+            }
+            catch (Exception e)
+            {
+                var prefixLength = "https://graph.microsoft.com/".Length;
+                var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
+                throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
+            }
+        }
+
 
         /// <summary>
         ///     Gets the result of the Compilation.Emit method.
@@ -175,7 +261,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        ///     Checks whether the EmitResult is successfull and returns an instance of CompilationResultsModel. 
+        ///     Checks whether the EmitResult is successfull and returns an instance of CompilationResultsModel.
         /// </summary>
         /// <param name="emitResult">The result of the Compilation.Emit method.</param>
         private CompilationResultsModel GetCompilationResults(EmitResult emitResult)
@@ -186,6 +272,36 @@ namespace MsGraphSDKSnippetsCompiler
                 : emitResult.Diagnostics.Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
 
             return new CompilationResultsModel(emitResult.Success, failures, _markdownFileName);
+        }
+
+        /// <summary>
+        /// Determines whether code snippet requires delegated permissions (as opposed to application permissions)
+        /// </summary>
+        /// <param name="codeSnippet">code snippet</param>
+        /// <returns>true if the snippet requires delegated permissions</returns>
+        private static bool RequiresDelegatedPermissions(string codeSnippet)
+        {
+            // TODO: https://github.com/microsoftgraph/msgraph-sdk-raptor/issues/164
+            return codeSnippet.Contains("graphClient.Me") ||
+                codeSnippet.Contains("graphClient.Education.Me") ||
+                codeSnippet.Contains("graphClient.Users[\"");
+        }
+
+        /// <summary>
+        /// Extracts the configuration value, throws if empty string
+        /// </summary>
+        /// <param name="config">configuration</param>
+        /// <param name="key">lookup key</param>
+        /// <returns>non-empty configuration value if found</returns>
+        private static string GetNonEmptyValue(IConfigurationRoot config, string key)
+        {
+            var value = config.GetSection(key).Value;
+            if (value == string.Empty)
+            {
+                throw new Exception($"Value for {key} is not found in appsettings.json");
+            }
+
+            return value;
         }
     }
 }

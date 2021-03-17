@@ -4,7 +4,10 @@ param(
     [string]$DocsRepoCheckoutDirectory = "C:/github",
     [Parameter(Mandatory=$true)][string]$TenantID,
     [Parameter(Mandatory=$true)][string]$ClientID,
-    [Parameter(Mandatory=$true)][string]$ClientSecret
+    [Parameter(Mandatory=$true)][string]$ClientSecret,
+    [Parameter(Mandatory=$true)][string]$Username,
+    [Parameter(Mandatory=$true)][string]$Password,
+    [Parameter(Mandatory=$true)][string]$Authority
 )
 
 $json = @{
@@ -14,6 +17,9 @@ $json = @{
     IsLocalRun = $IsLocalRun;
     GenerateLinqPadOutputInLocalRun = $GenerateLinqPadOutputInLocalRun;
     DocsRepoCheckoutDirectory = $DocsRepoCheckoutDirectory;
+    Username = $Username;
+    Password = $Password;
+    Authority = $Authority;
 }
 
 $repoRoot = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName

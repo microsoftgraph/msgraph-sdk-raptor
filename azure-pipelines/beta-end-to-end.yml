@@ -17,22 +17,22 @@ resources:
       type: github
       endpoint: microsoftgraph
       name: microsoftgraph/microsoft-graph-docs
-      ref: master
+      ref: main
     - repository: apidoctor
       type: github
       endpoint: microsoftgraph
       name: microsoftgraph/apidoctor
       ref: master
-    - repository: microsoft-graph-explorer-api
+    - repository: microsoft-graph-devx-api
       type: github
       endpoint: microsoftgraph
-      name: microsoftgraph/microsoft-graph-explorer-api
+      name: microsoftgraph/microsoft-graph-devx-api
       ref: dev
     - repository: MSGraph-SDK-Code-Generator
       type: github
       endpoint: microsoftgraph
       name: microsoftgraph/MSGraph-SDK-Code-Generator
-      ref: master
+      ref: main
     - repository: msgraph-sdk-dotnet
       type: github
       endpoint: microsoftgraph
