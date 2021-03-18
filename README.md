@@ -29,7 +29,7 @@ There are 7 C# test projects in total as noted below. The first 4 C# tests below
 
 7. CSharpArbitraryDllTests
 
- The arbitraryDllTest is useful in running customized tests, for example where there is a need to use a modified unpublished dll for whichever repository to test the effect of a specific fix or assumed hypothesis.
+ The arbitraryDllTest is useful in running customized tests for an unpublished dll, which can consist of a proposed metadata or generator changes.
 
 There are also 4 Java test projects, as listed below. These are all compilation tests
 
