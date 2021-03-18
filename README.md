@@ -2,7 +2,7 @@
 
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=microsoftgraph/msgraph-sdk-raptor)](https://dependabot.com)
 
-This repository consists of test projects which are broady categorized into 2.
+This repository consists of test projects which are broadly categorized into 2.
 
 1. compilation tests
 2. execution tests
