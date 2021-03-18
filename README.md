@@ -87,4 +87,4 @@ And the equivalent pipelines for running java tests are
 - Beta Java Snippet Compilation Tests - Known Issues
 - V1 Java Snippet Compilation Tests - Known Issues
 
-The scheduled pipelines are categorized into daily and weekly schedules. A single scheduled pipeline can contain a mix of categories of tests, for example the `PROD Beta Compilation - Daily`, runs "Beta C# Snippets" excluding known issues and after runs "Beta C# Snippets - Known Issues".
+The scheduled pipelines are categorized into daily and weekly schedules. A single scheduled pipeline can contain both categories of tests in a single run to report all failures including known issues. Azure DevOps tooling allows us to have these categories reflected in the test results page.
