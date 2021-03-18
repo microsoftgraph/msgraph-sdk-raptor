@@ -1,0 +1,20 @@
+parameters:
+  - name: shouldRunKnownFailures
+    type: boolean
+    default: true
+  - name: shouldRunSnippetGeneration
+    type: boolean
+    default: true
+
+steps:
+  - template: checkouts.yml
+    parameters:
+      shouldRunSnippetGeneration: ${{ parameters.shouldRunSnippetGeneration }}
+  - template: ../common-templates/use-dotnet-sdk.yml
+  - template: sdk-generation.yml
+  - ${{ if eq(parameters.shouldRunSnippetGeneration, true) }}:
+    - template: snippet-generation.yml
+  - template: regular-tests.yml
+  - ${{ if eq(parameters.shouldRunKnownFailures, true) }}:
+    - template: known-failure-tests.yml
+  - template: generate-type-summary.yml

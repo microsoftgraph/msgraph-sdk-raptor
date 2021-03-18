@@ -12,36 +12,36 @@ schedules:
   always: true
 
 resources:
- repositories:
-   - repository: microsoft-graph-docs
-     type: github
-     endpoint: microsoftgraph
-     name: microsoftgraph/microsoft-graph-docs
-     ref: master
-   - repository: apidoctor
-     type: github
-     endpoint: microsoftgraph
-     name: microsoftgraph/apidoctor
-     ref: master
-   - repository: microsoft-graph-explorer-api
-     type: github
-     endpoint: microsoftgraph
-     name: microsoftgraph/microsoft-graph-explorer-api
-     ref: dev
-   - repository: MSGraph-SDK-Code-Generator
-     type: github
-     endpoint: microsoftgraph
-     name: microsoftgraph/MSGraph-SDK-Code-Generator
-     ref: master
-   - repository: msgraph-sdk-dotnet
-     type: github
-     endpoint: microsoftgraph
-     name: microsoftgraph/msgraph-sdk-dotnet
-     ref: dev
-   - repository: msgraph-metadata
-     type: github
-     endpoint: microsoftgraph
-     name: microsoftgraph/msgraph-metadata
+  repositories:
+    - repository: microsoft-graph-docs
+      type: github
+      endpoint: microsoftgraph
+      name: microsoftgraph/microsoft-graph-docs
+      ref: main
+    - repository: apidoctor
+      type: github
+      endpoint: microsoftgraph
+      name: microsoftgraph/apidoctor
+      ref: master
+    - repository: microsoft-graph-devx-api
+      type: github
+      endpoint: microsoftgraph
+      name: microsoftgraph/microsoft-graph-devx-api
+      ref: dev
+    - repository: MSGraph-SDK-Code-Generator
+      type: github
+      endpoint: microsoftgraph
+      name: microsoftgraph/MSGraph-SDK-Code-Generator
+      ref: main
+    - repository: msgraph-sdk-dotnet
+      type: github
+      endpoint: microsoftgraph
+      name: microsoftgraph/msgraph-sdk-dotnet
+      ref: dev
+    - repository: msgraph-metadata
+      type: github
+      endpoint: microsoftgraph
+      name: microsoftgraph/msgraph-metadata
 
 parameters:
 - name: shouldRunKnownFailures
@@ -55,7 +55,7 @@ parameters:
   default: 'https://graph.microsoft.com/stagingv1.0/$metadata'
 
 pool:
-  vmImage: 'windows-latest' # to build ApiDoctor in .NET framework
+  vmImage: 'ubuntu-latest'
 
 variables:
   - template: e2e-templates/variables.yml
@@ -64,11 +64,6 @@ variables:
       metadataVersion: 'v1.0'
 
 steps:
-  - template: e2e-templates/checkouts.yml
-  - template: e2e-templates/sdk-generation.yml
-  - template: e2e-templates/snippet-generation.yml
-  - template: common-templates/use-dotnet-sdk.yml
-  - template: e2e-templates/regular-tests.yml
-  - ${{ if eq(parameters.shouldRunKnownFailures, true) }}:
-    - template: e2e-templates/known-failure-tests.yml
-  - template: e2e-templates/generate-type-summary.yml
+  - template: e2e-templates/steps.yml
+    parameters:
+      shouldRunKnownFailures: ${{ parameters.shouldRunKnownFailures }}

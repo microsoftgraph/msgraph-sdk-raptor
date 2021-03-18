@@ -1,0 +1,8 @@
+steps:
+  - pwsh: |
+      if ($env:BUILD_REASON -ne 'Schedule')
+      {
+        Write-Error "Only scheduled runs are allowed in this pipeline!"
+      }
+      Write-Host "This is a scheduled run!" -ForegroundColor Green
+    displayName: 'Allow only scheduled runs'

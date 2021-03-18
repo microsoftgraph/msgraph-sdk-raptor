@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MsGraphSDKSnippetsCompiler
@@ -25,7 +27,7 @@ namespace MsGraphSDKSnippetsCompiler
     id 'application'
 }
 repositories {
-    jcenter()
+    mavenCentral()
     flatDir {
         dirs '--path--/msgraph-sdk-java-core/build/libs'
         dirs '--path--/msgraph-sdk-java/build/libs'
@@ -44,7 +46,7 @@ application {
     id 'application'
 }
 repositories {
-    jcenter()
+    mavenCentral()
 }
 dependencies {
     --deps--
@@ -59,9 +61,9 @@ application {
     id 'application'
 }
 repositories {
-    jcenter()
-    jcenter{
-        	url 'https://oss.jfrog.org/artifactory/oss-snapshot-local'
+    maventCentral()
+    maven {
+        	url 'https://oss.sonatype.org/content/repositories/snapshots'
 	}
 }
 dependencies {
@@ -120,17 +122,49 @@ application {
                     WorkingDirectory = rootPath,
                 },
             };
+            var stdOuputSB = new StringBuilder();
+            var stdErrSB = new StringBuilder();
+            using var outputWaitHandle = new AutoResetEvent(false);
+            using var errorWaitHandle = new AutoResetEvent(false);
+            javacProcess.OutputDataReceived += (sender, e) => {
+                if (string.IsNullOrEmpty(e.Data))
+                {
+                    outputWaitHandle.Set();
+                }
+                else
+                {
+                    stdOuputSB.Append(e.Data);
+                }
+            };
+            javacProcess.ErrorDataReceived += (sender, e) =>
+            {
+                if (string.IsNullOrEmpty(e.Data))
+                {
+                    errorWaitHandle.Set();
+                }
+                else
+                {
+                    stdErrSB.Append(e.Data);
+                }
+            };
             javacProcess.Start();
+            javacProcess.BeginOutputReadLine();
+            javacProcess.BeginErrorReadLine();
             var hasExited = javacProcess.WaitForExit(20000);
             if (!hasExited)
                 javacProcess.Kill(true);
-            var stdOutput = javacProcess.StandardOutput.ReadToEnd(); //could be async
-            var stdErr = javacProcess.StandardError.ReadToEnd(); //could be async
+            var stdOutput = stdOuputSB.ToString();
+            var stdErr = stdErrSB.ToString();
             return new CompilationResultsModel(
                 hasExited && stdOutput.Contains("BUILD SUCCESSFUL"),
                 GetDiagnosticsFromStdErr(stdOutput, stdErr, hasExited),
                 _markdownFileName
             );
+        }
+
+        public async Task<ExecutionResultsModel> ExecuteSnippet(string codeSnippet, Versions version)
+        {
+            throw new NotImplementedException("not yet implemented for Java");
         }
 
         private const string errorsSuffix = "FAILURE";
@@ -153,13 +187,13 @@ application {
                 result.AddRange(errorMessageCaptureRegex
                                             .Matches(diagnosticsToParse)
                                             .Select(x => new { message = x.Groups["message"].Value, linenumber = int.Parse(x.Groups["linenumber"].Value) })
-                                            .Select(x => Diagnostic.Create(new DiagnosticDescriptor("JAVA1001", 
+                                            .Select(x => Diagnostic.Create(new DiagnosticDescriptor("JAVA1001",
                                                                                 "Error during Java compilation",
                                                                                 x.message,
                                                                                 "JAVA1001: 'Java.Language'",
                                                                                 DiagnosticSeverity.Error,
                                                                                 true),
-                                                                            Location.Create("App.java", 
+                                                                            Location.Create("App.java",
                                                                                 new TextSpan(0, 5),
                                                                                 new LinePositionSpan(
                                                                                     new LinePosition(x.linenumber, 0),

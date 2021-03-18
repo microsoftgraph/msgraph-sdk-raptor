@@ -1,6 +1,12 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
 trigger: none # disable triggers based on commits.
+pr:
+  branches:
+    include:
+      - dev
+      - main
+
 name: 'Preview Java Snippet Compilation Tests'
 
 resources:
@@ -9,7 +15,7 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
-     ref: master
+     ref: main
    - repository: msgraph-sdk-java
      type: github
      endpoint: microsoftgraph

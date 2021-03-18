@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+  </RunConfiguration>
   <TestRunParameters>
     <Parameter name="Version" value="---VersionPlaceholder---" />
     <Parameter name="DllPath" value="---DllPathPlaceholder---" />

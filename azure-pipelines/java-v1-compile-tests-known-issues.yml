@@ -1,6 +1,12 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 
 trigger: none # disable triggers based on commits.
+pr:
+  branches:
+    include:
+      - dev
+      - main
+
 name: 'V1 Java Snippet Compilation Tests - Known Issues'
 
 resources:
@@ -9,7 +15,7 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
-     ref: master
+     ref: main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -20,10 +26,12 @@ variables:
 steps:
 - template: java-templates/java-prepare.yml
 - template: common-templates/checkout.yml
+- template: java-templates/java-set-v1-version.yml
 - template: java-templates/java-replace-local-path.yml
   parameters:
     projectFileName: JavaV1KnownFailureTests
     javaPreviewLibPath: ''
+    javaLibVersion: $(serviceLibraryVersion)
 - template: compile-run-tests-template.yml
   parameters:
     projectFileName: JavaV1KnownFailureTests

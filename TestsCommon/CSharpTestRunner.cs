@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace TestsCommon
 {
@@ -24,6 +25,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 // Disambiguate colliding namespaces
 using DayOfWeek = Microsoft.Graph.DayOfWeek;
@@ -32,30 +34,37 @@ using KeyValuePair = Microsoft.Graph.KeyValuePair;
 
 public class GraphSDKTest
 {
-    private IAuthenticationProvider authProvider = null;
-
-    private async void Main()
+    public async Task Main(IAuthenticationProvider authProvider)
     {
-        authProvider = AuthenticationProvider.GetIAuthenticationProvider();
-
-        #region msgraphsnippets
         //insert-code-here
-        #endregion
+    }
+
+    public HttpRequestMessage GetRequestMessage(IAuthenticationProvider authProvider)
+    {
+        return null; //return-request-message
     }
 }";
 
         /// <summary>
         /// matches csharp snippet from C# snippets markdown output
         /// </summary>
-        private const string Pattern = @"```csharp(.*)```";
+        private const string CSharpSnippetPattern = @"```csharp(.*)```";
 
         /// <summary>
         /// compiled version of the C# markdown regular expression
         /// uses Singleline so that (.*) matches new line characters as well
         /// </summary>
-        private static readonly Regex RegExp = new Regex(Pattern, RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly Regex CSharpSnippetRegex = new Regex(CSharpSnippetPattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
-        
+        /// <summary>
+        /// matches result variable name from code snippets
+        /// </summary>
+        private const string ResultVariablePattern = "var ([a-zA-Z0-9]+) = await graphClient";
+
+        /// <summary>
+        /// compiled version of the regex matching result variable name from code snippets
+        /// </summary>
+        private static readonly Regex ResultVariableRegex = new Regex(ResultVariablePattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
         /// <summary>
         /// 1. Fetches snippet from docs repo
@@ -64,7 +73,7 @@ public class GraphSDKTest
         /// 4. Attempts to compile and reports errors if there is any
         /// </summary>
         /// <param name="testData">Test data containing information such as snippet file name</param>
-        public static void Run(LanguageTestData testData)
+        public static void Compile(LanguageTestData testData)
         {
             if (testData == null)
             {
@@ -75,37 +84,168 @@ public class GraphSDKTest
             Assert.IsTrue(File.Exists(fullPath), "Snippet file referenced in documentation is not found!");
 
             var fileContent = File.ReadAllText(fullPath);
-            var match = RegExp.Match(fileContent);
-            Assert.IsTrue(match.Success, "Csharp snippet file is not in expected format!");
-
-            var codeSnippetFormatted = match.Groups[1].Value
-                .Replace("\r\n", "\r\n        ")            // add indentation to match with the template
-                .Replace("\r\n        \r\n", "\r\n\r\n")    // remove indentation added to empty lines
-                .Replace("\t", "    ")                      // do not use tabs
-                .Replace("\r\n\r\n\r\n", "\r\n\r\n");       // do not have two consecutive empty lines
-
-            var codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(codeSnippetFormatted, SDKShellTemplate);
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(fileContent);
 
             // Compile Code
             var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
             var compilationResultsModel = microsoftGraphCSharpCompiler.CompileSnippet(codeToCompile, testData.Version);
 
-            if (compilationResultsModel.IsSuccess)
-            {
-                Assert.Pass();
-            }
-
             var compilationOutputMessage = new CompilationOutputMessage(compilationResultsModel, codeToCompile, testData.DocsLink, testData.KnownIssueMessage, testData.IsKnownIssue);
+            EvaluateCompilationResult(compilationResultsModel, testData, codeSnippetFormatted, compilationOutputMessage);
 
-            // environment variable for sources directory is defined only for cloud runs
-            var config = AppSettings.Config();
-            if (bool.Parse(config.GetSection("IsLocalRun").Value)
-                && bool.Parse(config.GetSection("GenerateLinqPadOutputInLocalRun").Value))
+            Assert.Pass();
+        }
+
+        /// <summary>
+        /// 1. Fetches snippet from docs repo
+        /// 2. Asserts that there is one and only one snippet in the file
+        /// 3. Wraps snippet with compilable template
+        /// 4. Attempts to compile and reports errors if there is any
+        /// 5. It uses the compiled binary to make a request to the demo tenant and reports error if there's a service exception i.e 4XX or 5xx response
+        /// </summary>
+        /// <param name="executionTestData">Test data containing information such as snippet file name</param>
+        public async static Task Execute(ExecutionTestData executionTestData)
+        {
+            if (executionTestData == null)
             {
-                WriteLinqFile(testData, codeSnippetFormatted);
+                throw new ArgumentNullException(nameof(executionTestData));
             }
 
-            Assert.Fail($"{compilationOutputMessage}");
+            var testData = executionTestData.LanguageTestData;
+
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToExecute(executionTestData.FileContent);
+
+            // Compile Code
+            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
+            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version).ConfigureAwait(false);
+            var compilationOutputMessage = new CompilationOutputMessage(
+                executionResultsModel.CompilationResult,
+                codeToCompile,
+                testData.DocsLink,
+                testData.KnownIssueMessage,
+                testData.IsKnownIssue);
+
+            EvaluateCompilationResult(executionResultsModel.CompilationResult, testData, codeSnippetFormatted, compilationOutputMessage);
+
+            if (!executionResultsModel.Success)
+            {
+                Assert.Fail($"{compilationOutputMessage}{Environment.NewLine}{executionResultsModel.ExceptionMessage}");
+            }
+
+            Assert.Pass(compilationOutputMessage.ToString());
+        }
+
+        private static void EvaluateCompilationResult(CompilationResultsModel compilationResult, LanguageTestData testData, string codeSnippetFormatted, CompilationOutputMessage compilationOutputMessage)
+        {
+            if (!compilationResult.IsSuccess)
+            {
+                // environment variable for sources directory is defined only for cloud runs
+                var config = AppSettings.Config();
+                if (bool.Parse(config.GetSection("IsLocalRun").Value)
+                    && bool.Parse(config.GetSection("GenerateLinqPadOutputInLocalRun").Value))
+                {
+                    WriteLinqFile(testData, codeSnippetFormatted);
+                }
+
+                Assert.Fail($"{compilationOutputMessage}");
+            }
+        }
+
+        private static string CaptureUriAndHeadersInException(string codeToCompile)
+        {
+            string resultVariable = null;
+            try
+            {
+                resultVariable = ResultVariableRegex.Match(codeToCompile).Groups[1].Value;
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("result variable is not found!" + Environment.NewLine + e.Message);
+            }
+
+            codeToCompile = codeToCompile.Replace("await graphClient", "graphClient")
+                .Replace(".GetAsync();", $@".GetHttpRequestMessage();
+
+        var uri = {resultVariable}.RequestUri;
+        var headers = {resultVariable}.Headers;
+        {resultVariable}.Method = HttpMethod.Get;
+        try
+        {{
+            await graphClient.HttpProvider.SendAsync({resultVariable});
+        }}
+        catch (Exception e)
+        {{
+            throw new Exception($""Request URI: {{uri}}{{Environment.NewLine}}Request Headers:{{Environment.NewLine}}{{headers}}"", e);
+        }}");
+
+            return codeToCompile;
+        }
+
+        /// <summary>
+        /// Modifies snippet to return HttpRequestMessage object so that we can extract the generated URL
+        /// </summary>
+        /// <param name="codeSnippet">code snippet</param>
+        /// <returns>Code snippet that returns an HttpRequestMessage</returns>
+
+        private static string ReturnHttpRequestMessage(string codeSnippet)
+        {
+            string resultVariable = null;
+            try
+            {
+                resultVariable = ResultVariableRegex.Match(codeSnippet).Groups[1].Value;
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("result variable is not found!" + Environment.NewLine + e.Message);
+            }
+
+            codeSnippet = codeSnippet.Replace("await graphClient", "graphClient")
+                .Replace(".GetAsync();", $@".GetHttpRequestMessage();
+
+        return {resultVariable};");
+
+            return codeSnippet;
+        }
+
+        /// <summary>
+        /// Gets code to be executed
+        /// </summary>
+        /// <param name="fileContent">snippet file content</param>
+        /// <returns>code to be executed</returns>
+        private static (string, string) GetCodeToExecute(string fileContent)
+        {
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(fileContent);
+
+            // have another tranformation to insert GetRequestMessage method
+            codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");
+            codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
+
+            return (CaptureUriAndHeadersInException(codeToCompile), codeSnippetFormatted);
+        }
+
+        /// <summary>
+        /// Gets code to be compiled
+        /// </summary>
+        /// <param name="fileContent">snippet file content</param>
+        /// <returns>code to be compiled</returns>
+        private static (string, string) GetCodeToCompile(string fileContent)
+        {
+            var match = CSharpSnippetRegex.Match(fileContent);
+            Assert.IsTrue(match.Success, "Csharp snippet file is not in expected format!");
+
+            var codeSnippetFormatted = match.Groups[1].Value
+                .Replace("\r\n", "\r\n        ")            // add indentation to match with the template
+                .Replace("\r\n        \r\n", "\r\n\r\n")    // remove indentation added to empty lines
+                .Replace("\t", "    ");                     // do not use tabs
+
+            while (codeSnippetFormatted.Contains("\r\n\r\n"))
+            {
+                codeSnippetFormatted = codeSnippetFormatted.Replace("\r\n\r\n", "\r\n"); // do not have empty lines for shorter error messages
+            }
+
+            var codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(codeSnippetFormatted, SDKShellTemplate);
+
+            return (codeToCompile, codeSnippetFormatted);
         }
 
         /// <summary>
@@ -138,8 +278,8 @@ public class GraphSDKTest
             var linqFilePath = Path.Join(linqDirectory, testData.FileName.Replace(".md", ".linq"));
 
             const string LinqTemplateStart = "<Query Kind=\"Statements\">";
-            const string LinqTemplateEnd =
-@"
+            string LinqTemplateEnd =
+@$"
   <Namespace>DayOfWeek = Microsoft.Graph.DayOfWeek</Namespace>
   <Namespace>KeyValuePair = Microsoft.Graph.KeyValuePair</Namespace>
   <Namespace>Microsoft.Graph</Namespace>
@@ -147,9 +287,8 @@ public class GraphSDKTest
   <Namespace>System.Threading.Tasks</Namespace>
   <Namespace>TimeOfDay = Microsoft.Graph.TimeOfDay</Namespace>
 </Query>
-
-IAuthenticationProvider authProvider  = null;
-";
+// {testData.DocsLink}{(testData.IsKnownIssue ? (Environment.NewLine + "/* " + testData.KnownIssueMessage + " */") : string.Empty)}
+IAuthenticationProvider authProvider  = null;";
 
             File.WriteAllText(linqFilePath,
                 LinqTemplateStart

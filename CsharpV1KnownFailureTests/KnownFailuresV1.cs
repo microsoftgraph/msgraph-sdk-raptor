@@ -32,7 +32,7 @@ namespace CsharpV1KnownFailureTests
         [TestCaseSource(typeof(KnownFailuresV1), nameof(TestDataV1))]
         public void Test(LanguageTestData testData)
         {
-            CSharpTestRunner.Run(testData);
+            CSharpTestRunner.Compile(testData);
         }
     }
 }

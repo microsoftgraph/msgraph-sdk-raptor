@@ -1,0 +1,36 @@
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+
+trigger: none # disable triggers based on commits.
+pr: none # disable this as a PR check
+name: 'Beta C# Snippet Execution Tests'
+
+schedules:
+  - cron: "0 12 * * WED" # every Wednesday at noon UTC
+    displayName: 'Weekly PROD Beta Execution Pipeline'
+    branches:
+      include:
+      - dev
+    always: true
+
+resources:
+ repositories:
+   - repository: microsoft-graph-docs
+     type: github
+     endpoint: microsoftgraph
+     name: microsoftgraph/microsoft-graph-docs
+     ref: main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- template: common-templates/checkout.yml
+- template: common-templates/transform-app-settings.yml
+- template: compile-run-tests-template.yml
+  parameters:
+    projectFileName: CsharpBetaExecutionTests
+    runName: 'Weekly Beta C# Snippet Execution Tests'
+    testType: 'Execution'

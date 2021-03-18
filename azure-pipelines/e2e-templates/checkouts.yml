@@ -1,39 +1,45 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 # repository checkout steps for end to end validation pipelines
+parameters:
+  - name: shouldRunSnippetGeneration
+    type: boolean
+    default: true
 
 steps:
-  - checkout: microsoft-graph-explorer-api
-    displayName: checkout GE api
-    fetchDepth: 1
-    persistCredentials: true
-  
+  - ${{ if eq(parameters.shouldRunSnippetGeneration, true) }}:
+    - checkout: microsoft-graph-devx-api
+      displayName: checkout GE api
+      fetchDepth: 1
+      persistCredentials: true
+
+  - ${{ if eq(parameters.shouldRunSnippetGeneration, true) }}:
+    - checkout: apidoctor
+      displayName: checkout apidoctor
+      fetchDepth: 1
+      submodules: recursive
+      persistCredentials: true
+
   - checkout: microsoft-graph-docs
     displayName: checkout docs
     fetchDepth: 1
     persistCredentials: true
-  
-  - checkout: apidoctor
-    displayName: checkout apidoctor
-    fetchDepth: 1
-    submodules: recursive
-    persistCredentials: true
-    
+
   - checkout: msgraph-metadata
     displayName: checkout metadata
     fetchDepth: 1
     persistCredentials: true
-  
+
   - checkout: MSGraph-SDK-Code-Generator
     displayName: checkout generator
     fetchDepth: 1
     submodules: recursive
     persistCredentials: true
-  
+
   - checkout: msgraph-sdk-dotnet
     displayName: checkout dotnet
     fetchDepth: 1
     persistCredentials: true
-  
+
   - checkout: self
     displayName: checkout raptor
     fetchDepth: 1
