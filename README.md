@@ -11,7 +11,7 @@ The compilation tests, test the successful compilation of the language-specific 
 
 The execution tests, other than testing compilation of the snippets, use the compiled binary to make a request to the demo tenant and reports error if there's a service exception i.e 4XX or 5xx response. Otherwise reports success.
 
-A test result both compilation test result and execution test result includes:
+A test result for both compilation and execution tests includes:
 - Root cause, if it is a known failure
 - Documentation page where the snippet appears
 - Piece of code that is to be compiled with line numbers
