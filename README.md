@@ -7,7 +7,7 @@ This repository consists of test projects which are broadly categorized into 2.
 1. compilation tests
 2. execution tests
 
-The compilation tests, test the successful compilation of the language-specific HTTP snippets from Microsoft Graph documentation. In C# for instance, for each snippet, there is an NUnit test case that outputs compilation result i.e whether a test compiled successfully or not. 
+The compilation tests, test the successful compilation of the language-specific snippets from Microsoft Graph documentation. For each snippet, there is an NUnit test case that outputs compilation result i.e whether a test compiled successfully or not. 
 
 The execution tests, other than testing compilation of the snippets, use the compiled binary to make a request to the demo tenant and reports error if there's a service exception i.e 4XX or 5xx response. Otherwise reports success.
 
