@@ -56,8 +56,6 @@ namespace TestsCommon
         private const string StructuralPropertiesAreNotHandled = "We don't generate request builders for URL navigation to structural properties." +
             " We should build a custom request with URL as this is not supported in SDK." +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
-        private const string EnumsAreNotHandled = "Handling of enums is not correct" +
-            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/482";
         private const string SameBlockNames = "Same block names indeterministic snippet generation" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/463";
         #endregion
@@ -196,9 +194,6 @@ namespace TestsCommon
                 { "update-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "Multiline string is not escaping quotes. https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/484") },
 
                 { "get-endpoints-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SameBlockNames) },
-
-                { "authenticationmethodsroot-usersregisteredbymethod-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
-                { "authenticationmethodsroot-usersregisteredbyfeature-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
 
                 {$"unfollow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 {$"follow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
