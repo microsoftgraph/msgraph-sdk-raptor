@@ -27,6 +27,7 @@ namespace TestsCommon
         private const string StreamRequestDoesNotSupportDelete = "Stream requests only support PUT and GET.";
         private const string DeleteAsyncIsNotSupportedForReferences = "DeleteAsync is not supported for reference collections\r\n"
             + "https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/471";
+        private const string TypeCastIsNotSupported = "Type cast operation is not supported in SDK.";
 
         #endregion
 
@@ -56,8 +57,6 @@ namespace TestsCommon
         private const string StructuralPropertiesAreNotHandled = "We don't generate request builders for URL navigation to structural properties." +
             " We should build a custom request with URL as this is not supported in SDK." +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
-        private const string EnumsAreNotHandled = "Handling of enums is not correct" +
-            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/482";
         private const string SameBlockNames = "Same block names indeterministic snippet generation" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/463";
         #endregion
@@ -133,7 +132,8 @@ namespace TestsCommon
                 { $"call-transfer-{lng}-{version}-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationAdditionalData) },
                 { $"call-updatemetadata-{lng}-Beta-compiles", new KnownIssue(Metadata, "updateMetadata doesn't exist in metadata") },
                 { $"create-certificatebasedauthconfiguration-from-certificatebasedauthconfiguration-{lng}-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
-                { $"create-directoryobject-from-featurerolloutpolicy-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo"))},
+                { $"create-directoryobject-from-featurerolloutpolicy-{lng}-{version}-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo"))},
+                { $"create-directoryobject-from-featurerolloutpolicy-policies-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo"))},
                 { $"create-directoryobject-from-orgcontact-{lng}-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
                 { $"create-educationrubric-from-educationassignment-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("educationAssignment", "rubric"))},
                 { $"create-educationschool-from-educationroot-{lng}-Beta-compiles", new KnownIssue(HTTP, GetPropertyNotFoundMessage("EducationSchool", "Status")) },
@@ -143,7 +143,8 @@ namespace TestsCommon
                 { $"create-onpremisesagentgroup-from-publishedresource-{lng}-Beta-compiles", new KnownIssue(HTTP, RefShouldBeRemoved) },
                 { $"create-reference-attachment-with-post-{lng}-V1-compiles", new KnownIssue(HTTP, GetPropertyNotFoundMessage("ReferenceAttachment", "SourceUrl, ProviderType, Permission and IsFolder")) },
                 { $"create-tokenlifetimepolicy-from-application-{lng}-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
-                { $"delete-directoryobject-from-featurerolloutpolicy-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo")) },
+                { $"delete-directoryobject-from-featurerolloutpolicy-{lng}-{version}-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo")) },
+                { $"delete-directoryobject-from-featurerolloutpolicy-policies-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo")) },
                 { $"delete-educationrubric-from-educationassignment-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("educationAssignment", "rubric"))},
                 { $"delete-externalsponsor-from-connectedorganization-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("connectedOrganization", "externalSponsor")) },
                 { $"delete-internalsponsor-from-connectedorganization-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("connectedOrganization", "internalSponsor")) },
@@ -160,7 +161,7 @@ namespace TestsCommon
                 { $"get-identityriskevent-{lng}-Beta-compiles", new KnownIssue(HTTP, IdentityRiskEvents) },
                 { $"get-identityriskevents-{lng}-Beta-compiles", new KnownIssue(HTTP, IdentityRiskEvents) },
                 { $"get-user-oauth2permissiongrants-{lng}-Beta-compiles", new KnownIssue(Metadata, "Oauth2PermissionGrants are not defined for user") },
-                { $"list-conversation-members-{lng}-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + "Me doesn't have \"Chats\". \"Chats\" is a high level EntitySet.") },
+                { $"list-conversation-members-1-{lng}-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + "Me doesn't have \"Chats\". \"Chats\" is a high level EntitySet.") },
                 { $"participant-configuremixer-{lng}-Beta-compiles", new KnownIssue(Metadata, "ConfigureMixer doesn't exist in metadata") },
                 { $"remove-group-from-rejectedsenderslist-of-group-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "rejectedSender")) },
                 { $"remove-user-from-rejectedsenderslist-of-group-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "rejectedSender")) },
@@ -170,7 +171,6 @@ namespace TestsCommon
                 { $"unfollow-item-{lng}-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(DELETE, POST)) },
                 { $"update-openidconnectprovider-{lng}-Beta-compiles", new KnownIssue(HTTP, "OpenIdConnectProvider should be specified") },
                 { $"update-teamsapp-{lng}-V1-compiles", new KnownIssue(Metadata, $"teamsApp needs hasStream=true. In addition to that, we need these fixed: {Environment.NewLine}https://github.com/microsoftgraph/msgraph-sdk-dotnet-core/issues/160 {Environment.NewLine}https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/336") },
-                { $"get-channel-messages-delta-1-{lng}-V1-compiles", new KnownIssue(Metadata, "Delta function is not declared") },
                 { $"create-b2cuserflow-from-b2cuserflows-identityprovider-{lng}-Beta-compiles", new KnownIssue(SnippetGeneration, "Snippet Generation needs casting support for *CollectionWithReferencesPage. See details at: https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/327") },
                 {$"update-b2xuserflows-identityprovider-{lng}-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 {$"update-b2cuserflows-identityprovider-{lng}-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
@@ -198,9 +198,6 @@ namespace TestsCommon
 
                 { "get-endpoints-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SameBlockNames) },
 
-                { "authenticationmethodsroot-usersregisteredbymethod-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
-                { "authenticationmethodsroot-usersregisteredbyfeature-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, EnumsAreNotHandled) },
-
                 {$"unfollow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 {$"follow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 { "get-android-count-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
@@ -224,13 +221,19 @@ namespace TestsCommon
                 { "put-regionalandlanguagesettings-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "team-put-schedule-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "update-organizationalbrandingproperties-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                {$"get-organizationalbrandingproperties-1-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                {$"update-organizationalbrandingproperties-4-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                {$"update-organizationalbrandingproperties-8-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 {$"timeoff-put-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 {$"timeoffreason-put-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 {$"schedule-put-schedulinggroups-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "update-emailauthenticationmethod-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "update-accesspackageassignmentpolicy-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "create-externalitem-from-connections-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
-                { "create-userflowlanguageconfiguration-from--csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                { "create-userflowlanguageconfiguration-from--1-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                { "create-userflowlanguageconfiguration-from--2-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                { "shift-get-3-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                { "update-adminconsentrequestpolicy-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
 
                 { "reportroot-getm365appplatformusercounts-csv-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
                 { "reportroot-getm365appplatformusercounts-json-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
@@ -245,6 +248,9 @@ namespace TestsCommon
                 { "update-trustframeworkkeyset-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
                 { "update-synchronizationschema-csharp-Beta-compiles", new KnownIssue(HTTPMethodWrong, GetMethodWrongMessage(PUT, PATCH)) },
 
+                { "get-chat-csharp-V1-compiles", new KnownIssue(HTTP, "User chats are not available in V1 yet: https://github.com/microsoftgraph/microsoft-graph-docs/issues/12162") },
+                { "get-featurerolloutpolicy-expand-appliesto-csharp-V1-compiles", new KnownIssue(HTTP, "Directory singleton doesn't have featureRolloutPolicies in V1: https://github.com/microsoftgraph/microsoft-graph-docs/issues/12162") },
+
                 { "put-b2cuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
                 { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
                 { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
@@ -256,6 +262,37 @@ namespace TestsCommon
 
                 { "remove-rejectedsender-from-group-csharp-V1-compiles", new KnownIssue(SDK, DeleteAsyncIsNotSupportedForReferences) },
                 { "delete-acceptedsenders-from-group-csharp-V1-compiles", new KnownIssue(SDK, DeleteAsyncIsNotSupportedForReferences) },
+
+                { "caseexportoperation-getdownloadurl-csharp-Beta-compiles", new KnownIssue(SDK, TypeCastIsNotSupported) },
+
+                { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "chat-sendactivitynotification-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "chat-sendactivitynotification-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "chat-sendactivitynotification-3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-connection-from-external-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-datasource-from--1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-datasource-from--2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-directoryobject-from-orgcontact-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-directoryobject-from-orgcontact-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroup-from-connection-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroupmember-from--1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroupmember-from--2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroupmember-from--3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-legalhold-from--csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "directoryobject-delta-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "recent-notebooks-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "reviewset-addtoreviewset-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-4-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "update-connection-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "update-externalitem-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "update-passwordlessmicrosoftauthenticatorauthenticationmethodconfiguration-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "userconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "userteamwork-sendactivitynotification-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
 
                 { "create-connectorgroup-from-connector-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
             };
