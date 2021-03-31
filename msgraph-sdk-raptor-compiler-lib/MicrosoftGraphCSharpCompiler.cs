@@ -21,7 +21,6 @@ using System.Text.RegularExpressions;
 using System.Security;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using Azure.Core;
 
 namespace MsGraphSDKSnippetsCompiler
 {
@@ -72,8 +71,7 @@ namespace MsGraphSDKSnippetsCompiler
                 MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(JToken).Assembly.Location), "Newtonsoft.Json.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(HttpClient).Assembly.Location), "System.Net.Http.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(Expression).Assembly.Location), "System.Linq.Expressions.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(Uri).Assembly.Location), "System.Private.Uri.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(TokenCredential).Assembly.Location), "Azure.Core.dll"))
+                MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(Uri).Assembly.Location), "System.Private.Uri.dll"))
             };
 
             //Use the right Microsoft Graph Version
