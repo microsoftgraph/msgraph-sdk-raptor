@@ -27,6 +27,7 @@ namespace TestsCommon
         private const string StreamRequestDoesNotSupportDelete = "Stream requests only support PUT and GET.";
         private const string DeleteAsyncIsNotSupportedForReferences = "DeleteAsync is not supported for reference collections\r\n"
             + "https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/471";
+        private const string TypeCastIsNotSupported = "Type cast operation is not supported in SDK.";
 
         #endregion
 
@@ -259,6 +260,37 @@ namespace TestsCommon
 
                 { "remove-rejectedsender-from-group-csharp-V1-compiles", new KnownIssue(SDK, DeleteAsyncIsNotSupportedForReferences) },
                 { "delete-acceptedsenders-from-group-csharp-V1-compiles", new KnownIssue(SDK, DeleteAsyncIsNotSupportedForReferences) },
+
+                { "caseexportoperation-getdownloadurl-csharp-Beta-compiles", new KnownIssue(SDK, TypeCastIsNotSupported) },
+
+                { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "chat-sendactivitynotification-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "chat-sendactivitynotification-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "chat-sendactivitynotification-3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-connection-from-external-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-datasource-from--1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-datasource-from--2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-directoryobject-from-orgcontact-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-directoryobject-from-orgcontact-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroup-from-connection-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroupmember-from--1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroupmember-from--2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-externalgroupmember-from--3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "create-legalhold-from--csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "directoryobject-delta-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "recent-notebooks-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "reviewset-addtoreviewset-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "team-sendactivitynotification-4-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "update-connection-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "update-externalitem-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "update-passwordlessmicrosoftauthenticatorauthenticationmethodconfiguration-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "userconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { "userteamwork-sendactivitynotification-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
 
                 { "create-connectorgroup-from-connector-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
             };
