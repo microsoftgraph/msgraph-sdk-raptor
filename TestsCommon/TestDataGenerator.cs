@@ -48,8 +48,6 @@ namespace TestsCommon
         #endregion
 
         #region Snipppet Generation Issues
-        private const string SnippetGenerationAdditionalData = "Open types should use additional data for non-existent properties." +
-            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/296";
         private const string SnippetGenerationCreateAsyncSupport = "Snippet generation doesn't use CreateAsync" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/301";
         private const string SnippetGenerationRequestObjectDisambiguation = "Snippet generation should rename objects that end with Request to end with RequestObject" +
@@ -129,7 +127,6 @@ namespace TestsCommon
             var lng = language.AsString();
             return new Dictionary<string, KnownIssue>()
             {
-                { $"call-transfer-{lng}-{version}-compiles", new KnownIssue(SnippetGeneration, SnippetGenerationAdditionalData) },
                 { $"call-updatemetadata-{lng}-Beta-compiles", new KnownIssue(Metadata, "updateMetadata doesn't exist in metadata") },
                 { $"create-certificatebasedauthconfiguration-from-certificatebasedauthconfiguration-{lng}-Beta-compiles", new KnownIssue(HTTP, RefNeeded) },
                 { $"create-directoryobject-from-featurerolloutpolicy-{lng}-{version}-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("featureRolloutPolicy", "appliesTo"))},
@@ -160,7 +157,6 @@ namespace TestsCommon
                 { $"get-endpoints-{lng}-V1-compiles", new KnownIssue(HTTP, "This is only available in Beta") },
                 { $"get-identityriskevent-{lng}-Beta-compiles", new KnownIssue(HTTP, IdentityRiskEvents) },
                 { $"get-identityriskevents-{lng}-Beta-compiles", new KnownIssue(HTTP, IdentityRiskEvents) },
-                { $"get-user-oauth2permissiongrants-{lng}-Beta-compiles", new KnownIssue(Metadata, "Oauth2PermissionGrants are not defined for user") },
                 { $"list-conversation-members-1-{lng}-V1-compiles", new KnownIssue(HTTP, HttpSnippetWrong + "Me doesn't have \"Chats\". \"Chats\" is a high level EntitySet.") },
                 { $"participant-configuremixer-{lng}-Beta-compiles", new KnownIssue(Metadata, "ConfigureMixer doesn't exist in metadata") },
                 { $"remove-group-from-rejectedsenderslist-of-group-{lng}-Beta-compiles", new KnownIssue(Metadata, GetContainsTargetRemoveMessage("group", "rejectedSender")) },
@@ -266,12 +262,8 @@ namespace TestsCommon
                 { "caseexportoperation-getdownloadurl-csharp-Beta-compiles", new KnownIssue(SDK, TypeCastIsNotSupported) },
 
                 { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "chat-sendactivitynotification-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "chat-sendactivitynotification-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "chat-sendactivitynotification-3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "create-connection-from-external-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-datasource-from--1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-datasource-from--2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-directoryobject-from-orgcontact-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
@@ -283,17 +275,9 @@ namespace TestsCommon
                 { "create-legalhold-from--csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "directoryobject-delta-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "recent-notebooks-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "reviewset-addtoreviewset-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "team-sendactivitynotification-1-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "team-sendactivitynotification-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "team-sendactivitynotification-3-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "team-sendactivitynotification-4-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "update-connection-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "update-externalitem-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "update-passwordlessmicrosoftauthenticatorauthenticationmethodconfiguration-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "userconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-                { "userteamwork-sendactivitynotification-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
-
                 { "create-connectorgroup-from-connector-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
             };
         }
@@ -449,6 +433,8 @@ namespace TestsCommon
                 {"get-document-value-java-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 {"remove-rejectedsender-from-group-java-V1-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 {"delete-acceptedsenders-from-group-java-V1-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+                { $"call-transfer-java-{version}-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
+
             };
         }
         /// <summary>
