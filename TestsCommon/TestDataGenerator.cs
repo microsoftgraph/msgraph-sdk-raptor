@@ -57,6 +57,8 @@ namespace TestsCommon
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
         private const string SameBlockNames = "Same block names indeterministic snippet generation" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/463";
+        private const string EnumType = "Enum type name generation is wrong" +
+            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/519";
         #endregion
 
         #region Needs analysis
@@ -229,7 +231,7 @@ namespace TestsCommon
                 { "create-userflowlanguageconfiguration-from--1-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "create-userflowlanguageconfiguration-from--2-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
                 { "shift-get-3-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
-                { "update-adminconsentrequestpolicy-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
+                {$"update-adminconsentrequestpolicy-csharp-{version}-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported) },
 
                 { "reportroot-getm365appplatformusercounts-csv-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
                 { "reportroot-getm365appplatformusercounts-json-csharp-Beta-compiles", new KnownIssue(SDK, MissingContentProperty) },
@@ -251,6 +253,9 @@ namespace TestsCommon
                 { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
                 { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
                 { "put-b2cuserflows-apiconnectorconfiguration-postattributecollection-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, StructuralPropertiesAreNotHandled) },
+
+                { "appconsentrequest-filterbycurrentuser-csharp-V1-compiles", new KnownIssue(SnippetGeneration, EnumType) },
+                { "userconsentrequest-filterbycurrentuser-csharp-V1-compiles", new KnownIssue(SnippetGeneration, EnumType) },
 
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-csharp-Beta-compiles", new KnownIssue(HttpSnippetWrong, "Need @odata.type for abstract type in JSON. https://github.com/microsoftgraph/microsoft-graph-docs/issues/11770") },
 
