@@ -442,20 +442,52 @@ namespace TestsCommon
 
             };
         }
+
+        public static Dictionary<string, KnownIssue> GetExecutionKnownIssues(Languages language, Versions versionEnum)
+        {
+            var version = versionEnum.ToString();
+            var lng = language.AsString();
+            var list = new List<string>() {
+                "get-event-multiple-locations-csharp-V1-compiles",
+                "get-event-csharp-V1-compiles",
+                "get-group-event-csharp-V1-compiles",
+                "get-organizationalbrandingproperties-10-csharp-V1-compiles",
+                "get-printsettings-csharp-V1-compiles",
+                "get-mailboxsettings-3-csharp-V1-compiles",
+                "get-mailboxsettings-2-csharp-V1-compiles"
+            };
+
+            var dict = new Dictionary<string, KnownIssue>();
+            var knownIssue = new KnownIssue("ExecutionIssue", "ExecutionIssue");
+            foreach (var elm in list)
+            {
+                dict.Add(elm, knownIssue);
+            }
+
+            return dict;
+        }
+
         /// <summary>
         /// Gets known issues by language
         /// </summary>
         /// <param name="language">language to get the issues for</param>
         /// <param name="version">version to get the issues for</param>
         /// <returns>A mapping of test names into known issues</returns>
-        public static Dictionary<string, KnownIssue> GetIssues(Languages language, Versions version)
+        public static Dictionary<string, KnownIssue> GetIssues(Languages language, Versions version, bool isExecution = false)
         {
-            return (language switch
+            var issues = (language switch
             {
                 Languages.CSharp => GetCSharpIssues(version),
                 Languages.Java => GetJavaIssues(version),
                 _ => new Dictionary<string, KnownIssue>(),
             }).Union(GetCommonIssues(language, version)).ToDictionary(x => x.Key, x => x.Value);
+
+            if (isExecution)
+            {
+                issues = issues.Union(GetExecutionKnownIssues(language,version)).ToDictionary(x => x.Key, x => x.Value);
+            }
+
+            return issues;
         }
     }
     /// <summary>
@@ -518,7 +550,7 @@ namespace TestsCommon
         /// </returns>
         public static IEnumerable<TestCaseData> GetExecutionTestData(RunSettings runSettings)
         {
-            return from testData in GetLanguageTestData(runSettings)
+            return from testData in GetLanguageTestData(runSettings, true)
                    let fullPath = Path.Join(GraphDocsDirectory.GetSnippetsDirectory(testData.Version, runSettings.Language), testData.FileName)
                    let fileContent = File.ReadAllText(fullPath)
                    let executionTestData = new ExecutionTestData(testData, fileContent)
@@ -527,7 +559,7 @@ namespace TestsCommon
                    select new TestCaseData(executionTestData).SetName(testData.TestName).SetProperty("Owner", testData.Owner);
         }
 
-        private static IEnumerable<LanguageTestData> GetLanguageTestData(RunSettings runSettings)
+        private static IEnumerable<LanguageTestData> GetLanguageTestData(RunSettings runSettings, bool isExecution = false)
         {
             if (runSettings == null)
             {
@@ -537,7 +569,7 @@ namespace TestsCommon
             var language = runSettings.Language;
             var version = runSettings.Version;
             var documentationLinks = GetDocumentationLinks(version, language);
-            var knownIssues = KnownIssues.GetIssues(language, version);
+            var knownIssues = KnownIssues.GetIssues(language, version, isExecution);
             var snippetFileNames = documentationLinks.Keys.ToList();
             return from fileName in snippetFileNames                                            // e.g. application-addpassword-csharp-snippets.md
                    let arbitraryDllPostfix = runSettings.DllPath == null || runSettings.Language != Languages.CSharp ? string.Empty : "arbitraryDll-"
