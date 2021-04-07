@@ -18,7 +18,8 @@ namespace TestsCommon.Tests
                     {
                         ["conversationMember"] = new IDTree("<team_channel_conversationMember>")
                     }
-                }
+                },
+                ["callRecords.callRecord"] = new IDTree("<callRecords.callRecord>")
             };
 
             idReplacer = new IdentifierReplacer(ids);
@@ -28,6 +29,8 @@ namespace TestsCommon.Tests
                   "https://graph.microsoft.com/v1.0/applications/<application>/owners")]
         [TestCase("https://graph.microsoft.com/v1.0/teams/{team-id}/channels/{channel-id}/members/{conversationMember-id}",
                   "https://graph.microsoft.com/v1.0/teams/<team>/channels/<team_channel>/members/<team_channel_conversationMember>")]
+        [TestCase("https://graph.microsoft.com/v1.0/communications/callRecords/{callRecords.callRecord-id}?$expand=sessions($expand=segments)",
+                  "https://graph.microsoft.com/v1.0/communications/callRecords/<callRecords.callRecord>?$expand=sessions($expand=segments)")]
         public void TestIds(string snippetUrl, string expectedUrl)
         {
             var newUrl = idReplacer.ReplaceIds(snippetUrl);
