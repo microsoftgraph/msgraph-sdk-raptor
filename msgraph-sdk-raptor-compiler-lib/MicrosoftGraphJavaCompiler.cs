@@ -74,10 +74,10 @@ dependencies {
 application {
     mainClassName = 'com.microsoft.graph.raptor.App'
 }";
-        private const string depsCurrent = @"implementation 'com.google.guava:guava:23.0'";
-        private const string depsvNext = @"implementation 'com.google.guava:guava:23.0'
+        private const string deps = @"implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.0'";
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    implementation 'com.azure:azure-identity:1.2.5'";
         private static readonly string gradleSettingsFileName = "settings.gradle";
         private static readonly string gradleSettingsFileTemplate = @"rootProject.name = 'msgraph-sdk-java-raptor'";
 
@@ -233,7 +233,7 @@ application {
             if (!string.IsNullOrEmpty(_previewLibraryPath))
                 buildGradleFileContent = previewGradleBuildFileTemplate.Replace("--path--", _previewLibraryPath);
             await File.WriteAllTextAsync(Path.Combine(rootPath, gradleBuildFileName), buildGradleFileContent
-                                                                            .Replace("--deps--", string.IsNullOrEmpty(_previewLibraryPath) ? depsCurrent : depsvNext )
+                                                                            .Replace("--deps--", deps )
                                                                             .Replace("--coreversion--", _javaCoreVersion)
                                                                             .Replace("--libversion--", _javaLibVersion));
             var gradleSettingsFilePath = Path.Combine(rootPath, gradleSettingsFileName);
