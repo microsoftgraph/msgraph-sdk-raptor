@@ -129,10 +129,18 @@ public class GraphSDKTest
 
             if (!executionResultsModel.Success)
             {
-                Assert.Fail($"{compilationOutputMessage}{Environment.NewLine}{executionResultsModel.ExceptionMessage}");
+                var url = executionResultsModel.ExceptionMessage;
+                Regex rgx = new Regex("\\{[A-Za-z]+\\-id\\}", RegexOptions.Compiled);
+                var matches = rgx.Matches(url);
+                foreach (var match in matches)
+                {
+                    url = url.Replace(match.ToString(), "---replaced---");
+                }
+
+                Assert.Fail($"{url}");
             }
 
-            Assert.Pass(compilationOutputMessage.ToString());
+            //Assert.Pass(compilationOutputMessage.ToString());
         }
 
         private static void EvaluateCompilationResult(CompilationResultsModel compilationResult, LanguageTestData testData, string codeSnippetFormatted, CompilationOutputMessage compilationOutputMessage)

@@ -134,7 +134,7 @@ namespace MsGraphSDKSnippetsCompiler
                     dynamic instance = assembly.CreateInstance("GraphSDKTest");
                     IAuthenticationProvider authProvider;
 
-                    if (requiresDelegatedPermissions)
+                    /*if (requiresDelegatedPermissions)
                     {
                         // delegated permissions
                         using var httpRequestMessage = instance.GetRequestMessage(null);
@@ -159,10 +159,11 @@ namespace MsGraphSDKSnippetsCompiler
                             .WithClientSecret(clientSecret)
                             .Build();
                         authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
-                    }
-
-                    await (instance.Main(authProvider) as Task);
-                    success = true;
+                    }*/
+                    var httpRequestMessage = instance.GetRequestMessage(null) as HttpRequestMessage;
+                    exceptionMessage = httpRequestMessage.RequestUri.ToString();
+                    //await (instance.Main(authProvider) as Task);
+                    success = false;
                 }
                 catch (Exception e)
                 {
