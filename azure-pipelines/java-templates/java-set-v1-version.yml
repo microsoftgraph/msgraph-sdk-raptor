@@ -1,10 +1,9 @@
 steps:
 - pwsh: |
-    $webResponse = Invoke-WebRequest "https://api.bintray.com/search/packages/maven?q=com.microsoft.graph:microsoft-graph" -UseBasicParsing
-    $responseContent = $webResponse.Content | ConvertFrom-Json
-    $serviceLibraryVersion = $responseContent.latest_version
+    $webResponse = Invoke-WebRequest "https://repo1.maven.org/maven2/com/microsoft/graph/microsoft-graph/maven-metadata.xml" -UseBasicParsing
+    $version = Select-Xml -Content $webResponse.Content -XPath '/metadata/versioning/versions/version[last()]'
+    $serviceLibraryVersion = $version.Node.InnerText
 
     Write-Host "Java V1 Service Library Version: $serviceLibraryVersion"
     Write-Host "##vso[task.setvariable variable=serviceLibraryVersion]$serviceLibraryVersion"
   displayName: 'Get latest V1 service library version'
-      
