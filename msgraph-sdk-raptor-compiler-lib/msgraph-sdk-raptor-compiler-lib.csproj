@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>MsGraphSDKSnippetsCompiler</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Core" Version="1.10.0" />
+    <PackageReference Include="Azure.Core" Version="1.12.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.9.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="3.28.0" />
-    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.8" />
+    <PackageReference Include="Microsoft.Graph" Version="4.0.0-preview.2" />
+    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.9" />
     <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.6" />
-    <PackageReference Include="Microsoft.Graph.Beta" Version="4.0.0-preview" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.28.1" />
+    <PackageReference Include="Microsoft.Graph.Beta" Version="4.0.1-preview" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.29.0" />
     <PackageReference Include="System.CodeDom" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
