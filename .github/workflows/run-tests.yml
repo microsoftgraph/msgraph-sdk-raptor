@@ -16,6 +16,6 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.x
+        dotnet-version: 5.0.x
     - name: Unit Tests
       run: dotnet test ./TestsCommon.Tests
