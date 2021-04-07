@@ -9,7 +9,7 @@ namespace TestsCommon.Tests
         [SetUp]
         public void Setup()
         {
-            var ids = new IDTree(null)
+            var tree = new IDTree(null)
             {
                 ["application"] = new IDTree("<application>"),
                 ["team"] = new IDTree("<team>")
@@ -17,12 +17,17 @@ namespace TestsCommon.Tests
                     ["channel"] = new IDTree("<team_channel>")
                     {
                         ["conversationMember"] = new IDTree("<team_channel_conversationMember>")
-                    }
+                    },
+                    ["conversationMember"] = new IDTree("<team_conversationMember>")
+                },
+                ["chat"] = new IDTree("<chat>")
+                {
+                    ["conversationMember"] = new IDTree("<chat_conversationMember>")
                 },
                 ["callRecords.callRecord"] = new IDTree("<callRecords.callRecord>")
             };
 
-            idReplacer = new IdentifierReplacer(ids);
+            idReplacer = new IdentifierReplacer(tree);
         }
 
         [TestCase("https://graph.microsoft.com/v1.0/applications/{application-id}/owners",
@@ -31,6 +36,10 @@ namespace TestsCommon.Tests
                   "https://graph.microsoft.com/v1.0/teams/<team>/channels/<team_channel>/members/<team_channel_conversationMember>")]
         [TestCase("https://graph.microsoft.com/v1.0/communications/callRecords/{callRecords.callRecord-id}?$expand=sessions($expand=segments)",
                   "https://graph.microsoft.com/v1.0/communications/callRecords/<callRecords.callRecord>?$expand=sessions($expand=segments)")]
+        [TestCase("https://graph.microsoft.com/v1.0/chats/{chat-id}/members/{conversationMember-id}",
+                  "https://graph.microsoft.com/v1.0/chats/<chat>/members/<chat_conversationMember>")]
+        [TestCase("https://graph.microsoft.com/v1.0/teams/{team-id}/members/{conversationMember-id}",
+                  "https://graph.microsoft.com/v1.0/teams/<team>/members/<team_conversationMember>")]
         public void TestIds(string snippetUrl, string expectedUrl)
         {
             var newUrl = idReplacer.ReplaceIds(snippetUrl);
