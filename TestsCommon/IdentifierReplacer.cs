@@ -23,7 +23,7 @@ namespace TestsCommon
 
         /// <summary>
         /// Replaces ID placeholders of the form {name-id} by looking up name in the IDTree.
-        /// If there are more than one placeholder, it traverses through the tree, e.g.
+        /// If there is more than one placeholder, it traverses through the tree, e.g.
         /// For input string "sites/{site-id}/lists/{list-id}",
         ///   {site-id} is replaced by root->site entry from the IDTree.
         ///   {list-id} is replaced by root->site->list entry from the IDTree.
