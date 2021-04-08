@@ -9,23 +9,9 @@ namespace TestsCommon.Tests
         [SetUp]
         public void Setup()
         {
-            var tree = new IDTree(null)
-            {
-                ["application"] = new IDTree("<application>"),
-                ["team"] = new IDTree("<team>")
-                {
-                    ["channel"] = new IDTree("<team_channel>")
-                    {
-                        ["conversationMember"] = new IDTree("<team_channel_conversationMember>")
-                    },
-                    ["conversationMember"] = new IDTree("<team_conversationMember>")
-                },
-                ["chat"] = new IDTree("<chat>")
-                {
-                    ["conversationMember"] = new IDTree("<chat_conversationMember>")
-                },
-                ["callRecords.callRecord"] = new IDTree("<callRecords.callRecord>")
-            };
+            // identifiers.json holds sample tree constructed from V1 urls
+            var identifiersJson = System.IO.File.ReadAllText("identifiers.json");
+            var tree = System.Text.Json.JsonSerializer.Deserialize<IDTree>(identifiersJson);
 
             idReplacer = new IdentifierReplacer(tree);
         }
