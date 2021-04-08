@@ -91,7 +91,7 @@ namespace TestsCommon
                 }
             }
 
-            throw new JsonException();
+            throw new JsonException("Unexpected JSON object. See identifiers.json file for a sample JSON in the TestCommon.Tests project.");
         }
 
         public override void Write(Utf8JsonWriter writer, IDTree tree, JsonSerializerOptions options)
