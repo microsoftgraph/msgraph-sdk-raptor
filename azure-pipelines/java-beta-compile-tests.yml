@@ -24,7 +24,7 @@ jobs:
   - job: CompileJavaBetaSnippets
     displayName: 'Beta Java Snippet Compilation Tests'
     pool: 'MsGraphBuildAgentsLinux'
-    timeoutInMinutes: 120
+    timeoutInMinutes: 180
 
     steps:
     - template: java-templates/java-prepare.yml
@@ -34,6 +34,7 @@ jobs:
       parameters:
         projectFileName: JavaBetaTests
         javaPreviewLibPath: ''
+        javaLibVersion: $(serviceLibraryVersion)
     - template: compile-run-tests-template.yml
       parameters:
         projectFileName: JavaBetaTests
