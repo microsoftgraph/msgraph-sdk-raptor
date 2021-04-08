@@ -68,6 +68,14 @@ namespace TestsCommon.Tests
             }
         };
 
+        private static readonly IDTree DepthTwoWithNullChild = new IDTree()
+        {
+            ["application"] = new IDTree("(application)")
+            {
+                ["child"] = null
+            }
+        };
+
         private static readonly IDTree OneItemTreeValueDifferent = new IDTree()
         {
             ["application"] = new IDTree("(application2)")
@@ -154,6 +162,8 @@ namespace TestsCommon.Tests
             // check for subset or superset false equivelance with depth
             yield return new TestCaseData(OneItemTree, DepthTwoTree);
             yield return new TestCaseData(DepthTwoTree, OneItemTree);
+
+            yield return new TestCaseData(DepthTwoWithNullChild, DepthTwoTree);
         }
 
         public static IEnumerable<TestCaseData> LosslessSerializationTestCases()

@@ -47,7 +47,7 @@ namespace TestsCommon
             return other != null &&
                 Value == other.Value &&
                 Keys.Count == other.Keys.Count &&
-                Keys.All(key => other.ContainsKey(key) && this[key].Equals(other[key]));
+                Keys.All(key => other.ContainsKey(key) && (this[key]?.Equals(other[key]) ?? false));
         }
 
         public override bool Equals(object obj) => Equals(obj as IDTree);
