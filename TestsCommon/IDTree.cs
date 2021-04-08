@@ -30,7 +30,17 @@ namespace TestsCommon
     public class IDTree : Dictionary<string, IDTree>, IEquatable<IDTree>
     {
         public string Value { get; set; }
-        public IDTree(string value) { Value = value; }
+        public IDTree(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException($"{nameof(value)} can't be null or empty!");
+            }
+
+            Value = value;
+        }
+
+        public IDTree() { }
 
         public bool Equals(IDTree other)
         {
@@ -54,7 +64,7 @@ namespace TestsCommon
                 throw new JsonException();
             }
 
-            IDTree tree = null;
+            IDTree tree = new IDTree();
 
             while (reader.Read())
             {
@@ -72,7 +82,7 @@ namespace TestsCommon
                 if (propertyName == "_value")
                 {
                     reader.Read();
-                    tree = new IDTree(reader.GetString());
+                    tree.Value = reader.GetString();
                 }
                 else
                 {
@@ -87,8 +97,12 @@ namespace TestsCommon
         public override void Write(Utf8JsonWriter writer, IDTree tree, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("_value");
-            writer.WriteStringValue(tree.Value);
+            if (tree.Value is not null)
+            {
+                writer.WritePropertyName("_value");
+                writer.WriteStringValue(tree.Value);
+            }
+
             foreach (var key in tree.Keys.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
             {
                 writer.WritePropertyName(key);

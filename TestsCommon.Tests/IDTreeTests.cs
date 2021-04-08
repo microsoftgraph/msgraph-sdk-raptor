@@ -33,26 +33,26 @@ namespace TestsCommon.Tests
     public static class IDTreeTestCases
     {
         private static readonly IDTree NullTree = null;
-        private static readonly IDTree EmptyTree = new IDTree(null);
-        private static readonly IDTree EmptyTree2 = new IDTree(null);
+        private static readonly IDTree EmptyTree = new IDTree();
+        private static readonly IDTree EmptyTree2 = new IDTree();
 
-        private static readonly IDTree OneItemTree = new IDTree(null)
+        private static readonly IDTree OneItemTree = new IDTree()
         {
             ["application"] = new IDTree("(application)")
         };
 
-        private static readonly IDTree OneItemTree2 = new IDTree(null)
+        private static readonly IDTree OneItemTree2 = new IDTree()
         {
             ["application"] = new IDTree("(application)")
         };
 
-        private static readonly IDTree TwoItemTree = new IDTree(null)
+        private static readonly IDTree TwoItemTree = new IDTree()
         {
             ["application"] = new IDTree("(application)"),
             ["team"] = new IDTree("(team)")
         };
 
-        private static readonly IDTree DepthTwoTree = new IDTree(null)
+        private static readonly IDTree DepthTwoTree = new IDTree()
         {
             ["application"] = new IDTree("(application)")
             {
@@ -60,7 +60,7 @@ namespace TestsCommon.Tests
             }
         };
 
-        private static readonly IDTree DepthTwoTree2 = new IDTree(null)
+        private static readonly IDTree DepthTwoTree2 = new IDTree()
         {
             ["application"] = new IDTree("(application)")
             {
@@ -68,17 +68,17 @@ namespace TestsCommon.Tests
             }
         };
 
-        private static readonly IDTree OneItemTreeValueDifferent = new IDTree(null)
+        private static readonly IDTree OneItemTreeValueDifferent = new IDTree()
         {
             ["application"] = new IDTree("(application2)")
         };
 
-        private static readonly IDTree OneItemTreeKeyDifferent = new IDTree(null)
+        private static readonly IDTree OneItemTreeKeyDifferent = new IDTree()
         {
             ["application2"] = new IDTree("(application)")
         };
 
-        private static readonly IDTree ComplexTree = new IDTree(null)
+        private static readonly IDTree ComplexTree = new IDTree()
         {
             ["application"] = new IDTree("(application)"),
             ["team"] = new IDTree("(team)")
@@ -97,7 +97,6 @@ namespace TestsCommon.Tests
         };
 
         private static readonly string SerializedComplexTree = @"{
-    ""_value"": null,
     ""application"": {
     ""_value"": ""(application)""
     },
