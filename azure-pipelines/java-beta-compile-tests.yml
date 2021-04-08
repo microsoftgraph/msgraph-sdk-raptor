@@ -24,7 +24,7 @@ jobs:
   - job: CompileJavaBetaSnippets
     displayName: 'Beta Java Snippet Compilation Tests'
     pool: 'MsGraphBuildAgentsLinux'
-    timeoutInMinutes: 120
+    timeoutInMinutes: 180
 
     steps:
     - template: java-templates/java-prepare.yml
