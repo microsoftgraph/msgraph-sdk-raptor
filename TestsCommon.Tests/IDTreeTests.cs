@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 namespace TestsCommon.Tests
@@ -16,6 +17,16 @@ namespace TestsCommon.Tests
         public void LosslessSerialization(IDTree a)
         {
             a.Equals(JsonSerializer.Deserialize<IDTree>(JsonSerializer.Serialize(a)));
+        }
+
+        [TestCaseSource(typeof(IDTreeTestCases), nameof(IDTreeTestCases.SerializationTestCases))]
+        public void Serialization(IDTree a, string json)
+        {
+            var actual = JsonSerializer.Serialize(a);
+            actual = Regex.Replace(actual, @"\s", string.Empty);
+
+            var expected = Regex.Replace(json, @"\s", string.Empty);
+            Assert.AreEqual(expected, actual);
         }
     }
 
@@ -69,21 +80,49 @@ namespace TestsCommon.Tests
 
         private static readonly IDTree ComplexTree = new IDTree(null)
         {
-            ["application"] = new IDTree("<application>"),
-            ["team"] = new IDTree("<team>")
+            ["application"] = new IDTree("(application)"),
+            ["team"] = new IDTree("(team)")
             {
-                ["channel"] = new IDTree("<team_channel>")
+                ["channel"] = new IDTree("(team_channel)")
                 {
-                    ["conversationMember"] = new IDTree("<team_channel_conversationMember>")
+                    ["conversationMember"] = new IDTree("(team_channel_conversationMember)")
                 },
-                ["conversationMember"] = new IDTree("<team_conversationMember>")
+                ["conversationMember"] = new IDTree("(team_conversationMember)")
             },
-            ["chat"] = new IDTree("<chat>")
+            ["chat"] = new IDTree("(chat)")
             {
-                ["conversationMember"] = new IDTree("<chat_conversationMember>")
+                ["conversationMember"] = new IDTree("(chat_conversationMember)")
             },
-            ["callRecords.callRecord"] = new IDTree("<callRecords.callRecord>")
+            ["callRecords.callRecord"] = new IDTree("(callRecords.callRecord)")
         };
+
+        private static readonly string SerializedComplexTree = @"{
+    ""_value"": null,
+    ""application"": {
+    ""_value"": ""(application)""
+    },
+    ""callRecords.callRecord"": {
+    ""_value"": ""(callRecords.callRecord)""
+    },
+    ""chat"": {
+        ""_value"": ""(chat)"",
+        ""conversationMember"": {
+            ""_value"": ""(chat_conversationMember)""
+        }
+    },
+    ""team"": {
+        ""_value"": ""(team)"",
+        ""channel"": {
+            ""_value"": ""(team_channel)"",
+            ""conversationMember"": {
+                ""_value"": ""(team_channel_conversationMember)""
+            }
+        },
+        ""conversationMember"": {
+            ""_value"": ""(team_conversationMember)""
+        }
+    }
+}";
 
         public static IEnumerable<TestCaseData> EqualTestCases()
         {
@@ -125,6 +164,11 @@ namespace TestsCommon.Tests
             yield return new TestCaseData(TwoItemTree);
             yield return new TestCaseData(DepthTwoTree);
             yield return new TestCaseData(ComplexTree);
+        }
+
+        public static IEnumerable<TestCaseData> SerializationTestCases()
+        {
+            yield return new TestCaseData(ComplexTree, SerializedComplexTree);
         }
     }
 }

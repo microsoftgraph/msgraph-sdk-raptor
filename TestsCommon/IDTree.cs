@@ -89,10 +89,10 @@ namespace TestsCommon
             writer.WriteStartObject();
             writer.WritePropertyName("_value");
             writer.WriteStringValue(tree.Value);
-            foreach (KeyValuePair<string, IDTree> item in tree)
+            foreach (var key in tree.Keys.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
             {
-                writer.WritePropertyName(item.Key);
-                Write(writer, item.Value, options);
+                writer.WritePropertyName(key);
+                Write(writer, tree[key], options);
             }
             writer.WriteEndObject();
             writer.Flush();
