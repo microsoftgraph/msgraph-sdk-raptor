@@ -16,4 +16,10 @@
     <ProjectReference Include="..\TestsCommon\TestsCommon.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="identifiers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
