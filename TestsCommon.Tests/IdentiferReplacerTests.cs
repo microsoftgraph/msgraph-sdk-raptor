@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Text;
+using NUnit.Framework;
 
 namespace TestsCommon.Tests
 {
@@ -31,5 +32,37 @@ namespace TestsCommon.Tests
             var newUrl = idReplacer.ReplaceIds(snippetUrl);
             Assert.AreEqual(expectedUrl, newUrl);
         }
+
+        [Test]
+        public void CreatePSScript()
+        {
+            var identifiersJson = System.IO.File.ReadAllText("identifiers.json");
+            var tree = System.Text.Json.JsonSerializer.Deserialize<IDTree>(identifiersJson);
+            string currentRef = "$root";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("$root = @{}");
+            CrawlTree(sb, tree, currentRef);
+            sb.AppendLine("$root | ConvertTo-Json -Depth 10");
+            TestContext.Out.Write(sb.ToString());
+            Assert.Pass();
+        }
+
+        private void CrawlTree(StringBuilder sb, IDTree tree, string currentRef)
+        {
+            if (tree.Value is not null)
+            {
+                sb.AppendLine($"{currentRef}._value = \"{tree.Value}\"");
+            }
+
+            foreach (var key in tree.Keys)
+            {
+                var nextRef = $"{currentRef}[\"{key}\"]";
+                sb.AppendLine($"{nextRef} = @{{}}");
+                CrawlTree(sb, tree[key], nextRef);
+            }
+        }
+
+
+
     }
 }
