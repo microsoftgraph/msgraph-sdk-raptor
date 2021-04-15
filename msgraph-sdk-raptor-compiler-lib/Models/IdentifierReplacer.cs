@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace TestsCommon
+namespace MsGraphSDKSnippetsCompiler.Models
 {
     public class IdentifierReplacer
     {
