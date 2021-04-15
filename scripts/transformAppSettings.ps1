@@ -7,7 +7,8 @@ param(
     [Parameter(Mandatory=$true)][string]$ClientSecret,
     [Parameter(Mandatory=$true)][string]$Username,
     [Parameter(Mandatory=$true)][string]$Password,
-    [Parameter(Mandatory=$true)][string]$Authority
+    [Parameter(Mandatory=$true)][string]$Authority,
+    [Parameter(Mandatory=$true)][string]$RaptorStorageConnectionString
 )
 
 $json = @{
@@ -20,6 +21,7 @@ $json = @{
     Username = $Username;
     Password = $Password;
     Authority = $Authority;
+    RaptorStorageConnectionString = $RaptorStorageConnectionString;
 }
 
 $repoRoot = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
