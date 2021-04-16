@@ -31,13 +31,12 @@
       }
     },
     {
-      "label": "CSharpArbitraryDllTests filtered",
+      "label": "CSharpArbitraryDllTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/CSharpArbitraryDllTests/CSharpArbitraryDllTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/CSharpArbitraryDllTests/CSharpArbitraryDllTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -55,13 +54,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "CsharpBetaExecutionTests filtered",
+      "label": "CsharpBetaExecutionTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/CsharpBetaExecutionTests/CsharpBetaExecutionTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/CsharpBetaExecutionTests/CsharpBetaExecutionTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -79,13 +77,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "CsharpBetaKnownFailureTests filtered",
+      "label": "CsharpBetaKnownFailureTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/CsharpBetaKnownFailureTests/CsharpBetaKnownFailureTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/CsharpBetaKnownFailureTests/CsharpBetaKnownFailureTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -103,13 +100,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "CsharpBetaTests filtered",
+      "label": "CsharpBetaTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/CsharpBetaTests/CsharpBetaTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/CsharpBetaTests/CsharpBetaTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -127,13 +123,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "CsharpV1ExecutionTests filtered",
+      "label": "CsharpV1ExecutionTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/CsharpV1ExecutionTests/CsharpV1ExecutionTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/CsharpV1ExecutionTests/CsharpV1ExecutionTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -151,13 +146,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "CsharpV1KnownFailureTests filtered",
+      "label": "CsharpV1KnownFailureTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/CsharpV1KnownFailureTests/CsharpV1KnownFailureTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/CsharpV1KnownFailureTests/CsharpV1KnownFailureTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -175,13 +169,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "CsharpV1Tests filtered",
+      "label": "CsharpV1Tests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/CsharpV1Tests/CsharpV1Tests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/CsharpV1Tests/CsharpV1Tests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -199,13 +192,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "JavaBetaKnownFailureTests filtered",
+      "label": "JavaBetaKnownFailureTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/JavaBetaKnownFailureTests/JavaBetaKnownFailureTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/JavaBetaKnownFailureTests/JavaBetaKnownFailureTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -223,13 +215,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "JavaBetaTests filtered",
+      "label": "JavaBetaTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/JavaBetaTests/JavaBetaTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/JavaBetaTests/JavaBetaTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -247,13 +238,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "JavaV1KnownFailureTests filtered",
+      "label": "JavaV1KnownFailureTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/JavaV1KnownFailureTests/JavaV1KnownFailureTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/JavaV1KnownFailureTests/JavaV1KnownFailureTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -271,13 +261,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "JavaV1Tests filtered",
+      "label": "JavaV1Tests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/JavaV1Tests/JavaV1Tests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/JavaV1Tests/JavaV1Tests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"
@@ -295,13 +284,12 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "UnitTests filtered",
+      "label": "UnitTests",
       "type": "process",
       "command": "dotnet",
       "args": [
         "test",
-        "${workspaceFolder}/UnitTests/UnitTests.csproj",
-        "--filter \"${input:testFilter}\""
+        "${workspaceFolder}/UnitTests/UnitTests.csproj"
       ],
       "isTestCommand": true,
       "problemMatcher": "$msCompile"

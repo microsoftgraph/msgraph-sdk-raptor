@@ -52,10 +52,12 @@ foreach ($testProject in $testProjects)
 
     $obj.tasks += $task
 
-    $task.label += " filtered"
-    $task.args += "--filter `"`${input:testFilter}`""
+    # deep copy
+    $taskFiltered = $task | ConvertTo-Json -Depth 3 | ConvertFrom-Json
+    $taskFiltered.label += " filtered"
+    $taskFiltered.args += "--filter `"`${input:testFilter}`""
 
-    $obj.tasks += $task
+    $obj.tasks += $taskFiltered
 }
 
 $obj.inputs = @(
