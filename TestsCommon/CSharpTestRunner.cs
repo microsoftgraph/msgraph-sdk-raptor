@@ -214,7 +214,7 @@ public class GraphSDKTest
         /// <returns>code to be executed</returns>
         private static (string, string) GetCodeToExecute(string fileContent)
         {
-            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(fileContent);
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(IdentifierReplacer.Instance.ReplaceIds(fileContent));
 
             // have another tranformation to insert GetRequestMessage method
             codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");

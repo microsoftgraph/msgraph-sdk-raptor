@@ -1,10 +1,21 @@
 ﻿using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using Azure.Storage.Blobs;
 
-namespace TestsCommon
+namespace MsGraphSDKSnippetsCompiler.Models
 {
     public class IdentifierReplacer
     {
+        /// <summary>
+        /// singleton lazy instance
+        /// </summary>
+        public static IdentifierReplacer Instance => lazy.Value;
+
+        private static readonly Lazy<IdentifierReplacer> lazy = new (() => new IdentifierReplacer());
+
         /// <summary>
         /// tree of IDs that appear in sample Graph URLs
         /// </summary>
@@ -19,6 +30,25 @@ namespace TestsCommon
         public IdentifierReplacer(IDTree tree)
         {
             this.tree = tree;
+        }
+
+        /// <summary>
+        /// Default constructor which builds the tree from Azure blob storage
+        /// </summary>
+        private IdentifierReplacer()
+        {
+            const string blobContainerName = "raptoridentifiers";
+            const string blobName = "identifiers.json";
+
+            var config = AppSettings.Config();
+            var raptorStorageConnectionString = config.GetNonEmptyValue("RaptorStorageConnectionString");
+            var blobClient = new BlobClient(raptorStorageConnectionString, blobContainerName, blobName);
+
+            using var stream = new MemoryStream();
+            blobClient.DownloadTo(stream);
+            var json = new UTF8Encoding().GetString(stream.ToArray());
+
+            tree = JsonSerializer.Deserialize<IDTree>(json);
         }
 
         /// <summary>

@@ -2,8 +2,9 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using MsGraphSDKSnippetsCompiler.Models;
 
-namespace TestsCommon.Tests
+namespace UnitTests
 {
     public class IDTreeTests
     {

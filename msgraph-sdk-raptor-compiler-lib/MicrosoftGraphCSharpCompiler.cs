@@ -129,7 +129,7 @@ namespace MsGraphSDKSnippetsCompiler
                 {
                     var requiresDelegatedPermissions = RequiresDelegatedPermissions(codeSnippet);
                     var config = AppSettings.Config();
-                    var clientId = GetNonEmptyValue(config, "ClientID");
+                    var clientId = config.GetNonEmptyValue("ClientID");
 
                     dynamic instance = assembly.CreateInstance("GraphSDKTest");
                     IAuthenticationProvider authProvider;
@@ -139,9 +139,9 @@ namespace MsGraphSDKSnippetsCompiler
                         // delegated permissions
                         using var httpRequestMessage = instance.GetRequestMessage(null);
                         var scopes = await GetScopes(httpRequestMessage);
-                        var authority = GetNonEmptyValue(config, "Authority");
-                        var username = GetNonEmptyValue(config, "Username");
-                        var password = GetNonEmptyValue(config, "Password");
+                        var authority = config.GetNonEmptyValue("Authority");
+                        var username = config.GetNonEmptyValue("Username");
+                        var password = config.GetNonEmptyValue("Password");
                         var token = await GetATokenForGraph(clientId, authority, username, password, scopes).ConfigureAwait(false);
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
@@ -151,8 +151,8 @@ namespace MsGraphSDKSnippetsCompiler
                     else
                     {
                         // application permissions
-                        var tenantId = GetNonEmptyValue(config, "TenantID");
-                        var clientSecret = GetNonEmptyValue(config, "ClientSecret");
+                        var tenantId = config.GetNonEmptyValue("TenantID");
+                        var clientSecret = config.GetNonEmptyValue("ClientSecret");
                         IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
                             .Create(clientId)
                             .WithTenantId(tenantId)
@@ -285,23 +285,6 @@ namespace MsGraphSDKSnippetsCompiler
             return codeSnippet.Contains("graphClient.Me") ||
                 codeSnippet.Contains("graphClient.Education.Me") ||
                 codeSnippet.Contains("graphClient.Users[\"");
-        }
-
-        /// <summary>
-        /// Extracts the configuration value, throws if empty string
-        /// </summary>
-        /// <param name="config">configuration</param>
-        /// <param name="key">lookup key</param>
-        /// <returns>non-empty configuration value if found</returns>
-        private static string GetNonEmptyValue(IConfigurationRoot config, string key)
-        {
-            var value = config.GetSection(key).Value;
-            if (value == string.Empty)
-            {
-                throw new Exception($"Value for {key} is not found in appsettings.json");
-            }
-
-            return value;
         }
     }
 }

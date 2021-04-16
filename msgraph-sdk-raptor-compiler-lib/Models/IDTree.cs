@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Linq;
 
-namespace TestsCommon
+namespace MsGraphSDKSnippetsCompiler.Models
 {
     /// <summary>
     /// Tree data structure to represent ID placeholders in graph URLs.

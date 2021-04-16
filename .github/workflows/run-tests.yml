@@ -18,4 +18,4 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Unit Tests
-      run: dotnet test ./TestsCommon.Tests
+      run: dotnet test ./UnitTests
