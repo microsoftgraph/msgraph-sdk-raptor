@@ -101,6 +101,7 @@ public class GraphSDKTest
         /// 2. Asserts that there is one and only one snippet in the file
         /// 3. Wraps snippet with compilable template
         /// 4. Attempts to compile and reports errors if there is any
+        /// 5. It uses the compiled binary to make a request to the demo tenant and reports error if there's a service exception i.e 4XX or 5xx response
         /// </summary>
         /// <param name="executionTestData">Test data containing information such as snippet file name</param>
         public async static Task Execute(ExecutionTestData executionTestData)
@@ -213,7 +214,7 @@ public class GraphSDKTest
         /// <returns>code to be executed</returns>
         private static (string, string) GetCodeToExecute(string fileContent)
         {
-            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(fileContent);
+            var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(IdentifierReplacer.Instance.ReplaceIds(fileContent));
 
             // have another tranformation to insert GetRequestMessage method
             codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");

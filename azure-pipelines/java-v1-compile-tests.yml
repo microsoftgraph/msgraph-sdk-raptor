@@ -15,24 +15,27 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
-     ref: master
-
-pool:
-  vmImage: 'ubuntu-latest'
+     ref: main
 
 variables:
   buildConfiguration: 'Release'
 
-steps:
-- template: java-templates/java-prepare.yml
-- template: common-templates/checkout.yml
-- template: java-templates/java-set-v1-version.yml
-- template: java-templates/java-replace-local-path.yml
-  parameters:
-    projectFileName: JavaV1Tests
-    javaPreviewLibPath: ''
-    javaLibVersion: $(serviceLibraryVersion)
-- template: compile-run-tests-template.yml
-  parameters:
-    projectFileName: JavaV1Tests
-    runName: 'V1 Java Snippet Compilation Tests $(testRunTitle)'
+jobs:
+  - job: CompileJavaV1Snippets
+    displayName: 'V1 Java Snippet Compilation Tests'
+    pool: 'MsGraphBuildAgentsLinux'
+    timeoutInMinutes: 120
+
+    steps:
+    - template: java-templates/java-prepare.yml
+    - template: common-templates/checkout.yml
+    - template: java-templates/java-set-v1-version.yml
+    - template: java-templates/java-replace-local-path.yml
+      parameters:
+        projectFileName: JavaV1Tests
+        javaPreviewLibPath: ''
+        javaLibVersion: $(serviceLibraryVersion)
+    - template: compile-run-tests-template.yml
+      parameters:
+        projectFileName: JavaV1Tests
+        runName: 'V1 Java Snippet Compilation Tests $(testRunTitle)'

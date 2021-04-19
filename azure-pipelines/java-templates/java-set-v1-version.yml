@@ -1,10 +1,3 @@
 steps:
-- pwsh: |
-    $webResponse = Invoke-WebRequest "https://api.bintray.com/search/packages/maven?q=com.microsoft.graph:microsoft-graph" -UseBasicParsing
-    $responseContent = $webResponse.Content | ConvertFrom-Json
-    $serviceLibraryVersion = $responseContent.latest_version
-
-    Write-Host "Java V1 Service Library Version: $serviceLibraryVersion"
-    Write-Host "##vso[task.setvariable variable=serviceLibraryVersion]$serviceLibraryVersion"
+- pwsh: $(Build.SourcesDirectory)/msgraph-sdk-raptor/azure-pipelines/java-templates/set-latest-version.ps1
   displayName: 'Get latest V1 service library version'
-      

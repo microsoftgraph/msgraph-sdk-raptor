@@ -15,7 +15,7 @@ resources:
      type: github
      endpoint: microsoftgraph
      name: microsoftgraph/microsoft-graph-docs
-     ref: master
+     ref: main
    - repository: msgraph-sdk-java
      type: github
      endpoint: microsoftgraph
@@ -27,22 +27,25 @@ resources:
      name: microsoftgraph/msgraph-sdk-java-core
      ref: master
 
-pool:
-  vmImage: 'ubuntu-latest'
-
 variables:
   buildConfiguration: 'Release'
 
-steps:
-- template: java-templates/java-prepare.yml
-- template: common-templates/checkout.yml
-- template: java-templates/build-sdk-core.yml
-- template: java-templates/build-sdk.yml
-- template: java-templates/java-replace-local-path.yml
-  parameters:
-    projectFileName: JavaV1Tests
-    javaPreviewLibPath: '$(Build.SourcesDirectory)'
-- template: compile-run-tests-template.yml
-  parameters:
-    projectFileName: JavaV1Tests
-    runName: 'Preview Java Snippet Compilation Tests $(testRunTitle)'
+jobs:
+  - job: CompileJavaPreviewSnippets
+    displayName: 'Preview Java Snippet Compilation Tests'
+    pool: 'MsGraphBuildAgentsLinux'
+    timeoutInMinutes: 120
+
+    steps:
+    - template: java-templates/java-prepare.yml
+    - template: common-templates/checkout.yml
+    - template: java-templates/build-sdk-core.yml
+    - template: java-templates/build-sdk.yml
+    - template: java-templates/java-replace-local-path.yml
+      parameters:
+        projectFileName: JavaV1Tests
+        javaPreviewLibPath: '$(Build.SourcesDirectory)'
+    - template: compile-run-tests-template.yml
+      parameters:
+        projectFileName: JavaV1Tests
+        runName: 'Preview Java Snippet Compilation Tests $(testRunTitle)'
