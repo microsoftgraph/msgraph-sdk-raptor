@@ -13,13 +13,23 @@
 # ----------------------------------------------------------------------------------
 
 function Install-MicrosoftGraph(){
-    if(-not (Get-Module Microsoft.Graph -ListAvailable)){
-        Install-Module Microsoft.Graph -Force
+    if(-not (Get-Module Microsoft.Graph.Authentication -ListAvailable)){
+        Install-Module Microsoft.Graph.Authentication -Force
     }
 }
 
 function Install-Az(){
     if(-not (Get-Module Az -ListAvailable)){
         Install-Module Az -Force
+    }
+}
+
+function Install-ApiDocHttpParser(){
+    $apiDocPath = Join-Path $PSScriptRoot -ChildPath "apiDoctor"
+    $pkgfolder = Get-ChildItem -LiteralPath $apidocPath -Directory | Where-Object {$_.name -match "ApiDoctor"}
+    $apiDocHttpValidation = [System.IO.Path]::Combine($apidocPath, $pkgfolder.Name, "tools\ApiDoctor.Validation.dll")
+    if(-not (Test-Path $apiDocHttpValidation)){
+    Install-Package -Name ApiDoctor -ProviderName Nuget -Scope CurrentUser -Destination $apiDocPath -Force
+    [System.Reflection.Assembly]::LoadFrom($apiDocHttpValidation)
     }
 }
