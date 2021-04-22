@@ -3,11 +3,11 @@ Content-type: application/json
 
 {
   "accountEnabled": true,
-  "displayName": "Adele VanceTheThird",
+  "displayName": "Adele Vance",
   "mailNickname": "AdeleV",
-  "userPrincipalName": "FinalVance2@MsGraphRaptorBase.onmicrosoft.com",
+  "userPrincipalName": "Adele Vance@<tenant>.onmicrosoft.com",
   "passwordProfile" : {
     "forceChangePasswordNextSignIn": true,
-    "password": "xWwvJ]6NMw+bWH-d"
+    "password": "<password>"
   }
 }

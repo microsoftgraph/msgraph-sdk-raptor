@@ -14,9 +14,10 @@
 
 $envFile = "env.json"
 $env = @{}
-if(Test-Path -Path (Join-Path $PSScriptRoot $envFile)){
+if (Test-Path -Path (Join-Path $PSScriptRoot $envFile)) {
     $env = Get-Content (Join-Path $PSScriptRoot $envFile) | ConvertFrom-Json
-} else {
+}
+else {
     $env.MsGraphTenantIdentifier = ${env:MSGRAPHTENANTIDENTIFIER}
     $env.MsGraphClientIdentifier = ${env:MSGRAPHCLIENTIDENTIFIER}
     $env.MsGraphCertificateThumbprint = ${env:MSGRAPHCERTIFICATETHUMBPRINT}
@@ -28,13 +29,15 @@ if(Test-Path -Path (Join-Path $PSScriptRoot $envFile)){
     #DefaultUserIdentifier
     $env.DefaultUserIdentifier = ${env:DEFAULTUSERIDENTIFIER}
 }
-
-$PSDefaultParameterValues=@{
-"Connect-MgGraph:TenantId"=$env.MsGraphTenantIdentifier;
-"Connect-MgGraph:ClientId"=$env.MsGraphClientIdentifier;
-"Connect-MgGraph:CertificateThumbprint"=$env.MsGraphCertificateThumbprint;
-"Connect-AzAccount:TenantId"=$env.AzureTenantIdentifier;
-"Connect-AzAccount:ApplicationId"=$env.AzureClientIdentifier;
-"Connect-AzAccount:CertificateThumbprint"=$env.AzureCertificateThumbprint;
-"*:UserId"=$env.DefaultUserIdentifier
+$PSDefaultParameterValues = @{
+    "Connect-MgGraph:TenantId"                = $env.MsGraphTenantIdentifier;
+    "Connect-MgGraph:ClientId"                = $env.MsGraphClientIdentifier;
+    "Connect-MgGraph:CertificateThumbprint"   = $env.MsGraphCertificateThumbprint;
+    "Connect-AzAccount:TenantId"              = $env.AzureTenantIdentifier;
+    "Connect-AzAccount:ApplicationId"         = $env.AzureClientIdentifier;
+    "Connect-AzAccount:CertificateThumbprint" = $env.AzureCertificateThumbprint;
+    "*:UserId"                                = $env.DefaultUserIdentifier
+}
+function Setup-Environment() {
+    return $env
 }

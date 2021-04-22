@@ -12,24 +12,24 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------------
 
-function Install-MicrosoftGraph(){
-    if(-not (Get-Module Microsoft.Graph.Authentication -ListAvailable)){
+function Install-MicrosoftGraph() {
+    if (-not (Get-Module Microsoft.Graph.Authentication -ListAvailable)) {
         Install-Module Microsoft.Graph.Authentication -Force
     }
 }
 
-function Install-Az(){
-    if(-not (Get-Module Az -ListAvailable)){
+function Install-Az() {
+    if (-not (Get-Module Az -ListAvailable)) {
         Install-Module Az -Force
     }
 }
 
-function Install-ApiDocHttpParser(){
+function Install-ApiDocHttpParser() {
     $apiDocPath = Join-Path $PSScriptRoot -ChildPath "apiDoctor"
-    $pkgfolder = Get-ChildItem -LiteralPath $apidocPath -Directory | Where-Object {$_.name -match "ApiDoctor"}
-    $apiDocHttpValidation = [System.IO.Path]::Combine($apidocPath, $pkgfolder.Name, "tools\ApiDoctor.Validation.dll")
-    if(-not (Test-Path $apiDocHttpValidation)){
-    Install-Package -Name ApiDoctor -ProviderName Nuget -Scope CurrentUser -Destination $apiDocPath -Force
-    [System.Reflection.Assembly]::LoadFrom($apiDocHttpValidation)
+    if (-not (Test-Path $apiDocPath)) {
+        Install-Package -Name ApiDoctor -ProviderName Nuget -Scope CurrentUser -Destination $apiDocPath -Force
+        $pkgfolder = Get-ChildItem -LiteralPath $apidocPath -Directory | Where-Object { $_.name -match "ApiDoctor" }
+        $apiDocHttpValidation = [System.IO.Path]::Combine($apidocPath, $pkgfolder.Name, "tools\ApiDoctor.Validation.dll")
+        [System.Reflection.Assembly]::LoadFrom($apiDocHttpValidation)
     }
 }
