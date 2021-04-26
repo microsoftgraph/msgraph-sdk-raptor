@@ -1,13 +1,14 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 function Install-MicrosoftGraph() {
-    if (-not (Get-Module Microsoft.Graph.Authentication -ListAvailable)) {
-        Install-Module Microsoft.Graph.Authentication -Force -Scope CurrentUser
+    if (-not (Get-Module -FullyQualifiedName @{ModuleName="Microsoft.Graph.Authentication"; ModuleVersion="1.5.0"} -ListAvailable)) {
+        Install-Module Microsoft.Graph.Authentication -Force -AllowClobber -Scope CurrentUser -RequiredVersion 1.5.0
+        Import-Module Microsoft.Graph.Authentication -Force
     }
 }
 
 function Install-Az() {
     if (-not (Get-Module Az -ListAvailable)) {
-        Install-Module Az -Force -Scope CurrentUser -Scope CurrentUser
+        Install-Module Az -Force -AllowClobber -Scope CurrentUser -Scope CurrentUser
     }
 }
 

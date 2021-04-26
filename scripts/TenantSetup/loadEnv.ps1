@@ -1,30 +1,31 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 $envFile = "env.json"
-$env = @{}
+$envData = @{}
 if (Test-Path -Path (Join-Path $PSScriptRoot $envFile)) {
-    $env = Get-Content (Join-Path $PSScriptRoot $envFile) | ConvertFrom-Json
+    $envData = Get-Content (Join-Path $PSScriptRoot $envFile) | ConvertFrom-Json
 }
 else {
-    $env.MsGraphTenantIdentifier = ${env:MSGRAPHTENANTIDENTIFIER}
-    $env.MsGraphClientIdentifier = ${env:MSGRAPHCLIENTIDENTIFIER}
-    $env.MsGraphCertificateThumbprint = ${env:MSGRAPHCERTIFICATETHUMBPRINT}
+    $envData.MsGraphTenantIdentifier = ${env:MSGRAPH_TENANT_IDENTIFIER}
+    $envData.MsGraphClientIdentifier = ${env:MSGRAPH_CLIENT_IDENTIFIER}
+    $envData.MsGraphCertificateThumbprint = ${env:MSGRAPH_CERTIFICATE_THUMBPRINT}
 
-    $env.AzureTenantIdentifier = ${env:AZURETENANTIDENTIFIER}
-    $env.AzureClientIdentifier = ${env:AZURECLIENTIDENTIFIER}
-    $env.AzureCertificateThumbprint = ${env:AZURECERTIFICATETHUMBPRINT}
+    $envData.AzureTenantIdentifier = ${env:AZURE_TENANT_IDENTIFIER}
+    $envData.AzureClientIdentifier = ${env:AZURE_CLIENT_IDENTIFIER}
+    $envData.AzureCertificateThumbprint = ${env:AZURE_CERTIFICATE_THUMBPRINT}
 
     #DefaultUserIdentifier
-    $env.DefaultUserIdentifier = ${env:DEFAULTUSERIDENTIFIER}
+    $envData.DefaultUserIdentifier = ${env:DEFAULT_USER_IDENTIFIER}
 }
+
 $PSDefaultParameterValues = @{
-    "Connect-MgGraph:TenantId"                = $env.MsGraphTenantIdentifier;
-    "Connect-MgGraph:ClientId"                = $env.MsGraphClientIdentifier;
-    "Connect-MgGraph:CertificateThumbprint"   = $env.MsGraphCertificateThumbprint;
-    "Connect-AzAccount:TenantId"              = $env.AzureTenantIdentifier;
-    "Connect-AzAccount:ApplicationId"         = $env.AzureClientIdentifier;
-    "Connect-AzAccount:CertificateThumbprint" = $env.AzureCertificateThumbprint;
-    "*:UserId"                                = $env.DefaultUserIdentifier
+    "Connect-MgGraph:TenantId"                = $envData.MsGraphTenantIdentifier;
+    "Connect-MgGraph:ClientId"                = $envData.MsGraphClientIdentifier;
+    "Connect-MgGraph:CertificateThumbprint"   = $envData.MsGraphCertificateThumbprint;
+    "Connect-AzAccount:TenantId"              = $envData.AzureTenantIdentifier;
+    "Connect-AzAccount:ApplicationId"         = $envData.AzureClientIdentifier;
+    "Connect-AzAccount:CertificateThumbprint" = $envData.AzureCertificateThumbprint;
+    "*:UserId"                                = $envData.DefaultUserIdentifier
 }
 function Setup-Environment() {
-    return $env
+    return $envData
 }
