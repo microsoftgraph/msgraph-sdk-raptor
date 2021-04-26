@@ -1,5 +1,18 @@
 # Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 BeforeAll {
+    $loadEnvironment = Join-Path $PSScriptRoot 'loadEnv.ps1'
+    $installTools = Join-Path $PSScriptRoot 'Install-Tools.ps1'
+    $treeUtil = Join-Path $PSScriptRoot 'treeUtils.ps1'
+    . $loadEnvironment
+    . $installTools
+    . $treeUtil
+
+    Install-MicrosoftGraph
+
+    Connect-MgGraph
+
+    Install-ApiDocHttpParser
+
     function Get-RaptorIdentifiers() {
         if (Test-Path "RaptorIdentifiers.json") {
             $currentRaptorData = Get-Content "RaptorIdentifiers.json" -Raw |  ConvertFrom-Json -AsHashtable
@@ -17,34 +30,33 @@ BeforeAll {
             "Method"     = $tags[1]
         }
     }
-    $loadEnvironment = Join-Path $PSScriptRoot 'loadEnv.ps1'
-    $installTools = Join-Path $PSScriptRoot 'Install-Tools.ps1'
-    $treeUtil = Join-Path $PSScriptRoot 'treeUtils.ps1'
-    . $loadEnvironment
-    . $installTools
-    . $treeUtil
+    function Get-HttpRequests($entity){
+        Write-Debug $entity
+        $GETHttpRequest = Get-Content ".\TenantHttpData\$entity\GET\$entity.http" -Raw
+        $parsedGETHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($GETHttpRequest)
+        $POSTHttpRequest = Get-Content ".\TenantHttpData\$entity\POST\$entity.http" -Raw
+        $parsedPOSTHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($POSTHttpRequest)
+        return @{
+            "GET" = $parsedGETHttpRequest
+            "POST" = $parsedPOSTHttpRequest
+        }
+    }
 
     $environment = Setup-Environment
     $raptorIdentifiers = Get-RaptorIdentifiers
-
-    Install-MicrosoftGraph
-
-    Connect-MgGraph
-
-    Install-ApiDocHttpParser
 }
 
-Describe 'Users' -Tag "User" {
-    BeforeEach {
-        $GETHttpRequest = Get-Content .\TenantHttpData\Users\GET\user.http -Raw
-        $parsedGETHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($GETHttpRequest)
-        $POSTHttpRequest = Get-Content .\TenantHttpData\Users\POST\user.http -Raw
-        $parsedPOSTHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($POSTHttpRequest)
+Describe 'User' -Tag "User" {
+    BeforeAll {
+        $httpRequests = Get-HttpRequests("User")
     }   
     It "CREATE User" -Tag "userPrincipalName,POST" {
-        $method = $parsedGETHttpRequest.Method
-        $uri = $parsedGETHttpRequest.Url
-        $entityBodyData = $parsedPOSTHttpRequest.Body | ConvertFrom-Json -AsHashtable
+        $GETRequest = $httpRequests["GET"]
+        $POSTRequest = $httpRequests["POST"]
+
+        $method = $GETRequest.Method
+        $uri = $GETRequest.Url
+        $entityBodyData = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
 
         #Execute GET ALL Request
         $entities = Invoke-MgGraphRequest -Method $method -Uri $uri -OutputType PSObject
@@ -55,10 +67,10 @@ Describe 'Users' -Tag "User" {
         $entity = $entities.value | Where-Object -Property $primaryKey -eq $entityBodyData[$primaryKey]
 
         if ($null -eq $entity) {
-            $createMethod = $parsedPOSTHttpRequest.Method
-            $createUri = $parsedPOSTHttpRequest.Url
-            $createBody = $parsedPOSTHttpRequest.Body | ConvertFrom-Json -AsHashtable
-            $createContentType = $parsedPOSTHttpRequest.ContentType
+            $createMethod = $POSTRequest.Method
+            $createUri = $POSTRequest.Url
+            $createBody = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
+            $createContentType = $POSTRequest.ContentType
         
             $createdEntity = Invoke-MgGraphRequest -Method $createMethod -Uri $createUri -Body $createBody -ContentType $createContentType -OutputType PSObject
             $createdEntity | Should -Not -BeNullOrEmpty
@@ -72,17 +84,17 @@ Describe 'Users' -Tag "User" {
         }
     } 
 }
-Describe 'Applications' -Tag "Application" {
-    BeforeEach {
-        $GETHttpRequest = Get-Content .\TenantHttpData\Applications\GET\application.http -Raw
-        $parsedGETHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($GETHttpRequest)
-        $POSTHttpRequest = Get-Content .\TenantHttpData\Applications\POST\application.http -Raw
-        $parsedPOSTHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($POSTHttpRequest)
+Describe 'Application' -Tag "Application" {
+    BeforeAll {
+       $httpRequests = Get-HttpRequests("Application")
     }   
     It "CREATE Application" -Tag "displayName,POST" {
-        $method = $parsedGETHttpRequest.Method
-        $uri = $parsedGETHttpRequest.Url
-        $entityBodyData = $parsedPOSTHttpRequest.Body | ConvertFrom-Json -AsHashtable
+        $GETRequest = $httpRequests["GET"]
+        $POSTRequest = $httpRequests["POST"]
+        
+        $method = $GETRequest.Method
+        $uri = $GETRequest.Url
+        $entityBodyData = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
 
         #Execute GET ALL Request
         $entities = Invoke-MgGraphRequest -Method $method -Uri $uri -OutputType PSObject
@@ -94,10 +106,10 @@ Describe 'Applications' -Tag "Application" {
         $entity = $entities.value | Where-Object -Property $primaryKey -eq $entityBodyData[$primaryKey]
 
         if ($null -eq $entity) {
-            $createMethod = $parsedPOSTHttpRequest.Method
-            $createUri = $parsedPOSTHttpRequest.Url
-            $createBody = $parsedPOSTHttpRequest.Body | ConvertFrom-Json -AsHashtable
-            $createContentType = $parsedPOSTHttpRequest.ContentType
+            $createMethod = $POSTRequest.Method
+            $createUri = $POSTRequest.Url
+            $createBody = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
+            $createContentType = $POSTRequest.ContentType
         
             $createdEntity = Invoke-MgGraphRequest -Method $createMethod -Uri $createUri -Body $createBody -ContentType $createContentType -OutputType PSObject
             $createdEntity | Should -Not -BeNullOrEmpty
