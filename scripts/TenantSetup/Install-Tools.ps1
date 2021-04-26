@@ -7,7 +7,7 @@ function Install-MicrosoftGraph() {
 
 function Install-Az() {
     if (-not (Get-Module Az -ListAvailable)) {
-        Install-Module Az -Force -Scope CurrentUser
+        Install-Module Az -Force -Scope CurrentUser -Scope CurrentUser
     }
 }
 
