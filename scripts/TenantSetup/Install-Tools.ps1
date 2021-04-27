@@ -20,4 +20,10 @@ function Install-ApiDocHttpParser() {
         $apiDocHttpValidation = [System.IO.Path]::Combine($apidocPath, $pkgfolder.Name, "tools\ApiDoctor.Validation.dll")
         [System.Reflection.Assembly]::LoadFrom($apiDocHttpValidation)
     }
+    else {
+        $pkgfolder = Get-ChildItem -LiteralPath $apidocPath -Directory | Where-Object { $_.name -match "ApiDoctor" }
+        $apiDocHttpValidation = [System.IO.Path]::Combine($apidocPath, $pkgfolder.Name, "tools\ApiDoctor.Validation.dll")
+        [System.Reflection.Assembly]::LoadFrom($apiDocHttpValidation)   
+    }
+    
 }

@@ -13,6 +13,9 @@ BeforeAll {
 
     Install-ApiDocHttpParser
 
+    Import-Module (Join-Path $PSScriptRoot \loadEnvDelegatedAcess.ps1)
+
+
     function Get-RaptorIdentifiers() {
         if (Test-Path "RaptorIdentifiers.json") {
             $currentRaptorData = Get-Content "RaptorIdentifiers.json" -Raw |  ConvertFrom-Json -AsHashtable
@@ -24,18 +27,45 @@ BeforeAll {
     }
     function Get-MethodAndPrimaryKey($testTag) {
         $tags = $testTag -split ","
-        
+
         return @{
             "PrimaryKey" = $tags[0]
             "Method"     = $tags[1]
         }
     }
-    function Get-HttpRequests($entity){
+    function Get-HttpRequests{
+        Param(
+            [Parameter(Mandatory=$true)]
+            [String]
+            $entity,
+
+            [Parameter(Mandatory=$false)]
+            [hashtable]
+            $urlValues
+        )
+
         Write-Debug $entity
         $GETHttpRequest = Get-Content ".\TenantHttpData\$entity\GET\$entity.http" -Raw
         $parsedGETHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($GETHttpRequest)
         $POSTHttpRequest = Get-Content ".\TenantHttpData\$entity\POST\$entity.http" -Raw
         $parsedPOSTHttpRequest = [ApiDoctor.Validation.Http.HttpParser]::ParseHttpRequest($POSTHttpRequest)
+
+        if (($parsedGETHttpRequest.Url -like '*/users/*') -or ($parsedGETHttpRequest.Url -like '*/me/*'))
+        {
+            Write-Debug "Requesting delegated acess for $entity GET request"
+            $path = ($parsedGETHttpRequest.Url -split "v1.0")[1]
+            $auth = Request-MgDelegatedAccess $path "GET"
+            # Confirm auth was successful
+
+        }
+        if (($parsedPOSTHttpRequest.Url -like '*/users/*') -or ($parsedPOSTHttpRequest.Url -like '*/me/*'))
+        {
+            Write-Debug "Requesting delegated acess for $entity POST request"
+            $path =  $path = ($parsedGETHttpRequest.Url -split "v1.0")[1]
+            $auth = Request-MgDelegatedAccess $path "POST"
+            # Confirm auth was successful
+
+        }
         return @{
             "GET" = $parsedGETHttpRequest
             "POST" = $parsedPOSTHttpRequest
@@ -49,7 +79,7 @@ BeforeAll {
 Describe 'User' -Tag "User" {
     BeforeAll {
         $httpRequests = Get-HttpRequests("User")
-    }   
+    }
     It "CREATE User" -Tag "userPrincipalName,POST" {
         $GETRequest = $httpRequests["GET"]
         $POSTRequest = $httpRequests["POST"]
@@ -71,7 +101,7 @@ Describe 'User' -Tag "User" {
             $createUri = $POSTRequest.Url
             $createBody = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
             $createContentType = $POSTRequest.ContentType
-        
+
             $createdEntity = Invoke-MgGraphRequest -Method $createMethod -Uri $createUri -Body $createBody -ContentType $createContentType -OutputType PSObject
             $createdEntity | Should -Not -BeNullOrEmpty
 
@@ -82,16 +112,16 @@ Describe 'User' -Tag "User" {
             $message = "Entity Exists: TestName:{0} EntityId: {1}" -f $____Pester.CurrentTest.Name, $raptorIdentifiers.user._value
             Set-ItResult -Skipped -Because $message
         }
-    } 
+    }
 }
 Describe 'Application' -Tag "Application" {
     BeforeAll {
        $httpRequests = Get-HttpRequests("Application")
-    }   
+    }
     It "CREATE Application" -Tag "displayName,POST" {
         $GETRequest = $httpRequests["GET"]
         $POSTRequest = $httpRequests["POST"]
-        
+
         $method = $GETRequest.Method
         $uri = $GETRequest.Url
         $entityBodyData = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
@@ -110,7 +140,7 @@ Describe 'Application' -Tag "Application" {
             $createUri = $POSTRequest.Url
             $createBody = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
             $createContentType = $POSTRequest.ContentType
-        
+
             $createdEntity = Invoke-MgGraphRequest -Method $createMethod -Uri $createUri -Body $createBody -ContentType $createContentType -OutputType PSObject
             $createdEntity | Should -Not -BeNullOrEmpty
 
@@ -121,7 +151,49 @@ Describe 'Application' -Tag "Application" {
             $message = "Entity Exists: TestName:{0} EntityId: {1}" -f $____Pester.CurrentTest.Name, $raptorIdentifiers.application._value
             Set-ItResult -Skipped -Because $message
         }
-    } 
+    }
+}
+Describe 'TodoTaskList' -Tag "TodoTaskList" {
+    BeforeAll {
+        $userId = $raptorIdentifiers.User._value # ?? throw "RaptorIdentifiers.User._value not found "
+        $userId = "69b38f65-2c3d-498b-8acd-acedb671bf33"
+        $paramstable = @{userId = $userId}
+        $httpRequests = Get-HttpRequests "TodoTaskList" $paramstable
+    }
+    It "GetOrCREATE TodoTaskList" -Tag "displayName" {
+        $GETRequest = $httpRequests["GET"]
+        $POSTRequest = $httpRequests["POST"]
+
+        $method = $GETRequest.Method
+        $uri = $GETRequest.Url
+        $entityBodyData = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
+
+        #Execute GET ALL Request
+        $entities = Invoke-MgGraphRequest -Method $method -Uri $uri -OutputType PSObject
+
+        $methodAndPrimaryKey = Get-MethodAndPrimaryKey($____Pester.CurrentTest.Tag)
+        $primaryKey = $methodAndPrimaryKey["PrimaryKey"]
+
+        #Check if Entity Exists
+        $entity = $entities.value | Where-Object -Property $primaryKey -eq $entityBodyData[$primaryKey]
+
+        if ($null -eq $entity) {
+            $createMethod = $POSTRequest.Method
+            $createUri = $POSTRequest.Url
+            $createBody = $POSTRequest.Body | ConvertFrom-Json -AsHashtable
+            $createContentType = $POSTRequest.ContentType
+
+            $createdEntity = Invoke-MgGraphRequest -Method $createMethod -Uri $createUri -Body $createBody -ContentType $createContentType -OutputType PSObject
+            $createdEntity | Should -Not -BeNullOrEmpty
+
+            $raptorIdentifiers.todoTaskList._value = $createdEntity.Id
+        }
+        else {
+            $raptorIdentifiers.todoTaskList._value = $entity.Id
+            $message = "Entity Exists: TestName:{0} EntityId: {1}" -f $____Pester.CurrentTest.Name, $raptorIdentifiers.todoTaskList._value
+            Set-ItResult -Skipped -Because $message
+        }
+    }
 }
 AfterAll {
     $raptorIdentifiers | ConvertTo-Json | Out-File "RaptorIdentifiers.json"
