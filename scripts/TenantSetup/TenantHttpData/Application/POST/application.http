@@ -1,0 +1,7 @@
+POST https://graph.microsoft.com/v1.0/applications
+Content-type: application/json
+Content-length: 67
+
+{
+  "displayName": "Display name 6"
+}
