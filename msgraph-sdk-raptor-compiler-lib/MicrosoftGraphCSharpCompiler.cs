@@ -197,16 +197,24 @@ namespace MsGraphSDKSnippetsCompiler
             using var scopesRequest = new HttpRequestMessage(HttpMethod.Get, $"https://graphexplorerapi.azurewebsites.net/permissions?requesturl={path}&method={httpRequestMessage.Method}");
             scopesRequest.Headers.Add("Accept-Language", "en-US");
 
-            using var response = await httpClient.SendAsync(scopesRequest).ConfigureAwait(false);
-            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                using var response = await httpClient.SendAsync(scopesRequest).ConfigureAwait(false);
+                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var scopes = JsonSerializer.Deserialize<Scope[]>(responseString);
+                var fullReadScopes = scopes
+                    .ToList()
+                    .Where(x => x.value.Contains("Read") && !x.value.Contains("Write"))
+                    .Select(x => $"https://graph.microsoft.com/{ x.value }")
+                    .ToArray();
 
-            var scopes = JsonSerializer.Deserialize<Scope[]>(responseString);
-
-            return scopes
-                .ToList()
-                .Where(x => x.value.Contains("Read") && !x.value.Contains("Write"))
-                .Select(x => $"https://graph.microsoft.com/{ x.value }")
-                .ToArray();
+                return fullReadScopes.Length == 0 ? null : fullReadScopes;
+            }
+            catch (Exception)
+            {
+                // some URLs don't return scopes from the permissions endpoint of DevX API
+                return null;
+            }
         }
 
         /// <summary>
