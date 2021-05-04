@@ -2,6 +2,7 @@ param(
     [bool]$IsLocalRun = $false,
     [bool]$GenerateLinqPadOutputInLocalRun = $false,
     [string]$DocsRepoCheckoutDirectory = "C:/github",
+    [string]$CertificateThumbprint = "",
     [Parameter(Mandatory=$true)][string]$TenantID,
     [Parameter(Mandatory=$true)][string]$ClientID,
     [Parameter(Mandatory=$true)][string]$ClientSecret,
@@ -22,6 +23,7 @@ $json = @{
     Password = $Password;
     Authority = $Authority;
     RaptorStorageConnectionString = $RaptorStorageConnectionString;
+    CertificateThumbprint = $CertificateThumbprint
 }
 
 $repoRoot = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
