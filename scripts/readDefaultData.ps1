@@ -192,6 +192,89 @@ $subscribedSku = req -url "subscribedSkus" |
 $subscribedSku.id
 $identifiers.subscribedSku._value = $subscribedSku.id
 
+$site = req -url "sites?search=site" |
+    Where-Object { $_.displayName -eq 'The Landing' }
+    Select-Object -First 1
+$site.id
+$identifiers.site._value = $site.id
+
+$siteList = req -url "sites/$($site.id)/lists" |
+    Where-Object {$_.displayName -eq "Demo Docs"}
+    Select-Object -First 1
+$siteList.id
+$identifiers.site.list._value=$siteList.id
+
+$siteListItem = req -url "sites/$($site.id)/lists/$($siteList.id)/items" |
+    Select-Object -First 1
+$siteListItem.id
+$identifiers.site.list.listItem._value=$siteListItem.id
+
+$siteListItemVersion = req -url "sites/$($site.id)/lists/$($siteList.id)/items/$($siteListItem.id)/versions" |
+    Select-Object -First 1
+$siteListItemVersion.id
+$identifiers.site.list.listItem.listItemVersion._value=$siteListItem.id
+
+#Missing Permission. Need to Create Permission on Root Site
+#Azure AD Permission Issue. 
+#https://docs.microsoft.com/en-us/graph/api/site-post-permissions?view=graph-rest-1.0&tabs=http
+$sitePermission = req -url "sites/$($site.id)/permissions" |
+    Select-Object -First 1
+$sitePermission.id
+$identifiers.site.permission._value=$sitePermission.id
+
+$servicePrincipal = req -url "servicePrincipals" |
+    Where-Object {$_.displayName -eq "Microsoft Insider Risk Management"}
+    Select-Object -First 1
+$servicePrincipal.id
+$identifiers.servicePrincipal._value = $servicePrincipal.id
+
+$permissionGrantPolicy = req -url "policies/permissionGrantPolicies" |
+    Where-Object {$_.displayName -eq "All application permissions, for any client app"}
+    Select-Object -First 1
+$permissionGrantPolicy.id
+$identifiers.permissionGrantPolicy._value = $permissionGrantPolicy.id
+
+#Tenant has no messages with Attachments
+$message = req -url "users/$($identifiers.user._value)/messages?`$orderBy=createdDateTime asc" | 
+    Where-Object {$_.subject -eq "Get started with your new Enterprise Mobility + Security E5 trial"}
+    Select-Object -First 1
+$message.id
+$identifiers.message._value = $message.id
+
+#When Message with attachment is created, this should work
+#TODO: Create Message with Attachment
+$attachmentMessage = req -url "users/$($identifiers.user._value)/messages?`$filter=hasAttachments eq true" | 
+    Select-Object -First 1
+$attachment = req -url "users/$($identifiers.user._value)/messages/$($attachmentMessage.id)/attachments" |
+    Select-Object -First 1
+$identifiers.message.attachment._value = $attachment.id
+
+#OData Request is not Supported. 
+$messageExtensions = req -url "users/$($identifiers.user._value)/messages/$($identifiers.message._value)/extensions" |
+    Select-Object -First 1
+$messageExtensions.id
+$identifiers.message.extension._value = $messageExtensions.id
+
+$calendarGroup = req -url "users/$($identifiers.user._value)/calendarGroups" |
+    Where-Object {$_.name -eq "My Calendars"}
+    Select-Object -First 1
+
+$calendarGroup.id
+$identifiers.calendarGroup._value=$calendarGroup.id
+
+$orgContact = req -url "contacts" |
+    Select-Object -First 1
+
+$orgContact.id
+$identifiers.orgContact._value = $orgContact.id
+
+#Contact Folder is Missing from Tenant
+$contactFolder = req -url "users/$($identifiers.user._value)/contactFolders" | 
+    Select-Object -First 1
+
+$contactFolder.id
+$identifiers.contactFolder._value=$contactFolder.id
+
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 # $test = req -url "planner/tasks"
