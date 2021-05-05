@@ -1,4 +1,6 @@
-$appSettingsPath = Join-Path $PSScriptRoot "../msgraph-sdk-raptor-compiler-lib/appsettings.json"
+$scriptsPath = $PWD.Path
+
+$appSettingsPath = Join-Path $scriptsPath "../msgraph-sdk-raptor-compiler-lib/appsettings.json"
 $appSettings = Get-Content $appSettingsPath | ConvertFrom-Json
 
 if ( !$appSettings.CertificateThumbprint -or !$appSettings.ClientID -or !$appSettings.Username -or !$appSettings.TenantID)
@@ -6,7 +8,7 @@ if ( !$appSettings.CertificateThumbprint -or !$appSettings.ClientID -or !$appSet
     Write-Error -ErrorAction Stop -Message "please provide CertificateThumbprint, ClientID, Username and TenantID in appsettings.json"
 }
 
-$identifiersPath = Join-Path $PSScriptRoot "../msgraph-sdk-raptor-compiler-lib/identifiers.json"
+$identifiersPath = Join-Path $scriptsPath "../msgraph-sdk-raptor-compiler-lib/identifiers.json"
 $identifiers = Get-Content $identifiersPath | ConvertFrom-Json
 
 $admin = "MOD Administrator"
@@ -32,6 +34,17 @@ $user = req -url "users"  |
     Select-Object -First 1
 $user.id
 $identifiers.user._value = $user.id
+
+$calendarPermission = req -url "users/$($user.id)/calendar/calendarPermissions" |
+    Select-Object -First 1
+$calendarPermission.id
+$identifiers.user.calendarPermission._value = $calendarPermission.id
+
+$userScopeTeamsAppInstallation = req -url "users/$($user.id)/teamwork/installedApps?`$expand=teamsAppDefinition" |
+    Where-Object { $_.teamsAppDefinition.displayName -eq "Teams" }
+    Select-Object -First 1
+$userScopeTeamsAppInstallation.id
+$identifiers.user.userScopeTeamsAppInstallation._value = $userScopeTeamsAppInstallation.id
 
 $team = req -url "groups" |
     Where-Object { $_.resourceProvisioningOptions -eq "Team" -and $_.displayName -eq "U.S. Sales"} |
@@ -147,12 +160,11 @@ $conditionalAccessPolicy = req -url "identity/conditionalAccess/policies" |
 $conditionalAccessPolicy.id
 $identifiers.conditionalAccessPolicy._value = $conditionalAccessPolicy.id
 
-# not in the default list of identifiers
-# $oauth2PermissionGrant = req -url "oauth2PermissionGrants" |
-#     Where-Object { $_.scope.Trim() -eq "user_impersonation" }
-#     Select-Object -First 1
-# $oauth2PermissionGrant.id
-# $identifiers.oAuth2PermissionGrant._value = $oauth2PermissionGrant.id
+$oauth2PermissionGrant = req -url "oauth2PermissionGrants" |
+    Where-Object { $_.scope.Trim() -eq "user_impersonation" }
+    Select-Object -First 1
+$oauth2PermissionGrant.id
+$identifiers.oAuth2PermissionGrant._value = $oauth2PermissionGrant.id
 
 $organization = req -url "organization" |
     Where-Object { $_.displayName -eq "Contoso" } |
@@ -160,9 +172,29 @@ $organization = req -url "organization" |
 $organization.id
 $identifiers.organization._value = $organization.id
 
+# id is not dynamic per tenant
+$identifiers.permissionGrantPolicy._value = "microsoft-all-application-permissions"
+$identifiers.secureScoreControlProfile._value = "OneAdmin"
+
+$schemaExtension = req -url "schemaExtensions?`$filter=description eq 'Global settings'" |
+    Select-Object -First 1
+$schemaExtension.id
+$identifiers.schemaExtension._value = $schemaExtension.id
+
+$secureScore = req -url "security/secureScores?`$top=1" |
+    Select-Object -First 1
+$secureScore.id
+$identifiers.secureScore._value = $secureScore.id
+
+$subscribedSku = req -url "subscribedSkus" |
+    Where-Object { $_.skuPartNumber -eq 'ENTERPRISEPACK'}
+    Select-Object -First 1
+$subscribedSku.id
+$identifiers.subscribedSku._value = $subscribedSku.id
+
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
-# $test = req -url "informationProtection/threatAssessmentRequests"
+# $test = req -url "planner/tasks"
 
 <#
 $msAppActsAsHeader = @{ "MS-APP-ACTS-AS" = $user.id }
@@ -262,3 +294,71 @@ $places
 # no data
 # $threatAssessmentRequest = req -url "informationProtection/threatAssessmentRequests" |
 #     Select-Object -First 1
+
+# 401 Unauthorized
+# $test = req -url "planner/buckets"
+# $test = req -url "planner/plans"
+# $test = req -url "planner/tasks"
+
+# no data
+# $test = req -url "policies/activityBasedTimeoutPolicies"
+
+# 404 No HTTP resource was found that matches the request URI 'https://mface.windowsazure.com/odata/authenticationMethodsPolicy/authenticationMethodConfigurations
+# $test = req -url "policies/authenticationMethodsPolicy/authenticationMethodConfigurations"
+
+# no data
+# $test = req -url "policies/claimsMappingPolicies"
+
+# 403
+# $test = req -url "policies/featureRolloutPolicies"
+
+# no data
+# $test = req -url "policies/homeRealmDiscoveryPolicies"
+
+# no data
+# $test = req -url "policies/tokenIssuancePolicies"
+
+# no data
+# $test = req -url "policies/tokenLifetimePolicies"
+
+# 403
+# $test = req -url "print/connectors"
+
+# no data
+# $test = req -url "print/printers"
+
+# 403
+# $test = req -url "print/services"
+
+# 403
+# $test = req -url "print/shares"
+
+# 403
+# $test = req -url "print/taskDefinitions"
+
+# 403
+# $test = req -url "reports/dailyPrintUsageByPrinter"
+
+# 403
+# $test = req -url "reports/dailyPrintUsageByUser"
+
+# no data
+# $test = req -url "security/alerts"
+
+# 400 bad request
+# $test = req -url "shares/id"
+
+# no data
+# $test = req -url "subscriptions"
+
+# no data
+# req -url "users/$($user.id)/authentication/microsoftAuthenticatorMethods"
+
+# no data
+# req -url "users/$($user.id)/authentication/windowsHelloForBusinessMethods"
+
+# $test = req -url "users/$($user.id)/calendar/calendarPermissions"
+
+# $test = req -url "subscriptions"
+
+
