@@ -430,5 +430,8 @@
   },
   "workforceIntegration": {
     "_value": "<workforceIntegration>"
+  },
+  "oAuth2PermissionGrant": {
+    "_value": "<oAuth2PermissionGrant>"
   }
 }
