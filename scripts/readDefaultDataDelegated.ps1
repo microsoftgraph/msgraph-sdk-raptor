@@ -197,3 +197,8 @@ $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 # 500
 # reqDelegated -url "reports/dailyPrintUsageByUser"
+
+# no data
+# reqDelegated -url "identityGovernance/termsOfUse/agreements"
+# reqDelegated -url "identityGovernance/appConsent/appConsentRequests"
+# reqDelegated -url "identityProviders"

@@ -359,18 +359,6 @@ $workforceIntegrations
 #     Select-Object -First 1
 
 # no data
-# $appContentRequest = req -url "identityGovernance/appConsent/appConsentRequests" |
-#     Select-Object -First 1
-
-# 500
-# $agreement = req -url "identityGovernance/termsOfUse/agreements" |
-#     Select-Object -First 1
-
-# no data
-# $identityProvider = req -url "identityProviders" |
-#     Select-Object -First 1
-
-# no data
 # $threatAssessmentRequest = req -url "informationProtection/threatAssessmentRequests" |
 #     Select-Object -First 1
 
