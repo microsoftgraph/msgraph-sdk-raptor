@@ -376,11 +376,6 @@ $workforceIntegrations
 # $threatAssessmentRequest = req -url "informationProtection/threatAssessmentRequests" |
 #     Select-Object -First 1
 
-# 401 Unauthorized
-# $test = req -url "planner/buckets"
-# $test = req -url "planner/plans"
-# $test = req -url "planner/tasks"
-
 # no data
 # $test = req -url "policies/activityBasedTimeoutPolicies"
 
