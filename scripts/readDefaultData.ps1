@@ -34,6 +34,7 @@ $user = req -url "users"  |
     Select-Object -First 1
 $user.id
 $identifiers.user._value = $user.id
+$identifiers.directoryObject._value = $user.id
 
 $calendarPermission = req -url "users/$($user.id)/calendar/calendarPermissions" |
     Select-Object -First 1
@@ -329,9 +330,6 @@ $workforceIntegrations
 
 # can't query
 # $test = req -url "directory/deletedItems"
-
-# can't query
-# $test = req -url "directoryObjects"
 
 # $educationClasses = req -url "education/classes"
 # $educationClasses
