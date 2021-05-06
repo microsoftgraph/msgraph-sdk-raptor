@@ -292,7 +292,8 @@ namespace MsGraphSDKSnippetsCompiler
             // TODO: https://github.com/microsoftgraph/msgraph-sdk-raptor/issues/164
             return codeSnippet.Contains("graphClient.Me") ||
                 codeSnippet.Contains("graphClient.Education.Me") ||
-                codeSnippet.Contains("graphClient.Users[\"");
+                codeSnippet.Contains("graphClient.Users[\"") ||
+                codeSnippet.Contains("graphClient.Planner");
         }
     }
 }
