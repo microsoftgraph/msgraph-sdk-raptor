@@ -311,8 +311,8 @@ $workforceIntegrations = req -headers $msAppActsAsHeader -url "teamwork/workforc
 $workforceIntegrations
 #>
 
-$places = req -headers $msAppActsAsHeader -url "places"
-$places
+# $places = req -headers $msAppActsAsHeader -url "places"
+# $places
 
 # data missing
 # $test = req -url "contracts"
