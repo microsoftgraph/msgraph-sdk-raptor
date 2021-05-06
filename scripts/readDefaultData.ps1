@@ -275,35 +275,6 @@ $contactFolder = req -url "users/$($identifiers.user._value)/contactFolders" |
 $contactFolder.id
 $identifiers.contactFolder._value=$contactFolder.id
 
-#Get Group with plans
-#WorkAround Since highlevel Planner doesn't work without Owner (group or user)
-$groupWithPlan = req -url "groups" |
-    Where-Object {$_.displayName -eq "Mark 8 Project Team"}
-    Select-Object -First 1
-$groupWithPlan.id
-#Get Planner via Group
-#HTTP 401
-$plannerPlan = req -url "groups/$($groupWithPlan.id)/planner/plans" |
-    Where-Object {$_.title -eq "Mark8 project tracking"}
-    Select-Object -First 1
-
-$plannerPlan.id
-$identifiers.plannerPlan._value=$plannerPlan.Id
-
-$plannerTask = req -url "groups/$($groupWithPlan.id)/planner/plans/$($plannerPlan.id)/tasks" |
-    Where-Object {$_.title -eq "Organize Catering"}
-    Select-Object -First 1
-
-$plannerTask.id
-$identifiers.plannerTask._value=$plannerTask.Id
-
-$plannerBucket = req -url "groups/$($groupWithPlan.id)/planner/plans/$($plannerPlan.id)/buckets" |
-    Where-Object {$_.title -eq "After party"}
-    Select-Object -First 1
-
-$plannerBucket.id
-$identifiers.plannerBucket._value=$plannerBucket.Id
-
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 <#

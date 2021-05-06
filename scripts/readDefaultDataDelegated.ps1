@@ -55,7 +55,7 @@ function reqDelegated
     )
 
     $token = getToken -path "/$url" -scopeOverride $scopeOverride
-    Connect-MgGraph -AccessToken $token | Write-Host
+    Connect-MgGraph -AccessToken $token | Out-Null
 
     $response = Invoke-MgGraphRequest -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject
     $response.value
@@ -71,5 +71,32 @@ $todoTaskList = reqDelegated -url "me/todo/lists" -scopeOverride "Tasks.Read" |
     Select-Object -First 1
 $todoTaskList.id
 $identifiers.todoTaskList._value = $todoTaskList.id
+
+#Get Group with plans
+$groupWithPlan = reqDelegated -url "groups" |
+    Where-Object {$_.displayName -eq "Mark 8 Project Team"}
+    Select-Object -First 1
+$groupWithPlan.id
+#Get Planner via Group
+$plannerPlan = reqDelegated -url "groups/$($groupWithPlan.id)/planner/plans" |
+    Where-Object {$_.title -eq "Mark8 project tracking"}
+    Select-Object -First 1
+
+$plannerPlan.id
+$identifiers.plannerPlan._value=$plannerPlan.Id
+
+$plannerTask = reqDelegated -url "planner/plans/$($plannerPlan.id)/tasks" |
+    Where-Object {$_.title -eq "Organize Catering"}
+    Select-Object -First 1
+
+$plannerTask.id
+$identifiers.plannerTask._value=$plannerTask.Id
+
+$plannerBucket = reqDelegated -url "planner/plans/$($plannerPlan.id)/buckets" |
+    Where-Object {$_.name -eq "After party"}
+    Select-Object -First 1
+
+$plannerBucket.id
+$identifiers.plannerBucket._value=$plannerBucket.Id
 
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
