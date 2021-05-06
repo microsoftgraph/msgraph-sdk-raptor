@@ -293,7 +293,8 @@ namespace MsGraphSDKSnippetsCompiler
             return codeSnippet.Contains("graphClient.Me") ||
                 codeSnippet.Contains("graphClient.Education.Me") ||
                 codeSnippet.Contains("graphClient.Users[\"") ||
-                codeSnippet.Contains("graphClient.Planner");
+                codeSnippet.Contains("graphClient.Planner") ||
+                codeSnippet.Contains("graphClient.Print");
         }
     }
 }
