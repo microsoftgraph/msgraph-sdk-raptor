@@ -346,14 +346,6 @@ $workforceIntegrations
 # $extension.id
 # $identifiers.group.conversationThread.post.extension._value = $extension.id
 
-# resource not found for the segment
-# $groupSetting = req -url "groupSettings" |
-#     Select-Object -First 1
-
-# resource not found for the segment
-# $groupSettingTemplate = req -url "groupSettingTemplates" |
-#     Select-Object -First 1
-
 # no data
 # $namedLocation = req -url "identity/conditionalAccess/namedLocations" |
 #     Select-Object -First 1

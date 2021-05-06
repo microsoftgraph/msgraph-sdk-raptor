@@ -172,6 +172,13 @@ $printService = reqDelegated -url "print/services" |
 $printService.id
 $identifiers.printService._value = $printService.id
 
+$groupSettingTemplate = reqDelegated -url "groupSettingTemplates" |
+    Where-Object { $_.displayName -eq "Prohibited Names Settings" } |
+    Select-Object -First 1
+
+$groupSettingTemplate.id
+$identifiers.groupSettingTemplate._value = $groupSettingTemplate.id
+
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 # no data
@@ -202,3 +209,6 @@ $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 # reqDelegated -url "identityGovernance/termsOfUse/agreements"
 # reqDelegated -url "identityGovernance/appConsent/appConsentRequests"
 # reqDelegated -url "identityProviders"
+
+# no data
+# reqDelegated -url "groupSettings"
