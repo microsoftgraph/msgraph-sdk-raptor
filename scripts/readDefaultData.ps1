@@ -402,32 +402,8 @@ $workforceIntegrations
 # no data
 # $test = req -url "policies/tokenLifetimePolicies"
 
-# 403
-# $test = req -url "print/connectors"
-
-# no data
-# $test = req -url "print/printers"
-
-# 403
-# $test = req -url "print/services"
-
-# 403
-# $test = req -url "print/shares"
-
-# 403
-# $test = req -url "print/taskDefinitions"
-
-# 403
-# $test = req -url "reports/dailyPrintUsageByPrinter"
-
-# 403
-# $test = req -url "reports/dailyPrintUsageByUser"
-
 # no data
 # $test = req -url "security/alerts"
-
-# 400 bad request
-# $test = req -url "shares/id"
 
 # no data
 # $test = req -url "subscriptions"
@@ -441,5 +417,3 @@ $workforceIntegrations
 # $test = req -url "users/$($user.id)/calendar/calendarPermissions"
 
 # $test = req -url "subscriptions"
-
-

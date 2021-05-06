@@ -36,9 +36,14 @@ function getToken
     {
         try {
             $scopes = Invoke-RestMethod -Method Get -Uri "https://graphexplorerapi.azurewebsites.net/permissions?requesturl=$path&method=$method"
-            $joinedScopeString = $scopes.value |
+            if ($scopes.Count -eq 1 -and $scopes[0].value -eq "Not supported.") {
+                $joinedScopeString = ".default"
+            }
+            else {
+                $joinedScopeString = $scopes.value |
                 Where-Object { $_.Contains("Read") -and !$_.Contains("Write") } | # same selection as the read-only permissions for the app
                 Join-String -Separator " "
+            }
         }
         catch {
             # try with empty scopes if we can't get permissions from the DevX API
@@ -48,6 +53,12 @@ function getToken
 
     $body = "grant_type=$grantType&username=$($appSettings.Username)&password=$($appSettings.Password)&client_id=$($appSettings.ClientID)&scope=$($joinedScopeString)"
     $token = Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body -ContentType 'application/x-www-form-urlencoded'
+
+    Write-Debug "== got token with the following scopes"
+    foreach ($scope in $token.scope.Split())
+    {
+        Write-Debug "    $scope"
+    }
 
     $token.access_token
 }
@@ -59,6 +70,8 @@ function reqDelegated
         [string]$url,
         [string]$scopeOverride
     )
+
+    Write-Debug "== getting token for $url"
 
     $token = getToken -path "/$url" -scopeOverride $scopeOverride
     Connect-MgGraph -AccessToken $token | Out-Null
@@ -147,6 +160,18 @@ $worksheet = reqDelegated -url "me/drive/items/$($driveItem.id)/workbook/workshe
 $worksheet.id
 $identifiers.driveItem.workbookWorksheet._value = $worksheet.id
 
+# tenant agnostic data
+$printEndpointId = "mpsdiscovery"
+$printEndpointId
+$identifiers.printService.printServiceEndpoint._value = $printEndpointId
+
+$printService = reqDelegated -url "print/services" |
+    Where-Object { $_.endpoints[0].id -eq $printEndpointId } |
+    Select-Object -First 1
+
+$printService.id
+$identifiers.printService._value = $printService.id
+
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 # no data
@@ -157,3 +182,18 @@ $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 # no data
 # reqDelegated -url "me/drive/items/$($driveItem.id)/workbook/worksheets/$($worksheet.id)/charts"
+
+# no data
+# $connector = reqDelegated -url "print/connectors" -scopeOverride "PrintConnector.Read.All"
+
+# no data
+# $printShares = reqDelegated -url "print/shares"
+
+# no data
+# $taskDefition = reqDelegated -url "print/taskDefinitions"
+
+# 500
+# reqDelegated -url "reports/dailyPrintUsageByPrinter"
+
+# 500
+# reqDelegated -url "reports/dailyPrintUsageByUser"
