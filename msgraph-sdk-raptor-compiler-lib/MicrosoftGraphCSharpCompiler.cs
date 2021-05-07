@@ -290,11 +290,24 @@ namespace MsGraphSDKSnippetsCompiler
         private static bool RequiresDelegatedPermissions(string codeSnippet)
         {
             // TODO: https://github.com/microsoftgraph/msgraph-sdk-raptor/issues/164
-            return codeSnippet.Contains("graphClient.Me") ||
-                codeSnippet.Contains("graphClient.Education.Me") ||
-                codeSnippet.Contains("graphClient.Users[\"") ||
-                codeSnippet.Contains("graphClient.Planner") ||
-                codeSnippet.Contains("graphClient.Print");
+            const string graphClient = "graphClient.";
+            var apiPathStart = codeSnippet.IndexOf(graphClient) + graphClient.Length;
+            var apiPath = codeSnippet[apiPathStart..];
+
+            var apisWithDelegatedPermissions = new []
+            {
+                "Me",
+                "Education.Me",
+                "Users[",
+                "Planner",
+                "Print",
+                "IdentityProviders",
+                "Reports",
+                "IdentityGovernance",
+                "GroupSetting"
+            };
+
+            return apisWithDelegatedPermissions.Any(x => apiPath.StartsWith(x));
         }
     }
 }
