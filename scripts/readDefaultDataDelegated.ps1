@@ -91,6 +91,25 @@ $todoTaskList = reqDelegated -url "me/todo/lists" -scopeOverride "Tasks.Read" |
 $todoTaskList.id
 $identifiers.todoTaskList._value = $todoTaskList.id
 
+# no data
+# $todoTask = reqDelegated -url "me/todo/lists/$($todoTaskList.id)/tasks" -scopeOverride "Tasks.Read"
+
+# no data
+# $linkedResource = reqDelegated -url "me/todo/lists/$($todoTaskList.id)/tasks/$($todoTask.id)/linkedResources" -scopeOverride "Tasks.Read"
+
+# no data
+# $contactFolder = reqDelegated -url "me/contactFolders" # already in readDefaultData under user/contactFolders. Remove this??
+
+# no data
+# $contact = reqDelegated -url "me/contacts?`$top=1"
+
+$mailFolder = reqDelegated -url "me/mailFolders/inbox"
+$mailFolder.id
+$identifiers.mailFolder._value = $mailFolder.id
+
+# no data
+# $messageRule = reqDelegated -url "me/mailFolders/inbox/messageRules"
+
 #Get Group with plans
 $groupWithPlan = reqDelegated -url "groups" |
     Where-Object {$_.displayName -eq "Mark 8 Project Team"}
