@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.Graph" Version="3.32.0" />
     <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.7" />
-    <PackageReference Include="Microsoft.Graph.Beta" Version="0.45.0-preview" />
+    <PackageReference Include="Microsoft.Graph.Beta" Version="0.46.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="1.*" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.30.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
