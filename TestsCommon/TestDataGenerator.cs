@@ -29,6 +29,9 @@ namespace TestsCommon
             + "https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/471";
         private const string TypeCastIsNotSupported = "Type cast operation is not supported in SDK.";
 
+        private const string ComplexTypeNavigationProperties = "Complex Type navigation properties are not generated\r\n"
+            + "https://github.com/microsoftgraph/msgraph-sdk-dotnet/issues/1003";
+
         #endregion
 
         #region HTTP Snippet Issues
@@ -260,6 +263,9 @@ namespace TestsCommon
                 { "delete-acceptedsenders-from-group-csharp-V1-compiles", new KnownIssue(SDK, DeleteAsyncIsNotSupportedForReferences) },
 
                 { "caseexportoperation-getdownloadurl-csharp-Beta-compiles", new KnownIssue(SDK, TypeCastIsNotSupported) },
+
+                { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-V1-compiles", new KnownIssue(SDK, ComplexTypeNavigationProperties) },
+                { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-V1-compiles", new KnownIssue(SDK, ComplexTypeNavigationProperties) },
 
                 { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
