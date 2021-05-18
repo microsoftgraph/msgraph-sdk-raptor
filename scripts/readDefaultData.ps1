@@ -276,6 +276,14 @@ $contactFolder = req -url "users/$($identifiers.user._value)/contactFolders" |
 $contactFolder.id
 $identifiers.contactFolder._value=$contactFolder.id
 
+$place = req -url "places/microsoft.graph.room" |
+    Where-Object {$_.displayName = "Conf Room Rainier"}
+    Select-Object -First 1
+$place.id
+#Places can also be obtained 
+#$place = req -url "places/$($place.id)"
+$identifiers.place._value = $place.id
+
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 <#
@@ -311,9 +319,6 @@ $timesOff
 $workforceIntegrations = req -headers $msAppActsAsHeader -url "teamwork/workforceIntegrations"
 $workforceIntegrations
 #>
-
-# $places = req -headers $msAppActsAsHeader -url "places"
-# $places
 
 # data missing
 # $test = req -url "contracts"
