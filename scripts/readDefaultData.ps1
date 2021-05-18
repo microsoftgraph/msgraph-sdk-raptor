@@ -277,7 +277,7 @@ $contactFolder.id
 $identifiers.contactFolder._value=$contactFolder.id
 
 $place = req -url "places/microsoft.graph.room" |
-    Where-Object {$_.displayName = "Conf Room Rainier"}
+    Where-Object {$_.displayName -eq "Conf Room Rainier"}
     Select-Object -First 1
 $place.id
 #Places can also be obtained 
