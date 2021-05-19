@@ -267,6 +267,10 @@ namespace TestsCommon
                 { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-V1-compiles", new KnownIssue(SDK, ComplexTypeNavigationProperties) },
                 { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-V1-compiles", new KnownIssue(SDK, ComplexTypeNavigationProperties) },
                 { "delete-userflowlanguagepage-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12748") },
+                { "list-administrativeunit-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12770")},
+
+                { "update-socialidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780") },
+                { "update-appleidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780")},
 
                 { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
