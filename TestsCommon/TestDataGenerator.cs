@@ -60,6 +60,8 @@ namespace TestsCommon
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
         private const string SameBlockNames = "Same block names indeterministic snippet generation" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/463";
+        private const string NamespaceOdataTypeAnnotationsWithoutHashSymbol = "We do not support namespacing when odata.type annotations are not prepended with hash symbol." +
+            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/580";
         #endregion
 
         #region Needs analysis
@@ -271,14 +273,15 @@ namespace TestsCommon
 
                 { "update-socialidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780") },
                 { "update-appleidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780")},
-                { "update-deployment-csharp-Beta-compiles", new KnownIssue(HTTP, "Instantiating a complex type WindowsDeploymentSettings")},
-                { "create-deployment-from--csharp-Beta-compiles", new KnownIssue(HTTP, "Instantiating a complex type WindowsDeploymentSettings")},
+                { "update-deployment-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
+                { "create-deployment-from--csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
                 { "deploymentaudience-updateaudience-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12811")},
-                { "create-noncustodialdatasource-from--csharp-Beta-compiles", new KnownIssue(SDK, "userSource needs a microsoft.graph.ediscovery.dataSource namespace") },
-                { "educationsubmission-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(SDK, "SetUpResourcesFolder function exists in metadata but does not contain a definition for 'PostAsync'")},
-                { "educationassignment-publish-1-csharp-Beta-compiles", new KnownIssue(HTTP, "The getResourcesFolderUrl API is deprecated and will stop returning data on May 31, 2021")},
+                { "create-noncustodialdatasource-from--csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol) },
+                { "educationassignment-publish-1-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12823")},
                 { "update-unifiedrolemanagementpolicyrule-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12814")},
+                { "create-accessreviewscheduledefinition-inactiveguests-m365-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12821")},
 
+                { "educationsubmission-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, "'IEducationSubmissionSetUpResourcesFolderRequest' does not contain a definition for 'PostAsync'")},
                 { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
