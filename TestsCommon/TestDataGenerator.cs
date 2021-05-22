@@ -284,6 +284,7 @@ namespace TestsCommon
                 { "update-deployment-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
 
                 { "educationsubmission-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, "'IEducationSubmissionSetUpResourcesFolderRequest' does not contain a definition for 'PostAsync'")},
+                { "educationassignment-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, "'IEducationAssignmentSetUpResourcesFolderRequest' does not contain a definition for 'PostAsync'")},
                 { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
