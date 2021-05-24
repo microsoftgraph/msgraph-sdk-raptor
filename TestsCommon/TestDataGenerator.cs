@@ -66,6 +66,8 @@ namespace TestsCommon
 
         #region Needs analysis
         private const string NeedsAnalysisText = "This is a consistently failing test, the root cause is not yet identified";
+        private const string GroupSettingNotFound = "Needs analysis, the entityType exists in metadata.";
+        private const string ActionItemNotFoundInRequestBuilder = "Needs analysis - action in metadata and sdk but not found.";
         #endregion
 
         #region Test Owner values (to categorize results in Azure DevOps)
@@ -270,6 +272,7 @@ namespace TestsCommon
                 { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-V1-compiles", new KnownIssue(SDK, ComplexTypeNavigationProperties) },
                 { "delete-userflowlanguagepage-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12748") },
                 { "list-administrativeunit-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12770")},
+                { "list-educationclass-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12842")},
 
                 { "update-socialidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780") },
                 { "update-appleidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780")},
@@ -282,6 +285,26 @@ namespace TestsCommon
                 { "update-deployment-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
                 { "update-deployment-1-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
                 { "update-deployment-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
+                
+                { "create-groupsetting-from-groupsettings-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, GroupSettingNotFound)},
+                { "update-tenant-setting-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, GroupSettingNotFound)},
+                { "get-groupsettings-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, GroupSettingNotFound)},
+                { "get-groupsetting-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, GroupSettingNotFound)},
+                { "get-groupsettingtemplate-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, GroupSettingNotFound)},
+                { "get-groupsettingtemplates-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, GroupSettingNotFound)},
+                { "delete-groupsetting-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, GroupSettingNotFound)},
+                { "serviceprincipal-removepassword-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, ActionItemNotFoundInRequestBuilder)},
+                { "serviceprincipal-removekey-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, ActionItemNotFoundInRequestBuilder)},
+                { "serviceprincipal-addkey-1-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, ActionItemNotFoundInRequestBuilder)},
+                { "serviceprincipal-addkey-2-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, ActionItemNotFoundInRequestBuilder)},
+                { "serviceprincipal-addpassword-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, ActionItemNotFoundInRequestBuilder)},
+                { "update-authzpolicy-enableuserconsentlow-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, "'DefaultUserRolePermissions' does not contain a definition for 'PermissionGrantPoliciesAssigned'")},
+                { "update-authzpolicy-disableuserconsent-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, "'DefaultUserRolePermissions' does not contain a definition for 'PermissionGrantPoliciesAssigned'")},
+                { "update-authzpolicy-guestuserlevel-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, "'IPolicyRootAuthorizationPolicyCollectionRequest' does not contain a definition for 'UpdateAsync")},
+                { "update-authzpolicy-sspr-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, "'IPolicyRootAuthorizationPolicyCollectionRequest' does not contain a definition for 'UpdateAsync'")},
+                { "update-authzpolicy-blockmsolpowershell-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, "'IPolicyRootAuthorizationPolicyCollectionRequest' does not contain a definition for 'UpdateAsync")},
+                { "update-authzpolicy-applications-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, "'IPolicyRootAuthorizationPolicyCollectionRequest' does not contain a definition for 'UpdateAsync")},
+                { "directoryobject-getavailableextensionproperties-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, "'IGraphServiceDirectoryObjectsCollectionRequestBuilder' does not contain a definition for 'GetAvailableExtensionProperties")},
 
                 { "educationsubmission-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, "'IEducationSubmissionSetUpResourcesFolderRequest' does not contain a definition for 'PostAsync'")},
                 { "educationassignment-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, "'IEducationAssignmentSetUpResourcesFolderRequest' does not contain a definition for 'PostAsync'")},
