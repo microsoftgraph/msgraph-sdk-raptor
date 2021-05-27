@@ -36,8 +36,9 @@ steps:
     versionSelector: 'latestStable' 
 
 - task: VSTest@2
+  continueOnError: true
   inputs:
-    runInParallel: true
+    runInParallel: false
     rerunFailedTests: True
     rerunMaxAttempts: 5
     testAssemblyVer2: | # Required when testSelector == TestAssemblies
