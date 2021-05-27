@@ -17,14 +17,14 @@ steps:
     command: 'test'
     projects: '**/${{ parameters.projectFileName }}.csproj'
     arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
-    publishTestResults: false
+    publishTestResults: true
   displayName: '${{ parameters.projectFileName }} ${{ parameters.testType }} Tests'
   continueOnError: true
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
-    testResultsFormat: 'VSTest'
+    testResultsFormat: 'NUnit'
     searchFolder: '$(Agent.TempDirectory)'
     testResultsFiles: '**/*.trx'
     testRunTitle: '${{ parameters.runName }}'
