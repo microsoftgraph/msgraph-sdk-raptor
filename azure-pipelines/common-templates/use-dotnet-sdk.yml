@@ -1,7 +1,6 @@
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET Core sdk'
+  displayName: 'Use .NET Core SDK 5.x'
   inputs:
-    packageType: sdk
-    version: 5.0.100
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+    debugMode: false
+    version: 5.x
