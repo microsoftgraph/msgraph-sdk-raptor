@@ -15,17 +15,17 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
+    publishTestResults: true
     projects: '**/${{ parameters.projectFileName }}.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
-    publishTestResults: false
+    arguments: '--configuration $(buildConfiguration) --settings $(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
   displayName: '${{ parameters.projectFileName }} ${{ parameters.testType }} Tests'
   continueOnError: true
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
-    testResultsFormat: 'VSTest'
+    testResultsFormat: 'NUnit'
     searchFolder: '$(Agent.TempDirectory)'
-    testResultsFiles: '**/*.trx'
+    testResultsFiles: '**/*.trx;**/*-TestResults.xml'
     testRunTitle: '${{ parameters.runName }}'
   displayName: 'Publish Test Results'
