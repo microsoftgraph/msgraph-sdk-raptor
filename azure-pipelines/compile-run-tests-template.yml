@@ -5,26 +5,38 @@ parameters:
 steps:
 - template: common-templates/use-dotnet-sdk.yml
 
-- task: DotNetCoreCLI@2
+# Visual Studio build
+# Build with MSBuild and set the Visual Studio version property
+- task: VSBuild@1
   inputs:
-    command: 'build'
-    projects: msgraph-sdk-raptor/**/${{ parameters.projectFileName }}.csproj
-    arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build Projects'
+    solution: '**\*.sln' 
+    vsVersion: 'latest'
+    configuration: $(BuildConfiguration)
+    clean: true
+    restoreNugetPackages: true
+    msbuildArchitecture: x64
+    logProjectEvents: true # Optional
+    logFileVerbosity: 'normal' # Optional. Options: quiet, minimal, normal, detailed, diagnostic
 
-- task: DotNetCoreCLI@2
+- task: VisualStudioTestPlatformInstaller@1
   inputs:
-    command: 'test'
-    publishTestResults: true
-    projects: '**/${{ parameters.projectFileName }}.csproj'
-    arguments: '--configuration $(buildConfiguration) --settings $(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
-  displayName: '${{ parameters.projectFileName }} ${{ parameters.testType }} Tests'
-  continueOnError: true
+    packageFeedSelector: 'nugetOrg' 
+    versionSelector: 'latestStable' 
+
+- task: VSTest@2
+  inputs:
+    runInParallel: true
+    rerunFailedTests: True
+    rerunMaxAttempts: 5
+    testAssemblyVer2: | # Required when testSelector == TestAssemblies
+      **\*CsharpV1ExecutionTests*.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
-    testResultsFormat: 'NUnit'
+    testResultsFormat: 'VSTest'
     searchFolder: '$(Agent.TempDirectory)'
     testResultsFiles: '**/*.trx;**/*-TestResults.xml'
     testRunTitle: '${{ parameters.runName }}'
