@@ -38,13 +38,13 @@ steps:
 - task: VSTest@2
   continueOnError: true
   inputs:
-    runInParallel: false
+    runInParallel: true
     rerunFailedTests: True
     rerunFailedThreshold: 20
     rerunType: basedOnTestFailurePercentage
     runTestsInIsolation: true
     diagnosticsEnabled: true
-    rerunMaxAttempts: 6
+    rerunMaxAttempts: 10
     testAssemblyVer2: | # Required when testSelector == TestAssemblies
       **\*CsharpV1ExecutionTests*.dll
       !**\*TestAdapter.dll
