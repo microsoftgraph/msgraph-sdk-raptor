@@ -94,11 +94,11 @@ namespace MsGraphSDKSnippetsCompiler
             }
 
             var compilation = CSharpCompilation.Create(
-               assemblyName,
-               syntaxTrees: new[] { syntaxTree },
-               references: metadataReferences,
-               options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                                .WithOptimizationLevel(OptimizationLevel.Release));
+                assemblyName,
+                syntaxTrees: new[] {syntaxTree},
+                references: metadataReferences,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                    .WithOptimizationLevel(OptimizationLevel.Debug));
 
             var (emitResult, assembly) = GetEmitResult(compilation);
             CompilationResultsModel results = GetCompilationResults(emitResult);
