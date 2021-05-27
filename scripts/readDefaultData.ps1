@@ -1,3 +1,9 @@
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+# - reads data from default data pack in CDX's Enterprise Data Pack.
+# - updates identifiers.json file with IDs obtained from the tenant whose
+#   credentials are given in the appsettings.json file.
+# - uses application permissions to access the data.
+
 $scriptsPath = $PWD.Path
 
 $appSettingsPath = Join-Path $scriptsPath "../msgraph-sdk-raptor-compiler-lib/appsettings.json"
