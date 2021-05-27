@@ -17,7 +17,7 @@ steps:
     command: 'test'
     projects: '**/${{ parameters.projectFileName }}.csproj'
     arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
-    publishTestResults: true
+    publishTestResults: false
   displayName: '${{ parameters.projectFileName }} ${{ parameters.testType }} Tests'
   continueOnError: true
 
