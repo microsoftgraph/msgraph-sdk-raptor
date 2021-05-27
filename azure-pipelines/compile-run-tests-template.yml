@@ -40,7 +40,11 @@ steps:
   inputs:
     runInParallel: false
     rerunFailedTests: True
-    rerunMaxAttempts: 5
+    rerunFailedThreshold: 20
+    rerunType: basedOnTestFailurePercentage
+    runTestsInIsolation: true
+    diagnosticsEnabled: true
+    rerunMaxAttempts: 6
     testAssemblyVer2: | # Required when testSelector == TestAssemblies
       **\*CsharpV1ExecutionTests*.dll
       !**\*TestAdapter.dll
