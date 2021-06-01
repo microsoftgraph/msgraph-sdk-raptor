@@ -146,9 +146,10 @@ namespace MsGraphSDKSnippetsCompiler
                         var authority = config.GetNonEmptyValue("Authority");
                         var username = config.GetNonEmptyValue("Username");
                         var password = config.GetNonEmptyValue("Password");
-                        var token = GetATokenForGraph(clientId, authority, username, password, scopes);
+
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
+                            var token = GetATokenForGraph(clientId, authority, username, password, scopes);
                             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         });
                     }
