@@ -137,7 +137,7 @@ $directoryRoleTemplate = req -url "directoryRoleTemplates" |
     Where-Object { $_.displayName -eq "Global Administrator" }
     Select-Object -First 1
 $directoryRoleTemplate.id
-$identifiers.directoryRole._value = $directoryRoleTemplate.id
+$identifiers.directoryRoleTemplate._value = $directoryRoleTemplate.id
 
 $educationUser = req -url "education/users" |
     Where-Object { $_.displayName -eq $admin }
