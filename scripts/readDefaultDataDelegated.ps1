@@ -72,9 +72,9 @@ function getToken
 function reqDelegated
 {
     param(
-        [string]$version = "v1.0",
         [string]$url,
-        [string]$scopeOverride
+        [string]$scopeOverride,
+        [string]$version = "v1.0"
     )
 
     Write-Debug "== getting token for $url"

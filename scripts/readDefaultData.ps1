@@ -24,9 +24,9 @@ $identifiers.domain._value = $domain
 function req
 {
     param(
+        [string]$url,
         [string]$version = "v1.0",
-        [PSCustomObject]$headers = @{},
-        [string]$url
+        [PSCustomObject]$headers = @{}
     )
 
     $response = Invoke-MgGraphRequest -Headers $headers -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject
