@@ -20,7 +20,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Security;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 namespace MsGraphSDKSnippetsCompiler
 {
@@ -36,6 +36,10 @@ namespace MsGraphSDKSnippetsCompiler
         private const string AuthHeaderPattern = "Authorization: Bearer .*";
         private const string AuthHeaderReplacement = "Authorization: Bearer <token>";
         private static readonly Regex AuthHeaderRegex = new Regex(AuthHeaderPattern, RegexOptions.Compiled);
+
+        // token cache
+        private static readonly object tokenLock = new object();
+        private static ConcurrentDictionary<string, string> tokenCache = new ConcurrentDictionary<string, string>();
 
         private const string DefaultAuthScope = "https://graph.microsoft.com/.default";
 
@@ -142,9 +146,10 @@ namespace MsGraphSDKSnippetsCompiler
                         var authority = config.GetNonEmptyValue("Authority");
                         var username = config.GetNonEmptyValue("Username");
                         var password = config.GetNonEmptyValue("Password");
-                        var token = await GetATokenForGraph(clientId, authority, username, password, scopes).ConfigureAwait(false);
+
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
+                            var token = GetATokenForGraph(clientId, authority, username, password, scopes);
                             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         });
                     }
@@ -226,25 +231,39 @@ namespace MsGraphSDKSnippetsCompiler
         /// <param name="password">password of the user for which the token is requested</param>
         /// <param name="scopes">requested scopes in the token</param>
         /// <returns>token for the given context</returns>
-        static async Task<string> GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
+        static string GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
         {
-            var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
-
-            using var securePassword = new SecureString();
-
-            // convert plain password into a secure string.
-            password.ToList().ForEach(c => securePassword.AppendChar(c));
-
-            try
+            lock(tokenLock)
             {
-                var result = await app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
-                return result.AccessToken;
-            }
-            catch (Exception e)
-            {
-                var prefixLength = "https://graph.microsoft.com/".Length;
-                var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
-                throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
+                var scopesSorted = scopes.ToList();
+                scopesSorted.Sort();
+                var tokenKey = string.Join("-", scopesSorted);
+                if (tokenCache.ContainsKey(tokenKey))
+                {
+                    return tokenCache[tokenKey];
+                }
+                else
+                {
+                    var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
+
+                    using var securePassword = new SecureString();
+
+                    // convert plain password into a secure string.
+                    password.ToList().ForEach(c => securePassword.AppendChar(c));
+
+                    try
+                    {
+                        var result = app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync().Result;
+                        tokenCache[tokenKey] = result.AccessToken;
+                        return result.AccessToken;
+                    }
+                    catch (Exception e)
+                    {
+                        var prefixLength = "https://graph.microsoft.com/".Length;
+                        var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
+                        throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
+                    }
+                }
             }
         }
 

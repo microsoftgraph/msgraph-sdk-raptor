@@ -29,6 +29,9 @@ namespace TestsCommon
             + "https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/471";
         private const string TypeCastIsNotSupported = "Type cast operation is not supported in SDK.";
 
+        private const string ComplexTypeNavigationProperties = "Complex Type navigation properties are not generated\r\n"
+            + "https://github.com/microsoftgraph/msgraph-sdk-dotnet/issues/1003";
+
         #endregion
 
         #region HTTP Snippet Issues
@@ -57,6 +60,8 @@ namespace TestsCommon
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/485";
         private const string SameBlockNames = "Same block names indeterministic snippet generation" +
             " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/463";
+        private const string NamespaceOdataTypeAnnotationsWithoutHashSymbol = "We do not support namespacing when odata.type annotations are not prepended with hash symbol." +
+            " See https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/580";
         #endregion
 
         #region Needs analysis
@@ -261,6 +266,26 @@ namespace TestsCommon
 
                 { "caseexportoperation-getdownloadurl-csharp-Beta-compiles", new KnownIssue(SDK, TypeCastIsNotSupported) },
 
+                { "put-b2xuserflows-apiconnectorconfiguration-postattributecollection-csharp-V1-compiles", new KnownIssue(SDK, ComplexTypeNavigationProperties) },
+                { "put-b2xuserflows-apiconnectorconfiguration-postfederationsignup-csharp-V1-compiles", new KnownIssue(SDK, ComplexTypeNavigationProperties) },
+                { "delete-userflowlanguagepage-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12748") },
+                { "list-administrativeunit-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12770")},
+                { "list-educationclass-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12842")},
+
+                { "update-socialidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780") },
+                { "update-appleidentityprovider-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12780")},
+                { "create-deployment-from--csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
+                { "deploymentaudience-updateaudience-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12811")},
+                { "create-noncustodialdatasource-from--csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol) },
+                { "educationassignment-publish-1-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12823")},
+                { "update-unifiedrolemanagementpolicyrule-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12814")},
+                { "create-accessreviewscheduledefinition-inactiveguests-m365-csharp-Beta-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/12821")},
+                { "update-deployment-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
+                { "update-deployment-1-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
+                { "update-deployment-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, NamespaceOdataTypeAnnotationsWithoutHashSymbol)},
+
+                { "educationsubmission-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, "'IEducationSubmissionSetUpResourcesFolderRequest' does not contain a definition for 'PostAsync'")},
+                { "educationassignment-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, "'IEducationAssignmentSetUpResourcesFolderRequest' does not contain a definition for 'PostAsync'")},
                 { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
