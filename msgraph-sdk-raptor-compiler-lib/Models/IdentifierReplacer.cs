@@ -37,16 +37,24 @@ namespace MsGraphSDKSnippetsCompiler.Models
         /// </summary>
         private IdentifierReplacer()
         {
-            const string blobContainerName = "raptoridentifiers";
-            const string blobName = "identifiers.json";
-
             var config = AppSettings.Config();
-            var raptorStorageConnectionString = config.GetNonEmptyValue("RaptorStorageConnectionString");
-            var blobClient = new BlobClient(raptorStorageConnectionString, blobContainerName, blobName);
+            string json;
+            if (bool.Parse(config.GetSection("IsLocalRun").Value))
+            {
+                json = File.ReadAllText(@"identifiers.json");
+            }
+            else
+            {
+                const string blobContainerName = "raptoridentifiers";
+                const string blobName = "identifiers.json";
 
-            using var stream = new MemoryStream();
-            blobClient.DownloadTo(stream);
-            var json = new UTF8Encoding().GetString(stream.ToArray());
+                var raptorStorageConnectionString = config.GetNonEmptyValue("RaptorStorageConnectionString");
+                var blobClient = new BlobClient(raptorStorageConnectionString, blobContainerName, blobName);
+
+                using var stream = new MemoryStream();
+                blobClient.DownloadTo(stream);
+                json = new UTF8Encoding().GetString(stream.ToArray());
+            }
 
             tree = JsonSerializer.Deserialize<IDTree>(json);
         }
