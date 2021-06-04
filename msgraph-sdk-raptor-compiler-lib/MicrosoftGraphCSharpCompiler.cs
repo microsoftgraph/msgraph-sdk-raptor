@@ -96,13 +96,13 @@ namespace MsGraphSDKSnippetsCompiler
             {
                 metadataReferences.Add(MetadataReference.CreateFromFile(Path.Combine(graphAssemblyPathBeta, "Microsoft.Graph.Beta.dll")));
             }
-
+            //Compile with Debug for better error feedback.
             var compilation = CSharpCompilation.Create(
                assemblyName,
                syntaxTrees: new[] { syntaxTree },
                references: metadataReferences,
                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                                .WithOptimizationLevel(OptimizationLevel.Release));
+                                .WithOptimizationLevel(OptimizationLevel.Debug));
 
             var (emitResult, assembly) = GetEmitResult(compilation);
             CompilationResultsModel results = GetCompilationResults(emitResult);

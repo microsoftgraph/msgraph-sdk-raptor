@@ -5,27 +5,57 @@ parameters:
 steps:
 - template: common-templates/use-dotnet-sdk.yml
 
-- task: DotNetCoreCLI@2
+- task: NuGetToolInstaller@1
+  displayName: 'Install Nuget 5.9.x'
   inputs:
-    command: 'build'
-    projects: msgraph-sdk-raptor/**/${{ parameters.projectFileName }}.csproj
-    arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build Projects'
+     versionSpec: 5.9.1
+     checkLatest: true # Optional
 
-- task: DotNetCoreCLI@2
+- task: NuGetCommand@2
+  displayName: 'Restore Nuget Packages'
   inputs:
-    command: 'test'
-    projects: '**/${{ parameters.projectFileName }}.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
-    publishTestResults: false
-  displayName: '${{ parameters.projectFileName }} ${{ parameters.testType }} Tests'
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+# Visual Studio build
+# Build with MSBuild and set the Visual Studio version property
+- task: VSBuild@1
+  inputs:
+    solution: '**\*.sln' 
+    vsVersion: 'latest'
+    configuration: $(BuildConfiguration)
+    clean: true
+    restoreNugetPackages: true
+    msbuildArchitecture: x64
+    logProjectEvents: true # Optional
+    logFileVerbosity: 'normal' # Optional. Options: quiet, minimal, normal, detailed, diagnostic
+
+- task: VisualStudioTestPlatformInstaller@1
+  inputs:
+    packageFeedSelector: 'nugetOrg' 
+    versionSelector: 'latestStable' 
+
+- task: VSTest@2
   continueOnError: true
+  inputs:
+    runInParallel: true
+    rerunFailedTests: True
+    rerunFailedThreshold: 40
+    rerunType: basedOnTestFailurePercentage
+    runTestsInIsolation: true
+    diagnosticsEnabled: true
+    rerunMaxAttempts: 10
+    testAssemblyVer2: | # Required when testSelector == TestAssemblies
+      **\*CsharpV1ExecutionTests*.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'VSTest'
     searchFolder: '$(Agent.TempDirectory)'
-    testResultsFiles: '**/*.trx'
+    testResultsFiles: '**/*.trx;**/*-TestResults.xml'
     testRunTitle: '${{ parameters.runName }}'
   displayName: 'Publish Test Results'
