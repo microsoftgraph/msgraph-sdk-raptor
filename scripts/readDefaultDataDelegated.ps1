@@ -204,6 +204,11 @@ $groupSettingTemplate = reqDelegated -url "groupSettingTemplates" |
 $groupSettingTemplate.id
 $identifiers.groupSettingTemplate._value = $groupSettingTemplate.id
 
+$presence = reqDelegated -url "/me/presence" |
+    Select-Object -First graph-rest-1
+$presence.id
+$identifiers.presence._value = $presence.id
+
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
 # no data

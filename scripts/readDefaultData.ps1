@@ -168,7 +168,7 @@ $conditionalAccessPolicy.id
 $identifiers.conditionalAccessPolicy._value = $conditionalAccessPolicy.id
 
 $oauth2PermissionGrant = req -url "oauth2PermissionGrants" |
-    Where-Object { $_.scope.Trim() -eq "user_impersonation" }
+    Where-Object { $_.scope.Trim() -eq "user_impersonation" } |
     Select-Object -First 1
 $oauth2PermissionGrant.id
 $identifiers.oAuth2PermissionGrant._value = $oauth2PermissionGrant.id
@@ -243,7 +243,7 @@ $identifiers.permissionGrantPolicy._value = $permissionGrantPolicy.id
 
 #Tenant has no messages with Attachments
 $message = req -url "users/$($identifiers.user._value)/messages?`$orderBy=createdDateTime asc" |
-    Where-Object {$_.subject -eq "Get started with your new Enterprise Mobility + Security E5 trial"}
+    Where-Object {$_.subject -eq "Get started with your new Microsoft 365 E5 Compliance trial"}
     Select-Object -First 1
 $message.id
 $identifiers.message._value = $message.id
@@ -289,6 +289,17 @@ $place.id
 #Places can also be obtained 
 #$place = req -url "places/$($place.id)"
 $identifiers.place._value = $place.id
+
+$teamsApp = req -url "appCatalogs/teamsApps" |
+    Where-Object { $_.displayName -eq "Teams"} |
+    Select-Object -First 1
+$teamsApp.id
+$identifiers.teamsApp._value = $teamsApp.id
+
+$secureScore = req -url "security/secureScores?`$orderby=createdDateTime asc" |
+    Select-Object -First 1
+$secureScore.id
+$identifiers.secureScore._value = $secureScore.id
 
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
