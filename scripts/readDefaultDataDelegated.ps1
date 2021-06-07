@@ -74,7 +74,8 @@ function reqDelegated
     param(
         [string]$url,
         [string]$scopeOverride,
-        [string]$version = "v1.0"
+        [string]$version = "v1.0",
+        [switch]$debug
     )
 
     Write-Debug "== getting token for $url"
@@ -82,8 +83,8 @@ function reqDelegated
     $token = getToken -path "/$url" -scopeOverride $scopeOverride
     Connect-MgGraph -AccessToken $token | Out-Null
 
-    $response = Invoke-MgGraphRequest -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject
-    $response.value
+    $response = Invoke-MgGraphRequest -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject -Debug:$debug
+    return $response.value ?? $response
 }
 
 $calendarGroup = reqDelegated -url "me/calendarGroups" |
@@ -204,10 +205,15 @@ $groupSettingTemplate = reqDelegated -url "groupSettingTemplates" |
 $groupSettingTemplate.id
 $identifiers.groupSettingTemplate._value = $groupSettingTemplate.id
 
-$presence = reqDelegated -url "/me/presence" |
-    Select-Object -First graph-rest-1
+$presence = reqDelegated -url "users/$($identifiers.user._value)/presence"
 $presence.id
 $identifiers.presence._value = $presence.id
+
+$teamsApp = req -url "appCatalogs/teamsApps" |
+    Where-Object { $_.displayName -eq "Teams"} |
+    Select-Object -First 1
+$teamsApp.id
+$identifiers.teamsApp._value = $teamsApp.id
 
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 

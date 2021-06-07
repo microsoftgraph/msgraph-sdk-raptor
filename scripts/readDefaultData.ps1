@@ -26,10 +26,11 @@ function req
     param(
         [string]$url,
         [string]$version = "v1.0",
-        [PSCustomObject]$headers = @{}
+        [PSCustomObject]$headers = @{},
+        [switch]$debug
     )
 
-    $response = Invoke-MgGraphRequest -Headers $headers -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject
+    $response = Invoke-MgGraphRequest -Headers $headers -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject -Debug:$debug
     $response.value
 }
 
@@ -243,7 +244,6 @@ $identifiers.permissionGrantPolicy._value = $permissionGrantPolicy.id
 
 #Tenant has no messages with Attachments
 $message = req -url "users/$($identifiers.user._value)/messages?`$orderBy=createdDateTime asc" |
-    Where-Object {$_.subject -eq "Get started with your new Microsoft 365 E5 Compliance trial"}
     Select-Object -First 1
 $message.id
 $identifiers.message._value = $message.id
@@ -289,17 +289,6 @@ $place.id
 #Places can also be obtained 
 #$place = req -url "places/$($place.id)"
 $identifiers.place._value = $place.id
-
-$teamsApp = req -url "appCatalogs/teamsApps" |
-    Where-Object { $_.displayName -eq "Teams"} |
-    Select-Object -First 1
-$teamsApp.id
-$identifiers.teamsApp._value = $teamsApp.id
-
-$secureScore = req -url "security/secureScores?`$orderby=createdDateTime asc" |
-    Select-Object -First 1
-$secureScore.id
-$identifiers.secureScore._value = $secureScore.id
 
 $identifiers | ConvertTo-Json -Depth 10 > $identifiersPath
 
