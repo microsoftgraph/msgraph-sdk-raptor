@@ -26,10 +26,11 @@ function req
     param(
         [string]$url,
         [string]$version = "v1.0",
-        [PSCustomObject]$headers = @{}
+        [PSCustomObject]$headers = @{},
+        [switch]$debug
     )
 
-    $response = Invoke-MgGraphRequest -Headers $headers -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject
+    $response = Invoke-MgGraphRequest -Headers $headers -Method GET -Uri "https://graph.microsoft.com/$version/$url" -OutputType PSObject -Debug:$debug
     $response.value
 }
 
@@ -168,7 +169,7 @@ $conditionalAccessPolicy.id
 $identifiers.conditionalAccessPolicy._value = $conditionalAccessPolicy.id
 
 $oauth2PermissionGrant = req -url "oauth2PermissionGrants" |
-    Where-Object { $_.scope.Trim() -eq "user_impersonation" }
+    Where-Object { $_.scope.Trim() -eq "user_impersonation" } |
     Select-Object -First 1
 $oauth2PermissionGrant.id
 $identifiers.oAuth2PermissionGrant._value = $oauth2PermissionGrant.id
@@ -243,7 +244,6 @@ $identifiers.permissionGrantPolicy._value = $permissionGrantPolicy.id
 
 #Tenant has no messages with Attachments
 $message = req -url "users/$($identifiers.user._value)/messages?`$orderBy=createdDateTime asc" |
-    Where-Object {$_.subject -eq "Get started with your new Enterprise Mobility + Security E5 trial"}
     Select-Object -First 1
 $message.id
 $identifiers.message._value = $message.id
