@@ -24,6 +24,7 @@ if (    !$appSettings.CertificateThumbprint `
     Team
         - OpenShift.json
         - Schedule.json
+    Based on the Tree Structure in Identifiers.json
 #>
 function Get-RequestData {
     param (
