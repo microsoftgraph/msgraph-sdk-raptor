@@ -1,0 +1,5 @@
+{
+    "definition": ["{\"HomeRealmDiscoveryPolicy\":{\"AccelerateToFederatedDomain\":false,\"PreferredDomain\":\"federated.example.edu\",\"AlternateIdLogin\":{\"Enabled\":false}}}"],
+    "displayName": "Raptor Home Realm Discovery Policy",
+    "isOrganizationDefault": false
+  }

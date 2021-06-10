@@ -1,0 +1,7 @@
+{
+    "definition": [
+        "{ \"TokenIssuancePolicy\":{\"TokenResponseSigningPolicy\":\"TokenOnly\",\"SamlTokenVersion\":\"1.1\",\"SigningAlgorithm\":\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\",\"Version\":1}}"
+      ],
+    "displayName": "Raptor Token Issuance Policy",
+    "isOrganizationDefault": false
+  }
