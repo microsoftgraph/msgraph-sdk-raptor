@@ -65,7 +65,7 @@ var ev@ent = await graphClient.Groups[\""8730b5a6-eca3-400d-9011-1f4202418218\""
         [TestCase("_event", UnderScoreIdentifier, TestName = "_event")]
         public void ShouldCaptureUriAndHeadersInException(string variableName, string testSnippet)
         {
-            CSharpTestRunner.CaptureUriAndHeadersInException(testSnippet);
+            Assert.DoesNotThrow(() => CSharpTestRunner.CaptureUriAndHeadersInException(testSnippet));
         }
 
         [TestCase("@event", VerbatimIdentifer, TestName = "@event")]
@@ -73,7 +73,7 @@ var ev@ent = await graphClient.Groups[\""8730b5a6-eca3-400d-9011-1f4202418218\""
         [TestCase("_event", UnderScoreIdentifier, TestName = "_event")]
         public void ShouldReturnHttpRequestMessage(string variableName, string testSnippet)
         {
-            CSharpTestRunner.ReturnHttpRequestMessage(testSnippet);
+            Assert.DoesNotThrow(() => CSharpTestRunner.ReturnHttpRequestMessage(testSnippet));
         }
 
         [TestCase("ev@ent", IncorrectVerbatimIdentifier, TestName = "ev@ent", Description = "Incorrect Verbatim Identifier")]

@@ -156,15 +156,7 @@ public class GraphSDKTest
             string resultVariable = null;
             try
             {
-                var resultVariableMatch = ResultVariableRegex.Match(codeToCompile);
-                if (resultVariableMatch.Success)
-                {
-                    resultVariable = resultVariableMatch.Groups[1].Value;
-                }
-                else
-                {
-                    Assert.Fail("Regex {0}, against code {1} Failed", ResultVariablePattern, codeToCompile);
-                }
+                resultVariable = GetResultVariable(codeToCompile);
             }
             catch (Exception e)
             {
@@ -200,15 +192,7 @@ public class GraphSDKTest
             string resultVariable = null;
             try
             {
-                var resultVariableMatch = ResultVariableRegex.Match(codeSnippet);
-                if (resultVariableMatch.Success)
-                {
-                    resultVariable = resultVariableMatch.Groups[1].Value;
-                }
-                else
-                {
-                    Assert.Fail("Regex {0}, against code {1} Failed", ResultVariablePattern, codeSnippet);
-                }
+                resultVariable = GetResultVariable(codeSnippet);
             }
             catch (Exception e)
             {
@@ -221,6 +205,21 @@ public class GraphSDKTest
         return {resultVariable};");
 
             return codeSnippet;
+        }
+        private static string GetResultVariable(string codeToCompile)
+        {
+            string resultVariable = null;
+            var resultVariableMatch = ResultVariableRegex.Match(codeToCompile);
+            if (resultVariableMatch.Success)
+            {
+                resultVariable = resultVariableMatch.Groups[1].Value;
+            }
+            else
+            {
+                Assert.Fail("Regex {0}, against code {1} Failed", ResultVariablePattern, codeToCompile);
+            }
+
+            return resultVariable;
         }
 
         /// <summary>
