@@ -16,20 +16,4 @@
     <ProjectReference Include="..\msgraph-sdk-raptor-compiler-lib\msgraph-sdk-raptor-compiler-lib.csproj" />
     <ProjectReference Include="..\TestsCommon\TestsCommon.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="identifiers.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Snippets\underScoreIdentifier.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Snippets\nonVerbatimIdentifier.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Snippets\verbatimIdentifier.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
