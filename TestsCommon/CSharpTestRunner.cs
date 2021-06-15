@@ -59,12 +59,12 @@ public class GraphSDKTest
         /// <summary>
         /// matches result variable name from code snippets
         /// </summary>
-        private const string ResultVariablePattern = "var ([a-zA-Z0-9]+) = await graphClient";
+        private const string ResultVariablePattern = "var ([@_a-zA-Z][_a-zA-Z0-9]+) = await graphClient";
 
         /// <summary>
         /// compiled version of the regex matching result variable name from code snippets
         /// </summary>
-        private static readonly Regex ResultVariableRegex = new Regex(ResultVariablePattern, RegexOptions.Singleline | RegexOptions.Compiled);
+        internal static readonly Regex ResultVariableRegex = new Regex(ResultVariablePattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
         /// <summary>
         /// 1. Fetches snippet from docs repo
@@ -151,12 +151,20 @@ public class GraphSDKTest
             }
         }
 
-        private static string CaptureUriAndHeadersInException(string codeToCompile)
+        internal static string CaptureUriAndHeadersInException(string codeToCompile)
         {
             string resultVariable = null;
             try
             {
-                resultVariable = ResultVariableRegex.Match(codeToCompile).Groups[1].Value;
+                var resultVariableMatch = ResultVariableRegex.Match(codeToCompile);
+                if (resultVariableMatch.Success)
+                {
+                    resultVariable = resultVariableMatch.Groups[1].Value;
+                }
+                else
+                {
+                    Assert.Fail("Regex {0}, against code {1} Failed", ResultVariablePattern, codeToCompile);
+                }
             }
             catch (Exception e)
             {
@@ -187,12 +195,20 @@ public class GraphSDKTest
         /// <param name="codeSnippet">code snippet</param>
         /// <returns>Code snippet that returns an HttpRequestMessage</returns>
 
-        private static string ReturnHttpRequestMessage(string codeSnippet)
+        internal static string ReturnHttpRequestMessage(string codeSnippet)
         {
             string resultVariable = null;
             try
             {
-                resultVariable = ResultVariableRegex.Match(codeSnippet).Groups[1].Value;
+                var resultVariableMatch = ResultVariableRegex.Match(codeSnippet);
+                if (resultVariableMatch.Success)
+                {
+                    resultVariable = resultVariableMatch.Groups[1].Value;
+                }
+                else
+                {
+                    Assert.Fail("Regex {0}, against code {1} Failed", ResultVariablePattern, codeSnippet);
+                }
             }
             catch (Exception e)
             {
@@ -294,11 +310,11 @@ IAuthenticationProvider authProvider  = null;";
                 LinqTemplateStart
                 + Environment.NewLine
                 + (testData.Version) switch
-                    {
-                        Versions.Beta => "  <NuGetReference Prerelease=\"true\">Microsoft.Graph.Beta</NuGetReference>",
-                        Versions.V1 => "  <NuGetReference>Microsoft.Graph</NuGetReference>",
-                        _ => throw new ArgumentException("unsupported version", nameof(testData))
-                    }
+                {
+                    Versions.Beta => "  <NuGetReference Prerelease=\"true\">Microsoft.Graph.Beta</NuGetReference>",
+                    Versions.V1 => "  <NuGetReference>Microsoft.Graph</NuGetReference>",
+                    _ => throw new ArgumentException("unsupported version", nameof(testData))
+                }
                 + LinqTemplateEnd
                 + codeSnippetFormatted.Replace("\n        ", "\n"));
         }
