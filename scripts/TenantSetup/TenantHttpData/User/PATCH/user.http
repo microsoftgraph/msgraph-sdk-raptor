@@ -1,9 +1,0 @@
-PATCH https://graph.microsoft.com/v1.0/users/{id}
-Content-type: application/json
-
-{
-  "businessPhones": [
-    "+1 425 555 0109"
-  ],
-  "officeLocation": "18/2111"
-}

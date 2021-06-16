@@ -4,70 +4,12 @@ Param(
     [string] $IdentifiersPath = (Join-Path $PSScriptRoot "../../../../msgraph-sdk-raptor-compiler-lib/identifiers.json")
 )
 
-$appSettings = Get-Content $AppSettingsPath | ConvertFrom-Json
-$identifiers = Get-Content $IdentifiersPath | ConvertFrom-Json
-$domain = $appSettings.Username.Split("@")[1]
+$raptorUtils = Join-Path $PSScriptRoot "../../RaptorUtils.ps1" -Resolve
+. $raptorUtils
 
-if (    !$appSettings.CertificateThumbprint `
-        -or !$appSettings.ClientID `
-        -or !$appSettings.Username `
-        -or !$appSettings.Password `
-        -or !$appSettings.TenantID) {
-    Write-Error -ErrorAction Stop -Message "please provide CertificateThumbprint, ClientID, Username, Password and TenantID in appsettings.json"
-}
-<#
-   Assumes that data is Stored in the following format:-
-   Entity
-        - ChildEntity.json
-        - ChildEntity.json
-    Such as:-
-    Team
-        - OpenShift.json
-        - Schedule.json
-    Based on the Tree Structure in Identifiers.json
-#>
-function Get-RequestData {
-    param (
-        [string] $ChildEntity
-    )
-    $entityPath = Join-Path $PSScriptRoot "./$($childEntity).json" -Resolve
-    $data = Get-Content -Path $entityPath -Raw | ConvertFrom-Json
-    return $data
-}
-<#
-    Helpers handles:-
-        1. GraphVersion,
-        2. MS-APP-ACTS-AS Headers
-        3. Content-Type header
-        4. HttpMethod
-
-    Basic Validation of Parameters
-#>
-function Invoke-RequestHelper {
-    param(
-        [string]
-        $Uri,
-        [Parameter(Mandatory = $False)]
-        [ValidateSet("v1.0", "beta")]
-        [string] $GraphVersion = "v1.0",
-        [Parameter(Mandatory = $False)]
-        [ValidateSet("GET", "POST", "PUT", "PATCH", "DELETE")]
-        [string] $Method = "GET",
-        $Headers = @{ },
-        $Body,
-        $User
-    )
-    #Append Content-Type to headers collection
-    #Append "MS-APP-ACTS-AS" to headers collection
-    $headers += @{ "Content-Type" = "application/json" }
-    $headers += @{"MS-APP-ACTS-AS" = $User }
-    #Convert Body to Json
-    $jsonData = $body | ConvertTo-Json -Depth 3
-
-    $response = Invoke-MgGraphRequest -Headers $headers -Method $Method -Uri "https://graph.microsoft.com/$GraphVersion/$Uri" -Body $jsonData -OutputType PSObject
-
-    return $response.value ?? $response
-}
+$appSettings = Get-AppSettings -AppSettingsPath $AppSettingsPath
+$identifiers = Get-CurrentIdentifiers -IdentifiersPath $IdentifiersPath
+$domain = Get-CurrentDomain -AppSettings $appSettings
 
 #Connect To Microsoft Graph Using ClientId, TenantId and Certificate
 Connect-MgGraph -CertificateThumbprint $appSettings.CertificateThumbprint -ClientId $appSettings.ClientID -TenantId $appSettings.TenantID
