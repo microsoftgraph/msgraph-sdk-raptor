@@ -37,7 +37,7 @@ function Invoke-RequestHelper (
     #Append Content-Type to headers collection
     #Append "MS-APP-ACTS-AS" to headers collection
     $headers += @{ "Content-Type" = "application/json" }
-    if ($null -eq $User) {
+    if ($null -ne $User) {
         $headers += @{"MS-APP-ACTS-AS" = $User }
     }
     #Convert Body to Json
