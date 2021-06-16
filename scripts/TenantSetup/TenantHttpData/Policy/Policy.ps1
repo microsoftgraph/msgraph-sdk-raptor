@@ -105,7 +105,7 @@ if($null -eq $currentHomeRealmDiscoveryPolicyData){
     $currentHomeRealmDiscoveryPolicyData.id
 }
 
-$tokenIssuancePolicyData = Get-RequestData -ChildEntity "TokenIssuancePolicy "
+$tokenIssuancePolicyData = Get-RequestData -ChildEntity "TokenIssuancePolicy"
 $currentTokenIssuancePolicy = Invoke-RequestHelper -Uri "policies/tokenIssuancePolicies" -Method GET |
         Where-Object { $_.displayName -eq $tokenIssuancePolicyData.displayName } |
         Select-Object -First 1
