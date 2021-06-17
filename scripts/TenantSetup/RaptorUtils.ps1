@@ -149,7 +149,7 @@ function reqDelegated
 
     $token = getToken -path "/$url" -scopeOverride $scopeOverride -method $method
     Connect-MgGraph -AccessToken $token | Out-Null
-    
+
     $jsonBody = $body | ConvertTo-Json -Depth 3
     $response = Invoke-MgGraphRequest -Method $method -Headers $Headers -Uri "https://graph.microsoft.com/$version/$url" -Body $jsonBody -OutputType PSObject
     return $response.value ?? $response
