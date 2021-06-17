@@ -13,7 +13,7 @@ $domain = Get-CurrentDomain -AppSettings $appSettings
 
 if($null -eq $threatAssessmentRequest) {
     $threatAssessmentRequestContent = Get-RequestData -ChildEntity "threatAssessmentRequest"
-    $threatAssessmentRequest = reqDelegated -url "informationProtection/threatAssessmentRequests" -method "POST" -body $threatAssessmentRequestContent
+    $threatAssessmentRequest = Request-DelegatedResource -Uri "informationProtection/threatAssessmentRequests" -Method "POST" -Body $threatAssessmentRequestContent
     $threatAssessmentRequest.id
 }
 $identifiers.threatAssessmentRequest._value = $threatAssessmentRequest.id

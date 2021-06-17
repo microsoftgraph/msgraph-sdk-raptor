@@ -78,31 +78,31 @@ function Invoke-RequestHelper (
     return $response.value ?? $response
 }
 
-function getToken
+function Get-Token
 {
     param(
-        [string]$path,
-        [string]$scopeOverride,
+        [string]$Path,
+        [string]$ScopeOverride,
         [Parameter(Mandatory = $False)]
         [ValidateSet("GET", "POST", "PUT", "PATCH", "DELETE")]
-        [string] $method = "GET"
+        [string] $Method = "GET"
     )
 
-    $tokenEndpoint = "https://login.microsoftonline.com/$domain/oauth2/v2.0/token"
+    $tokenEndpoint = "https://login.microsoftonline.com/$($domain)/oauth2/v2.0/token"
     $grantType = "password"
 
-    if ($scopeOverride)
+    if ($ScopeOverride)
     {
-        $joinedScopeString = $scopeOverride
+        $joinedScopeString = $ScopeOverride
     }
     else
     {
         try {
-            $scopes = Invoke-RestMethod -Method Get -Uri "https://graphexplorerapi.azurewebsites.net/permissions?requesturl=$path&method=$method"
+            $scopes = Invoke-RestMethod -Method Get -Uri "https://graphexplorerapi.azurewebsites.net/permissions?requesturl=$Path&method=$Method"
             if ($scopes.Count -eq 1 -and $scopes[0].value -eq "Not supported.") {
                 $joinedScopeString = ".default"
             }
-            elseif ($method -eq "GET") {
+            elseif ($Method -eq "GET") {
                 $joinedScopeString = $scopes.value |
                 Where-Object { $_.Contains("Read") -and !$_.Contains("Write") } | # same selection as the read-only permissions for the app
                 Join-String -Separator " "
@@ -119,7 +119,7 @@ function getToken
     }
 
     $body = "grant_type=$grantType&username=$($appSettings.Username)&password=$($appSettings.Password)&client_id=$($appSettings.ClientID)&scope=$($joinedScopeString)"
-    $token = Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body -ContentType 'application/x-www-form-urlencoded'
+    $token = Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $Body -ContentType 'application/x-www-form-urlencoded'
 
     Write-Debug "== got token with the following scopes"
     foreach ($scope in $token.scope.Split())
@@ -130,27 +130,27 @@ function getToken
     $token.access_token
 }
 
-function reqDelegated
+function Request-DelegatedResource
 {
     param(
         [Parameter(Mandatory = $true)]
-        [string]$url,
+        [string]$Uri,
         [Parameter(Mandatory = $False)]
-        $body,
+        $Body,
         [ValidateSet("GET", "POST", "PUT", "PATCH", "DELETE")]
-        [string] $method="GET",
-        $headers = @{ },
-        [string]$scopeOverride,
-        [string]$version = "v1.0"
+        [string] $Method="GET",
+        $Headers = @{ },
+        [string]$ScopeOverride,
+        [string]$Version = "v1.0"
     )
 
-    $headers += @{ "Content-Type" = "application/json" }
-    Write-Debug "== getting token for $url for method $method"
+    $Headers += @{ "Content-Type" = "application/json" }
+    Write-Debug "== getting token for $($Uri) for method $($Method)"
 
-    $token = getToken -path "/$url" -scopeOverride $scopeOverride -method $method
+    $token = Get-Token -Path "/$Uri" -ScopeOverride $ScopeOverride -Method $Method
     Connect-MgGraph -AccessToken $token | Out-Null
 
-    $jsonBody = $body | ConvertTo-Json -Depth 3
-    $response = Invoke-MgGraphRequest -Method $method -Headers $Headers -Uri "https://graph.microsoft.com/$version/$url" -Body $jsonBody -OutputType PSObject -ResponseHeadersVariable "respHeaderVar"
+    $jsonBody = $Body | ConvertTo-Json -Depth 3
+    $response = Invoke-MgGraphRequest -Method $Method -Headers $Headers -Uri "https://graph.microsoft.com/$Version/$Uri" -Body $jsonBody -OutputType PSObject -ResponseHeadersVariable "respHeaderVar"
     return $response.value ?? $response ?? $respHeaderVar
 }
