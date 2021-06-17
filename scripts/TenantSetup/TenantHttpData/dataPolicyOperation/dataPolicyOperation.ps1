@@ -16,6 +16,7 @@ $userId
 
 if($null -eq $dataPolicyOperation) {
     $dataPolicyOperationContent = Get-RequestData -ChildEntity "dataPolicyOperation"
+    $dataPolicyOperationContent.storageLocation = $appSettings.SASUrl
     $dataPolicyOperation = reqDelegated -url "/users/$($userId)/exportPersonalData" -method "Post" -scopeOverride "User.Export.All User.Read.All" -body $dataPolicyOperationContent
     $dataPolicyOperation.id
 }
