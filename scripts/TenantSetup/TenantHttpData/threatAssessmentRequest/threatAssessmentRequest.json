@@ -1,0 +1,6 @@
+{
+    "@odata.type": "#microsoft.graph.urlAssessmentRequest",
+    "url": "http://test.com",
+    "expectedAssessment": "block",
+    "category": "phishing"
+}
