@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# RaptorIgnoredFiles
+msgraph-sdk-raptor-compiler-lib/identifiers.json
+msgraph-sdk-raptor-compiler-lib/appsettings.json
+
 # User-specific files
 *.suo
 *.user
@@ -31,6 +35,9 @@ bld/
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/
+
+#VsCode auto generated files
+.vscode/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

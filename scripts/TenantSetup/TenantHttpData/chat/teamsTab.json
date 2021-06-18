@@ -1,0 +1,10 @@
+{
+    "displayName": "My Contoso Tab",
+    "teamsApp@odata.bind": "https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/",
+    "configuration": {
+        "entityId": "115A90F4-AC9C-4F79-9837-36D1EFB3BE08",
+        "contentUrl": "https://m365x165177.sharepoint.com/sites/4NewCloneWithClonableParts/Shared%20Documents/General/Employee Handbook.docx",
+        "removeUrl": null,
+        "websiteUrl": null
+    }
+}
