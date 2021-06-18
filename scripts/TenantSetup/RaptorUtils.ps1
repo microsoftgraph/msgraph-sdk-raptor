@@ -1,5 +1,6 @@
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 function Get-AppSettings (
-    [string] $AppSettingsPath = (Join-Path $MyInvocation.PSScriptRoot "../../../../msgraph-sdk-raptor-compiler-lib/appsettings.json")
+    [string] $AppSettingsPath = (Join-Path $PSScriptRoot "./../../msgraph-sdk-raptor-compiler-lib/appsettings.json")
 ) {
     $appSettings = Get-Content $AppSettingsPath -Raw | ConvertFrom-Json
     if (    !$appSettings.CertificateThumbprint `
@@ -78,6 +79,13 @@ function Invoke-RequestHelper (
     return $response.value ?? $response
 }
 
+<#
+    Handles:
+        Getting of scopes and token to be used in authenticating a delegated request
+        - Handled manually since ps sdk does not support delegated access to an application
+        - This application need access to delegated resources without user interaction
+    Returns: an access token
+#>
 function Get-Token
 {
     param(
@@ -88,9 +96,9 @@ function Get-Token
         [string] $Method = "GET"
     )
 
+    $appSettings = Get-AppSettings
+    $domain = Get-CurrentDomain -AppSettings $appSettings
     $tokenEndpoint = "https://login.microsoftonline.com/$($domain)/oauth2/v2.0/token"
-    $grantType = "password"
-
     if ($ScopeOverride)
     {
         $joinedScopeString = $ScopeOverride
@@ -118,7 +126,7 @@ function Get-Token
         }
     }
 
-    $body = "grant_type=$grantType&username=$($appSettings.Username)&password=$($appSettings.Password)&client_id=$($appSettings.ClientID)&scope=$($joinedScopeString)"
+    $body = "grant_type=password&username=$($appSettings.Username)&password=$($appSettings.Password)&client_id=$($appSettings.ClientID)&scope=$($joinedScopeString)"
     $token = Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $Body -ContentType 'application/x-www-form-urlencoded'
 
     Write-Debug "== got token with the following scopes"
@@ -127,9 +135,21 @@ function Get-Token
         Write-Debug "    $scope"
     }
 
-    $token.access_token
+    return $token.access_token
 }
 
+<#
+    Gets a delegated access resource
+    Handles:
+        - pre-appending the $Uri with a forward slash at the beginning
+        - converting passed in powershell object to json object for the request
+        - Adding the content-type: {"application/json"} header to request headers
+        - Requesting an auth token for the delegated permission
+    Returns:
+        - http response.value for odata collections or
+        - http response if response is a single item
+        - http response headers if the first two options return $null.
+#>
 function Request-DelegatedResource
 {
     param(

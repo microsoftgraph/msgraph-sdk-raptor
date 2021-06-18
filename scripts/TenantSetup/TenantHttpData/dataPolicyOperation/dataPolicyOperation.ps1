@@ -8,7 +8,6 @@ $raptorUtils = Join-Path $PSScriptRoot "../../RaptorUtils.ps1" -Resolve
 
 $appSettings = Get-AppSettings -AppSettingsPath $AppSettingsPath
 $identifiers = Get-CurrentIdentifiers -IdentifiersPath $IdentifiersPath
-$domain = Get-CurrentDomain -AppSettings $appSettings
 
 
 $userId = $identifiers.user._value
