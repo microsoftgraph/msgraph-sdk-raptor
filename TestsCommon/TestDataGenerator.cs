@@ -293,13 +293,14 @@ namespace TestsCommon
                 { "post-channelmessage-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "post-chatmessage-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "post-channelmessage-3-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
-                { "post-chatmessagereply-2-csharp-arbitraryDll-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
+                { "post-chatmessagereply-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "team-put-schedule-2-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported)},
                 { "timecard-replace-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported)},
 
                 { "post-channelmessage-3-csharp-V1-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "post-channelmessage-2-csharp-V1-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "post-chatmessage-2-csharp-V1-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
+                { "post-chatmessagereply-2-csharp-V1-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "shift-put-csharp-V1-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "create-educationsubmissionresource-from-educationsubmission-csharp-V1-compiles", new KnownIssue(HTTP, "https://github.com/microsoftgraph/microsoft-graph-docs/issues/13191")},
 
