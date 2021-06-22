@@ -306,27 +306,31 @@ namespace MsGraphSDKSnippetsCompiler
         /// </summary>
         /// <param name="codeSnippet">code snippet</param>
         /// <returns>true if the snippet requires delegated permissions</returns>
-        private static bool RequiresDelegatedPermissions(string codeSnippet)
+        internal static bool RequiresDelegatedPermissions(string codeSnippet)
         {
             // TODO: https://github.com/microsoftgraph/msgraph-sdk-raptor/issues/164
             const string graphClient = "graphClient.";
             var apiPathStart = codeSnippet.IndexOf(graphClient) + graphClient.Length;
             var apiPath = codeSnippet[apiPathStart..];
 
-            var apisWithDelegatedPermissions = new []
+            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
+            var apisWithDelegatedPermissions = new[]
             {
-                "Me",
-                "Education.Me",
-                "Users[",
-                "Planner",
-                "Print",
-                "IdentityProviders",
-                "Reports",
-                "IdentityGovernance",
-                "GroupSetting"
+               
+                
+                new Regex(@"^Education.Me", regexOptions),
+                new Regex(@"^Users\[",regexOptions),
+                new Regex(@"^Planner",regexOptions),
+                new Regex(@"^Print",regexOptions),
+                new Regex(@"^IdentityProviders",regexOptions),
+                new Regex(@"^Reports",regexOptions),
+                new Regex(@"^IdentityGovernance",regexOptions),
+                new Regex(@"^GroupSetting",regexOptions),
+                new Regex(@"^Teams\[[^\]]*\]\.Schedule",regexOptions)
             };
 
-            return apisWithDelegatedPermissions.Any(x => apiPath.StartsWith(x));
+            var matchResult = apisWithDelegatedPermissions.Any(x => x.IsMatch(apiPath));
+            return matchResult;
         }
     }
 }
