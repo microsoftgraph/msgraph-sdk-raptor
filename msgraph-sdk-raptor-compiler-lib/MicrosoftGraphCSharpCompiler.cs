@@ -316,8 +316,7 @@ namespace MsGraphSDKSnippetsCompiler
             const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
             var apisWithDelegatedPermissions = new[]
             {
-               
-                
+                new Regex(@"^Me", regexOptions),
                 new Regex(@"^Education.Me", regexOptions),
                 new Regex(@"^Users\[",regexOptions),
                 new Regex(@"^Planner",regexOptions),
