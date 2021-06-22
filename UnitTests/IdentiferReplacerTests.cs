@@ -27,10 +27,13 @@ namespace UnitTests
                   "https://graph.microsoft.com/v1.0/chats/<chat>/members/<chat_conversationMember>")]
         [TestCase("https://graph.microsoft.com/v1.0/teams/{team-id}/members/{conversationMember-id}",
                   "https://graph.microsoft.com/v1.0/teams/<team>/members/<team_conversationMember>")]
+        [TestCase("https://graph.microsoft.com/v1.0/education/schools/{educationSchool-id}/users",
+                  "https://graph.microsoft.com/v1.0/education/schools/<educationSchool>/users")]
         public void TestIds(string snippetUrl, string expectedUrl)
         {
             var newUrl = idReplacer.ReplaceIds(snippetUrl);
             Assert.AreEqual(expectedUrl, newUrl);
         }
+
     }
 }

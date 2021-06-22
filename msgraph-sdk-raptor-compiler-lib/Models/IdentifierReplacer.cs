@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+
 using Azure.Storage.Blobs;
 
 namespace MsGraphSDKSnippetsCompiler.Models
@@ -14,7 +15,7 @@ namespace MsGraphSDKSnippetsCompiler.Models
         /// </summary>
         public static IdentifierReplacer Instance => lazy.Value;
 
-        private static readonly Lazy<IdentifierReplacer> lazy = new (() => new IdentifierReplacer());
+        private static readonly Lazy<IdentifierReplacer> lazy = new(() => new IdentifierReplacer());
 
         /// <summary>
         /// tree of IDs that appear in sample Graph URLs
@@ -82,8 +83,12 @@ namespace MsGraphSDKSnippetsCompiler.Models
                 var id = match.Groups[0].Value;     // e.g. {site-id}
                 var idType = match.Groups[1].Value; // e.g. extract site from {site-id}
 
-                currentIdNode = currentIdNode[idType];
-                input = input.Replace(id, currentIdNode.Value);
+                var exists = currentIdNode.TryGetValue(idType, out IDTree localTree);
+                if (exists && localTree != null)
+                {
+                    currentIdNode = localTree;
+                    input = input.Replace(id, currentIdNode.Value);
+                }
             }
 
             return input;
