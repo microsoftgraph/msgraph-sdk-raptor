@@ -108,7 +108,16 @@
     "_value": "<subscription>"
   },
   "educationClass": {
-    "_value": "<educationClass>"
+    "_value": "<educationClass>",
+    "educationAssignment": {
+      "_value": "<educationAssignment>",
+      "educationSubmission": {
+        "_value": "<educationSubmission>",
+        "educationSubmissionResource": {
+          "_value": "<educationSubmissionResource>"
+        } 
+      } 
+    } 
   },
   "educationSchool": {
     "_value": "<educationSchool>"
