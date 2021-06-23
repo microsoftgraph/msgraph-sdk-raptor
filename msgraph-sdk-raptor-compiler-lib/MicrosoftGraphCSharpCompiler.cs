@@ -325,7 +325,8 @@ namespace MsGraphSDKSnippetsCompiler
                 new Regex(@"^Reports",regexOptions),
                 new Regex(@"^IdentityGovernance",regexOptions),
                 new Regex(@"^GroupSetting",regexOptions),
-                new Regex(@"^Teams\[[^\]]*\]\.Schedule",regexOptions)
+                new Regex(@"^Teams\[[^\]]*\]\.Schedule",regexOptions),
+                new Regex(@"^Teamwork.WorkforceIntegrations",regexOptions)
             };
 
             var matchResult = apisWithDelegatedPermissions.Any(x => x.IsMatch(apiPath));
