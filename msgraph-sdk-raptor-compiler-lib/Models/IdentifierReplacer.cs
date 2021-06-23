@@ -83,8 +83,8 @@ namespace MsGraphSDKSnippetsCompiler.Models
                 var id = match.Groups[0].Value;     // e.g. {site-id}
                 var idType = match.Groups[1].Value; // e.g. extract site from {site-id}
 
-                var exists = currentIdNode.TryGetValue(idType, out IDTree localTree);
-                if (exists)
+                currentIdNode.TryGetValue(idType, out IDTree localTree);
+                if (localTree != null)
                 {
                     currentIdNode = localTree;
                     input = input.Replace(id, currentIdNode.Value);
