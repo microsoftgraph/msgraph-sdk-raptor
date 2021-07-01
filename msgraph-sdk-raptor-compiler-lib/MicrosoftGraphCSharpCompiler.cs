@@ -213,12 +213,12 @@ namespace MsGraphSDKSnippetsCompiler
                     .Select(x => $"https://graph.microsoft.com/{ x.value }")
                     .ToArray();
 
-                return fullReadScopes.Length == 0 ? null : fullReadScopes;
+                return fullReadScopes.Length == 0 ? new[] { DefaultAuthScope } : fullReadScopes;
             }
             catch (Exception)
             {
                 // some URLs don't return scopes from the permissions endpoint of DevX API
-                return null;
+                return new[] { DefaultAuthScope };
             }
         }
 
@@ -233,7 +233,7 @@ namespace MsGraphSDKSnippetsCompiler
         /// <returns>token for the given context</returns>
         static string GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
         {
-            lock(tokenLock)
+            lock (tokenLock)
             {
                 var scopesSorted = scopes.ToList();
                 scopesSorted.Sort();
@@ -326,7 +326,8 @@ namespace MsGraphSDKSnippetsCompiler
                 new Regex(@"^IdentityGovernance",regexOptions),
                 new Regex(@"^GroupSetting",regexOptions),
                 new Regex(@"^Teams\[[^\]]*\]\.Schedule",regexOptions),
-                new Regex(@"^Teamwork.WorkforceIntegrations",regexOptions)
+                new Regex(@"^Teamwork.WorkforceIntegrations",regexOptions),
+                new Regex(@"^Communications.Presences\[[^\]]*\]",regexOptions)
             };
 
             var matchResult = apisWithDelegatedPermissions.Any(x => x.IsMatch(apiPath));
