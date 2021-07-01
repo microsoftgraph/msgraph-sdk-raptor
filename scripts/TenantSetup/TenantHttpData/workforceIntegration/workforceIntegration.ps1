@@ -9,6 +9,7 @@ $identifiers = Get-CurrentIdentifiers -IdentifiersPath $IdentifiersPath
 
 
 $intgData = Get-RequestData -ChildEntity "workforceIntegration"
+$intgData.encryption.secret = Get-RandomAlphanumericString -length 64
 $intg = Request-DelegatedResource -Uri teamwork/workforceintegrations -Method "POST" -Body $intgData
 $intg.id
 $identifiers.workforceIntegration._value = $intg.id

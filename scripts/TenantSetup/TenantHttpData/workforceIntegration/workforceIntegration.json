@@ -3,7 +3,7 @@
     "apiVersion": 1,
     "encryption": {
       "protocol": "sharedSecret",
-      "secret": "uh5ZB27wWZVdZ3ahGNUg6m2WAywCv9Z2uJWnEcwNkSwdjFBPM8Qqtrin4bcpDmjJ"
+      "secret": ""
     },
     "isActive": true,
     "url": "https://raptorcallbacks.azurewebsites.net/api",

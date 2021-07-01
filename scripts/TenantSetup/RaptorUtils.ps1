@@ -174,3 +174,12 @@ function Request-DelegatedResource
     $response = Invoke-MgGraphRequest -Method $Method -Headers $Headers -Uri "https://graph.microsoft.com/$Version/$Uri" -Body $jsonBody -OutputType PSObject -ResponseHeadersVariable "respHeaderVar"
     return $response.value ?? $response ?? $respHeaderVar
 }
+
+Function Get-RandomAlphanumericString {
+	[CmdletBinding()]
+	Param (
+        [int] $length
+	)
+        $randString = ""; do { $randString = $randString + ((0x30..0x39) + (0x41..0x5A) + (0x61..0x7A) | Get-Random | % {[char]$_}) } until ($randString.length -eq $length)
+        return $randString
+}
