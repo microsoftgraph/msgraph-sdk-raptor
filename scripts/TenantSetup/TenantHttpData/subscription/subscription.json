@@ -1,0 +1,7 @@
+{
+    "changeType": "created,updated",
+    "notificationUrl": "https://raptorcallbacks.azurewebsites.net/Values",
+    "resource": "/me/mailfolders('inbox')/messages",
+    "expirationDateTime": "",
+    "clientState": "SecretClientState"
+}
