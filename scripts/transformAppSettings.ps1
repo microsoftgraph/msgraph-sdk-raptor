@@ -9,7 +9,10 @@ param(
     [Parameter(Mandatory=$true)][string]$Username,
     [Parameter(Mandatory=$true)][string]$Password,
     [Parameter(Mandatory=$true)][string]$Authority,
-    [Parameter(Mandatory=$true)][string]$RaptorStorageConnectionString
+    [Parameter(Mandatory=$true)][string]$RaptorStorageConnectionString,
+    [Parameter(Mandatory=$false)][string]$SASUrl,
+    [Parameter(Mandatory=$false)][string]$EducationTenantId,
+    [Parameter(Mandatory=$false)][string]$EducationClientId
 )
 
 $json = @{
@@ -23,7 +26,10 @@ $json = @{
     Password = $Password;
     Authority = $Authority;
     RaptorStorageConnectionString = $RaptorStorageConnectionString;
-    CertificateThumbprint = $CertificateThumbprint
+    CertificateThumbprint = $CertificateThumbprint;
+    SASUrl = $SASUrl;
+    EducationClientId = $EducationClientId;
+    EducationTenantId = $EducationTenantId;
 }
 
 $repoRoot = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
