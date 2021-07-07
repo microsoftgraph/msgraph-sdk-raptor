@@ -1,5 +1,5 @@
 steps:
-  - pwsh: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/scripts/transformAppSettings.ps1 -TenantID $(TenantID) -ClientID $(ClientID) -ClientSecret $(ClientSecret) -Authority $(Authority) -Username $(Username) -Password $(Password) -RaptorStorageConnectionString "$(RaptorStorageConnectionString)"'
+  - pwsh: '$(Build.SourcesDirectory)/msgraph-sdk-raptor/scripts/transformAppSettings.ps1 -TenantID $(TenantID) -ClientID $(ClientID) -ClientSecret $(ClientSecret) -Authority $(Authority) -Username $(Username) -Password $(Password) -RaptorStorageConnectionString "$(RaptorStorageConnectionString)" -SASUrl "$(SASUrl)" -EducationClientId "$(EducationClientId)" -EducationTenantId "$(EducationTenantId)"'
     workingDirectory: 'msgraph-sdk-raptor'
     displayName: 'Transform app settings with the secrets'
 
