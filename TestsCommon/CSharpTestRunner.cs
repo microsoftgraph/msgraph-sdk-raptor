@@ -2,7 +2,9 @@
 
 using MsGraphSDKSnippetsCompiler;
 using MsGraphSDKSnippetsCompiler.Models;
+
 using NUnit.Framework;
+
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -36,7 +38,17 @@ public class GraphSDKTest
 {
     public async Task Main(IAuthenticationProvider authProvider)
     {
-        //insert-code-here
+        var httpRequestMessage = GetRequestMessage(authProvider);
+        var uri = httpRequestMessage.RequestUri;
+        var headers = httpRequestMessage.Headers;
+        try
+        {
+            //insert-code-here
+        }
+        catch(Exception e)
+        {
+            throw new Exception($""Request URI: {uri}{Environment.NewLine}Request Headers:{Environment.NewLine}{headers}"", e);
+        }
     }
 
     public HttpRequestMessage GetRequestMessage(IAuthenticationProvider authProvider)
@@ -164,19 +176,11 @@ public class GraphSDKTest
             }
 
             codeToCompile = codeToCompile.Replace("await graphClient", "graphClient")
-                .Replace(".GetAsync();", $@".GetHttpRequestMessage();
-
-        var uri = {resultVariable}.RequestUri;
-        var headers = {resultVariable}.Headers;
-        {resultVariable}.Method = HttpMethod.Get;
-        try
-        {{
-            await graphClient.HttpProvider.SendAsync({resultVariable});
-        }}
-        catch (Exception e)
-        {{
-            throw new Exception($""Request URI: {{uri}}{{Environment.NewLine}}Request Headers:{{Environment.NewLine}}{{headers}}"", e);
-        }}");
+                .Replace(".GetAsync();", $@"
+        var httpRequestMessage = GetRequestMessage(authProvider);
+        var uri = httpRequestMessage.RequestUri;
+        var headers = httpRequestMessage.Headers;
+");
 
             return codeToCompile;
         }
@@ -203,7 +207,12 @@ public class GraphSDKTest
                 .Replace(".GetAsync();", $@".GetHttpRequestMessage();
 
         return {resultVariable};");
+            var intendedClosingStatement = codeSnippet.LastIndexOf($"{resultVariable};", StringComparison.OrdinalIgnoreCase);
 
+            // Semi-Colon closing the snippet is at LastIndexOf the return variable + Length of resultVariable + 1
+            var closingSemiColonIndex = intendedClosingStatement + resultVariable.Length + 1;
+            // Remove all text from intended closing statement to the end. 
+            codeSnippet = codeSnippet.Remove(closingSemiColonIndex);
             return codeSnippet;
         }
         private static string GetResultVariable(string codeToCompile)
@@ -231,11 +240,11 @@ public class GraphSDKTest
         {
             var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(IdentifierReplacer.Instance.ReplaceIds(fileContent));
 
-            // have another tranformation to insert GetRequestMessage method
+            // have another transformation to insert GetRequestMessage method
             codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");
             codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
-
-            return (CaptureUriAndHeadersInException(codeToCompile), codeSnippetFormatted);
+            //codeToCompile = CaptureUriAndHeadersInException(codeToCompile);
+            return (codeToCompile, codeSnippetFormatted);
         }
 
         /// <summary>
