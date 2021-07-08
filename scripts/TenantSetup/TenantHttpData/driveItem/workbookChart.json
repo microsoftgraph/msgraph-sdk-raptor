@@ -1,0 +1,5 @@
+{
+    "type": "ColumnStacked",
+    "sourceData": "A1:B1",
+    "seriesBy": "Auto"
+  }

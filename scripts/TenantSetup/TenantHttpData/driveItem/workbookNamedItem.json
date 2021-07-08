@@ -1,0 +1,5 @@
+{
+    "name": "test2",
+    "reference": "=Sheet1!$F$16:$N$27",
+    "comment": "Comment for the named item"
+}
