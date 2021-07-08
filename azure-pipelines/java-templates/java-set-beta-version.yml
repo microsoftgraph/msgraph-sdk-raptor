@@ -1,0 +1,3 @@
+steps:
+- pwsh: $(Build.SourcesDirectory)/msgraph-sdk-raptor/azure-pipelines/java-templates/set-latest-version.ps1 -versionName "Beta" -url "https://oss.sonatype.org/content/repositories/snapshots/com/microsoft/graph/microsoft-graph-beta/maven-metadata.xml"
+  displayName: 'Get latest Beta service library version'

@@ -1,0 +1,11 @@
+{
+    "displayName": "DemoWorkforceIntegration",
+    "apiVersion": 1,
+    "encryption": {
+      "protocol": "sharedSecret",
+      "secret": ""
+    },
+    "isActive": true,
+    "url": "https://raptorcallbacks.azurewebsites.net/api",
+    "supportedEntities": "shift"
+  }

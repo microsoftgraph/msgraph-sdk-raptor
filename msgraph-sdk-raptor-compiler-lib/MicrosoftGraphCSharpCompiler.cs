@@ -20,7 +20,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Security;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 namespace MsGraphSDKSnippetsCompiler
 {
@@ -36,6 +36,10 @@ namespace MsGraphSDKSnippetsCompiler
         private const string AuthHeaderPattern = "Authorization: Bearer .*";
         private const string AuthHeaderReplacement = "Authorization: Bearer <token>";
         private static readonly Regex AuthHeaderRegex = new Regex(AuthHeaderPattern, RegexOptions.Compiled);
+
+        // token cache
+        private static readonly object tokenLock = new object();
+        private static ConcurrentDictionary<string, string> tokenCache = new ConcurrentDictionary<string, string>();
 
         private const string DefaultAuthScope = "https://graph.microsoft.com/.default";
 
@@ -131,7 +135,7 @@ namespace MsGraphSDKSnippetsCompiler
                 {
                     var requiresDelegatedPermissions = RequiresDelegatedPermissions(codeSnippet);
                     var config = AppSettings.Config();
-                    var clientId = GetNonEmptyValue(config, "ClientID");
+                    var clientId = config.GetNonEmptyValue("ClientID");
 
                     dynamic instance = assembly.CreateInstance("GraphSDKTest");
                     IAuthenticationProvider authProvider;
@@ -141,20 +145,21 @@ namespace MsGraphSDKSnippetsCompiler
                         // delegated permissions
                         using var httpRequestMessage = instance.GetRequestMessage(null);
                         var scopes = await GetScopes(httpRequestMessage);
-                        var authority = GetNonEmptyValue(config, "Authority");
-                        var username = GetNonEmptyValue(config, "Username");
-                        var password = GetNonEmptyValue(config, "Password");
-                        var token = await GetATokenForGraph(clientId, authority, username, password, scopes).ConfigureAwait(false);
+                        var authority = config.GetNonEmptyValue("Authority");
+                        var username = config.GetNonEmptyValue("Username");
+                        var password = config.GetNonEmptyValue("Password");
+
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
+                            var token = GetATokenForGraph(clientId, authority, username, password, scopes);
                             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         });
                     }
                     else
                     {
                         // application permissions
-                        var tenantId = GetNonEmptyValue(config, "TenantID");
-                        var clientSecret = GetNonEmptyValue(config, "ClientSecret");
+                        var tenantId = config.GetNonEmptyValue("TenantID");
+                        var clientSecret = config.GetNonEmptyValue("ClientSecret");
                         IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
                             .Create(clientId)
                             .WithTenantId(tenantId)
@@ -199,16 +204,24 @@ namespace MsGraphSDKSnippetsCompiler
             using var scopesRequest = new HttpRequestMessage(HttpMethod.Get, $"https://graphexplorerapi.azurewebsites.net/permissions?requesturl={path}&method={httpRequestMessage.Method}");
             scopesRequest.Headers.Add("Accept-Language", "en-US");
 
-            using var response = await httpClient.SendAsync(scopesRequest).ConfigureAwait(false);
-            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
+            {
+                using var response = await httpClient.SendAsync(scopesRequest).ConfigureAwait(false);
+                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var scopes = JsonSerializer.Deserialize<Scope[]>(responseString);
+                var fullReadScopes = scopes
+                    .ToList()
+                    .Where(x => x.value.Contains("Read") && !x.value.Contains("Write"))
+                    .Select(x => $"https://graph.microsoft.com/{ x.value }")
+                    .ToArray();
 
-            var scopes = JsonSerializer.Deserialize<Scope[]>(responseString);
-
-            return scopes
-                .ToList()
-                .Where(x => x.value.Contains("Read") && !x.value.Contains("Write"))
-                .Select(x => $"https://graph.microsoft.com/{ x.value }")
-                .ToArray();
+                return fullReadScopes.Length == 0 ? new[] { DefaultAuthScope } : fullReadScopes;
+            }
+            catch (Exception)
+            {
+                // some URLs don't return scopes from the permissions endpoint of DevX API
+                return new[] { DefaultAuthScope };
+            }
         }
 
         /// <summary>
@@ -220,25 +233,39 @@ namespace MsGraphSDKSnippetsCompiler
         /// <param name="password">password of the user for which the token is requested</param>
         /// <param name="scopes">requested scopes in the token</param>
         /// <returns>token for the given context</returns>
-        static async Task<string> GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
+        static string GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
         {
-            var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
-
-            using var securePassword = new SecureString();
-
-            // convert plain password into a secure string.
-            password.ToList().ForEach(c => securePassword.AppendChar(c));
-
-            try
+            lock (tokenLock)
             {
-                var result = await app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
-                return result.AccessToken;
-            }
-            catch (Exception e)
-            {
-                var prefixLength = "https://graph.microsoft.com/".Length;
-                var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
-                throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
+                var scopesSorted = scopes.ToList();
+                scopesSorted.Sort();
+                var tokenKey = string.Join("-", scopesSorted);
+                if (tokenCache.ContainsKey(tokenKey))
+                {
+                    return tokenCache[tokenKey];
+                }
+                else
+                {
+                    var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
+
+                    using var securePassword = new SecureString();
+
+                    // convert plain password into a secure string.
+                    password.ToList().ForEach(c => securePassword.AppendChar(c));
+
+                    try
+                    {
+                        var result = app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync().Result;
+                        tokenCache[tokenKey] = result.AccessToken;
+                        return result.AccessToken;
+                    }
+                    catch (Exception e)
+                    {
+                        var prefixLength = "https://graph.microsoft.com/".Length;
+                        var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
+                        throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
+                    }
+                }
             }
         }
 
@@ -281,29 +308,32 @@ namespace MsGraphSDKSnippetsCompiler
         /// </summary>
         /// <param name="codeSnippet">code snippet</param>
         /// <returns>true if the snippet requires delegated permissions</returns>
-        private static bool RequiresDelegatedPermissions(string codeSnippet)
+        internal static bool RequiresDelegatedPermissions(string codeSnippet)
         {
             // TODO: https://github.com/microsoftgraph/msgraph-sdk-raptor/issues/164
-            return codeSnippet.Contains("graphClient.Me") ||
-                codeSnippet.Contains("graphClient.Education.Me") ||
-                codeSnippet.Contains("graphClient.Users[\"");
-        }
+            const string graphClient = "graphClient.";
+            var apiPathStart = codeSnippet.IndexOf(graphClient) + graphClient.Length;
+            var apiPath = codeSnippet[apiPathStart..];
 
-        /// <summary>
-        /// Extracts the configuration value, throws if empty string
-        /// </summary>
-        /// <param name="config">configuration</param>
-        /// <param name="key">lookup key</param>
-        /// <returns>non-empty configuration value if found</returns>
-        private static string GetNonEmptyValue(IConfigurationRoot config, string key)
-        {
-            var value = config.GetSection(key).Value;
-            if (value == string.Empty)
+            const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
+            var apisWithDelegatedPermissions = new[]
             {
-                throw new Exception($"Value for {key} is not found in appsettings.json");
-            }
+                new Regex(@"^Me", regexOptions),
+                new Regex(@"^Education.Me", regexOptions),
+                new Regex(@"^Users\[",regexOptions),
+                new Regex(@"^Planner",regexOptions),
+                new Regex(@"^Print",regexOptions),
+                new Regex(@"^IdentityProviders",regexOptions),
+                new Regex(@"^Reports",regexOptions),
+                new Regex(@"^IdentityGovernance",regexOptions),
+                new Regex(@"^GroupSetting",regexOptions),
+                new Regex(@"^Teams\[[^\]]*\]\.Schedule",regexOptions),
+                new Regex(@"^Teamwork.WorkforceIntegrations",regexOptions),
+                new Regex(@"^Communications.Presences\[[^\]]*\]",regexOptions)
+            };
 
-            return value;
+            var matchResult = apisWithDelegatedPermissions.Any(x => x.IsMatch(apiPath));
+            return matchResult;
         }
     }
 }

@@ -1,0 +1,21 @@
+{
+    "id": "SHFT_577b75d2-a927-48c0-a5d1-dc984894e7b8",
+    "userId": "01a83ee9-35c4-41d5-afa9-80a9f6a7bf64",
+    "schedulingGroupId": "TAG_ee6b9e81-a386-468c-86b2-f351ca907e53",
+    "draftShift": {
+        "displayName": "Day shift",
+        "notes": "Please do inventory as part of your shift.",
+        "startDateTime": "2021-07-11T15:00:00Z",
+        "endDateTime": "2021-07-12T00:00:00Z",
+        "theme": "blue",
+        "activities": [
+            {
+                "isPaid": true,
+                "startDateTime": "2021-07-11T15:00:00Z",
+                "endDateTime": "2021-07-11T15:30:00Z",
+                "code": "",
+                "displayName": "Lunch"
+            }
+        ]
+    }
+}

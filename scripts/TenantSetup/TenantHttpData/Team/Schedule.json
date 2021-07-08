@@ -1,0 +1,11 @@
+{
+    "id": "833fc4df-c88b-4398-992f-d8afcfe41df2",
+    "enabled": true,
+    "timeZone": "America/Chicago",
+    "provisionStatus": "Completed",
+    "timeClockEnabled": true,
+    "openShiftsEnabled": true,
+    "swapShiftsRequestsEnabled": true,
+    "offerShiftRequestsEnabled": true,
+    "timeOffRequestsEnabled": true
+  }
