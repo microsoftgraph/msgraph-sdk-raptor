@@ -160,28 +160,6 @@ public class GraphSDKTest
             }
         }
 
-        internal static string CaptureUriAndHeadersInException(string codeToCompile)
-        {
-            string resultVariable = null;
-            try
-            {
-                resultVariable = GetResultVariable(codeToCompile);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail("result variable is not found!" + Environment.NewLine + e.Message);
-            }
-
-            codeToCompile = codeToCompile.Replace("await graphClient", "graphClient")
-                .Replace(".GetAsync();", $@"
-        var httpRequestMessage = GetRequestMessage(authProvider);
-        var uri = httpRequestMessage.RequestUri;
-        var headers = httpRequestMessage.Headers;
-");
-
-            return codeToCompile;
-        }
-
         /// <summary>
         /// Modifies snippet to return HttpRequestMessage object so that we can extract the generated URL
         /// </summary>
