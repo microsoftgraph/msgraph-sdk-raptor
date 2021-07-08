@@ -12,24 +12,6 @@ namespace MsGraphSDKSnippetsCompiler
     /// </summary>
     public class CustomHttpProvider : HttpProvider, IHttpProvider
     {
-        //ISerializer IHttpProvider.Serializer => base.Serializer;
-
-        //TimeSpan IHttpProvider.OverallTimeout
-        //{
-        //    get => base.OverallTimeout;
-        //    set => base.OverallTimeout = value;
-        //}
-
-        //void IDisposable.Dispose()
-        //{
-        //    base.Dispose();
-        //}
-
-        //Task<HttpResponseMessage> IHttpProvider.SendAsync(HttpRequestMessage request)
-        //{
-        //    return this.SendAsync(request, HttpCompletionOption.ResponseContentRead, CancellationToken.None);
-        //}
-
         async Task<HttpResponseMessage> IHttpProvider.SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
         {
             var uri = request.RequestUri;
