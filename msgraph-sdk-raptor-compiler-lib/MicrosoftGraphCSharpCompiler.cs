@@ -149,7 +149,7 @@ namespace MsGraphSDKSnippetsCompiler
 
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
-                            var token = GetATokenForGraph(clientId, authority, username, password, scopes);
+                            var token = await GetATokenForGraph(clientId, authority, username, password, scopes);
                             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         });
                     }
@@ -231,39 +231,34 @@ namespace MsGraphSDKSnippetsCompiler
         /// <param name="password">password of the user for which the token is requested</param>
         /// <param name="scopes">requested scopes in the token</param>
         /// <returns>token for the given context</returns>
-        static string GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
+        static async Task<string> GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
         {
-            lock (tokenLock)
+            var scopesSorted = scopes.ToList();
+            scopesSorted.Sort();
+            var tokenKey = string.Join("-", scopesSorted);
+            if (tokenCache.ContainsKey(tokenKey))
             {
-                var scopesSorted = scopes.ToList();
-                scopesSorted.Sort();
-                var tokenKey = string.Join("-", scopesSorted);
-                if (tokenCache.ContainsKey(tokenKey))
-                {
-                    return tokenCache[tokenKey];
-                }
-                else
-                {
-                    var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
+                return tokenCache[tokenKey];
+            }
 
-                    using var securePassword = new SecureString();
+            var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
 
-                    // convert plain password into a secure string.
-                    password.ToList().ForEach(c => securePassword.AppendChar(c));
+            using var securePassword = new SecureString();
 
-                    try
-                    {
-                        var result = app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync().Result;
-                        tokenCache[tokenKey] = result.AccessToken;
-                        return result.AccessToken;
-                    }
-                    catch (Exception e)
-                    {
-                        var prefixLength = "https://graph.microsoft.com/".Length;
-                        var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
-                        throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
-                    }
-                }
+            // convert plain password into a secure string.
+            password.ToList().ForEach(c => securePassword.AppendChar(c));
+
+            try
+            {
+                var result =await  app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
+                tokenCache[tokenKey] = result.AccessToken;
+                return result.AccessToken;
+            }
+            catch (Exception e)
+            {
+                var prefixLength = "https://graph.microsoft.com/".Length;
+                var scopeShortNames = scopes.Select(s => s[prefixLength..]).ToArray();
+                throw new AggregateException("scopes: " + string.Join(", ", scopeShortNames), e);
             }
         }
 
