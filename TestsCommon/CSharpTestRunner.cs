@@ -207,8 +207,8 @@ public class GraphSDKTest
                 .Replace(".GetAsync();", $@".GetHttpRequestMessage();
 
         return {resultVariable};");
-            var intendedClosingStatement = codeSnippet.LastIndexOf($"{resultVariable};", StringComparison.OrdinalIgnoreCase);
 
+            var intendedClosingStatement = codeSnippet.LastIndexOf($"{resultVariable};", StringComparison.OrdinalIgnoreCase);
             // Semi-Colon closing the snippet is at LastIndexOf the return variable + Length of resultVariable + 1
             var closingSemiColonIndex = intendedClosingStatement + resultVariable.Length + 1;
             // Remove all text from intended closing statement to the end. 
@@ -243,7 +243,6 @@ public class GraphSDKTest
             // have another transformation to insert GetRequestMessage method
             codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");
             codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
-            //codeToCompile = CaptureUriAndHeadersInException(codeToCompile);
             return (codeToCompile, codeSnippetFormatted);
         }
 
