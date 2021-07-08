@@ -165,8 +165,8 @@ namespace MsGraphSDKSnippetsCompiler
                             .Build();
                         authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
                     }
-
-                    await (instance.Main(authProvider) as Task);
+                    // Pass custom http provider to provide interception and logging
+                    await (instance.Main(authProvider, new CustomHttpProvider()) as Task);
                     success = true;
                 }
                 catch (Exception e)

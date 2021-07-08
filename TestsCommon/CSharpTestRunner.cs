@@ -36,18 +36,15 @@ using KeyValuePair = Microsoft.Graph.KeyValuePair;
 
 public class GraphSDKTest
 {
-    public async Task Main(IAuthenticationProvider authProvider)
+    public async Task Main(IAuthenticationProvider authProvider, IHttpProvider httpProvider)
     {
-        var httpRequestMessage = GetRequestMessage(authProvider);
-        var uri = httpRequestMessage.RequestUri;
-        var headers = httpRequestMessage.Headers;
         try
         {
             //insert-code-here
         }
         catch(Exception e)
         {
-            throw new Exception($""Request URI: {uri}{Environment.NewLine}Request Headers:{Environment.NewLine}{headers}"", e);
+            throw;
         }
     }
 
@@ -241,6 +238,7 @@ public class GraphSDKTest
             var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(IdentifierReplacer.Instance.ReplaceIds(fileContent));
 
             // have another transformation to insert GetRequestMessage method
+            codeToCompile = codeToCompile.Replace("GraphServiceClient( authProvider );", "GraphServiceClient( authProvider, httpProvider );");
             codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");
             codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
             return (codeToCompile, codeSnippetFormatted);
