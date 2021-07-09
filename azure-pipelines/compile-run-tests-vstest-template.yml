@@ -18,6 +18,7 @@ steps:
     versionSelector: 'latestStable' # Required when packageFeedSelector == NugetOrg || PackageFeedSelector == CustomFeed# Options: latestPreRelease, latestStable, specificVersion
 
 - task: VSTest@2
+  continueOnError: true
   inputs:
      testSelector: 'testAssemblies'
      testAssemblyVer2: |
@@ -29,19 +30,18 @@ steps:
      codeCoverageEnabled: true
      publishRunAttachments: true
      diagnosticsEnabled: true
-     rerunFailedThreshold: 50
+     rerunFailedThreshold: 30
+     collectDumpOn: 'always'
      rerunType: basedOnTestFailurePercentage
      rerunMaxAttempts: 5
-     distributionBatchType: 'basedOnTestCases'
 
-- task: DotNetCoreCLI@2
+- task: PublishTestResults@2
   inputs:
-    command: 'test'
-    projects: '**/${{ parameters.projectFileName }}.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Agent.TempDirectory) --settings $(Build.SourcesDirectory)/msgraph-sdk-raptor/${{ parameters.projectFileName}}/Test.runsettings'
-    publishTestResults: false
-  displayName: '${{ parameters.projectFileName }} ${{ parameters.testType }} Tests'
-  continueOnError: true
+    testResultsFormat: VSTest
+    testResultsFiles: '**/*.trx'
+    mergeTestResults: false # Optional
+    failTaskOnFailedTests: false # Optional
+    publishRunAttachments: true # Optional
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
