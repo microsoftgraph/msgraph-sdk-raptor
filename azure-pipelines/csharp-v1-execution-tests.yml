@@ -11,7 +11,9 @@ resources:
      name: microsoftgraph/microsoft-graph-docs
      ref: main
 
-pool: MsGraphBuildAgentsWindows
+pool:
+  vmImage: 'windows-latest'
+
 
 variables:
   buildConfiguration: 'Release'
