@@ -25,6 +25,7 @@ steps:
         **\*CsharpV1ExecutionTests*.dll
         !**\*TestAdapter.dll
         !**\obj\**
+         !**\bin\**\ref\**
      runInParallel: true
      runTestsInIsolation: true
      codeCoverageEnabled: true
