@@ -20,7 +20,8 @@ namespace TestsCommon
         private const string FeatureNotSupported = "Range composable functions are not supported by SDK\r\n"
             + "https://github.com/microsoftgraph/msgraph-sdk-dotnet/issues/490";
         private const string SearchHeaderIsNotSupported = "Search header is not supported by the SDK";
-        private const string CountIsNotSupported = "OData $count is not supported by the SDK at the moment";
+        private const string CountIsNotSupported = "OData $count is not supported by the SDK at the moment.\r\n"
+            + "https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/402";
         private const string MissingContentProperty = "IReportRootGetM365AppPlatformUserCountsRequestBuilder is missing Content property";
         private const string PutAsyncIsNotSupported = "PutAsync methods are not auto generated.\r\n"
             + "https://github.com/microsoftgraph/msgraph-sdk-dotnet/issues/844";
@@ -297,6 +298,7 @@ namespace TestsCommon
                 { "post-chatmessage-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "post-channelmessage-3-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "post-chatmessagereply-2-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
+                { "get-transitivereports-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, "Support for $count segment, https://github.com/microsoftgraph/microsoft-graph-devx-api/issues/632")},
 
                 { "post-channelmessage-3-csharp-V1-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
                 { "post-channelmessage-2-csharp-V1-compiles", new KnownIssue(SnippetGeneration, IdentitySetAndIdentityShouldNestAdditionalData)},
