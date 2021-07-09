@@ -39,7 +39,7 @@ namespace MsGraphSDKSnippetsCompiler
 
         // token cache
         private static readonly object tokenLock = new object();
-        private static ConcurrentDictionary<string, string> tokenCache = new ConcurrentDictionary<string, string>();
+        private static ConcurrentDictionary<string, IAccount> tokenCache = new ConcurrentDictionary<string, IAccount>();
 
         private const string DefaultAuthScope = "https://graph.microsoft.com/.default";
 
@@ -116,12 +116,17 @@ namespace MsGraphSDKSnippetsCompiler
             return results;
         }
 
+        public Task<ExecutionResultsModel> ExecuteSnippet(string codeSnippet, Versions version)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics.
         /// </summary>
         /// <param name="codeSnippet">The code snippet to be compiled.</param>
         /// <returns>CompilationResultsModel</returns>
-        public async Task<ExecutionResultsModel> ExecuteSnippet(string codeSnippet, Versions version)
+        public async Task<ExecutionResultsModel> ExecuteSnippet(string codeSnippet, Versions version, IPublicClientApplication publicClientApplication, IConfidentialClientApplication confidentialClientApplication)
         {
             var (compilationResult, assembly) = CompileSnippetAndGetAssembly(codeSnippet, version);
 
@@ -149,7 +154,7 @@ namespace MsGraphSDKSnippetsCompiler
 
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
-                            var token = await GetATokenForGraph(clientId, authority, username, password, scopes);
+                            var token = await GetATokenForGraph(publicClientApplication, clientId, authority, username, password, scopes);
                             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         });
                     }
@@ -158,12 +163,12 @@ namespace MsGraphSDKSnippetsCompiler
                         // application permissions
                         var tenantId = config.GetNonEmptyValue("TenantID");
                         var clientSecret = config.GetNonEmptyValue("ClientSecret");
-                        IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
-                            .Create(clientId)
-                            .WithTenantId(tenantId)
-                            .WithClientSecret(clientSecret)
-                            .Build();
-                        authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
+                        //IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
+                        //    .Create(clientId)
+                        //    .WithTenantId(tenantId)
+                        //    .WithClientSecret(clientSecret)
+                        //    .Build();
+                        authProvider = new ClientCredentialProvider(confidentialClientApplication, DefaultAuthScope);
                     }
                     // Pass custom http provider to provide interception and logging
                     await (instance.Main(authProvider, new CustomHttpProvider()) as Task);
@@ -231,17 +236,19 @@ namespace MsGraphSDKSnippetsCompiler
         /// <param name="password">password of the user for which the token is requested</param>
         /// <param name="scopes">requested scopes in the token</param>
         /// <returns>token for the given context</returns>
-        static async Task<string> GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
+        static async Task<string> GetATokenForGraph(IPublicClientApplication app, string clientId, string authority, string username, string password, string[] scopes)
         {
             var scopesSorted = scopes.ToList();
             scopesSorted.Sort();
             var tokenKey = string.Join("-", scopesSorted);
-            if (tokenCache.ContainsKey(tokenKey))
+            IAccount account = null;
+            if (tokenCache.ContainsKey(username))
             {
-                return tokenCache[tokenKey];
+                account = tokenCache[username];
             }
+            
 
-            var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
+            //   var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
 
             using var securePassword = new SecureString();
 
@@ -250,9 +257,19 @@ namespace MsGraphSDKSnippetsCompiler
 
             try
             {
-                var result =await  app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
-                tokenCache[tokenKey] = result.AccessToken;
-                return result.AccessToken;
+                if (account == null)
+                {
+                    var result = await app.AcquireTokenByUsernamePassword(scopes, username, securePassword)
+                        .ExecuteAsync();
+                    tokenCache[username] = result.Account;
+                    return result.AccessToken;
+                }
+                else
+                {
+                    var result = await app.AcquireTokenSilent(scopes, account).ExecuteAsync();
+                    tokenCache[username] = result.Account;
+                    return result.AccessToken;
+                }
             }
             catch (Exception e)
             {
