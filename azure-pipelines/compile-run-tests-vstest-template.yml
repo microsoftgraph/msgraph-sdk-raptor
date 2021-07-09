@@ -37,18 +37,13 @@ steps:
      rerunMaxAttempts: 5
 
 - task: PublishTestResults@2
+  condition: succeededOrFailed()
   inputs:
     testResultsFormat: VSTest
-    testResultsFiles: '**/*.trx'
+    testResultsFiles: |
+        **/TEST-*.xml
+        **/*.trx
     mergeTestResults: false # Optional
     failTaskOnFailedTests: false # Optional
     publishRunAttachments: true # Optional
-
-- task: PublishTestResults@2
-  condition: succeededOrFailed()
-  inputs:
-    testResultsFormat: 'VSTest'
-    searchFolder: '$(Agent.TempDirectory)'
-    testResultsFiles: '**/*.trx'
-    testRunTitle: '${{ parameters.runName }}'
-  displayName: 'Publish Test Results'
+  displayName: "Publish Test Results"
