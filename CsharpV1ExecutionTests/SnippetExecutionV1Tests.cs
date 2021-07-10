@@ -58,26 +58,10 @@ namespace CsharpV1ExecutionTests
         /// <param name="docsLink">documentation page where the snippet is shown</param>
         /// <param name="version">Docs version (e.g. V1, Beta)</param>
         [Test]
-        [RetryTestCaseSourceAttribute(typeof(SnippetExecutionV1Tests), nameof(TestDataV1), MaxTries = 3)]
+        [RetryTestCaseSource(typeof(SnippetExecutionV1Tests), nameof(TestDataV1), MaxTries = 3)]
         public async Task Test(ExecutionTestData testData)
         {
             await CSharpTestRunner.Execute(testData, publicClientApp, confidentialClientApp);
-        }
-        [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-        public class RetryTestCaseSourceAttribute : TestCaseSourceAttribute, IRepeatTest
-        {
-            #region constructors
-            public RetryTestCaseSourceAttribute(string sourceName) : base(sourceName){}
-            public RetryTestCaseSourceAttribute(Type sourceType) : base(sourceType){}
-            public RetryTestCaseSourceAttribute(Type sourceType, string sourceName) : base(sourceType, sourceName){}
-            public RetryTestCaseSourceAttribute(string sourceName, object[] methodParams) : base(sourceName, methodParams){}
-            public RetryTestCaseSourceAttribute(Type sourceType, string sourceName, object[] methodParams) : base(sourceType, sourceName, methodParams){}
-            #endregion
-
-            #region repeat components
-            public int MaxTries { get; set; }
-            TestCommand ICommandWrapper.Wrap(TestCommand command) => new RetryAttribute.RetryCommand(command, MaxTries);
-            #endregion
         }
     }
 }
