@@ -203,6 +203,7 @@ namespace TestsCommon
 
                 { "get-endpoints-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SameBlockNames) },
 
+                {$"delete-userflowlanguagepage-csharp-{version}-compiles", new KnownIssue(SDK, StreamRequestDoesNotSupportDelete) },
                 {$"unfollow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 {$"follow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 { "get-android-count-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
@@ -264,10 +265,8 @@ namespace TestsCommon
 
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-csharp-Beta-compiles", new KnownIssue(HttpSnippetWrong, "Need @odata.type for abstract type in JSON. https://github.com/microsoftgraph/microsoft-graph-docs/issues/11770") },
 
-                { "delete-userflowlanguagepage-csharp-Beta-compiles", new KnownIssue(SDK, StreamRequestDoesNotSupportDelete) },
                 { "team-put-schedule-2-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported)},
                 { "timecard-replace-csharp-Beta-compiles", new KnownIssue(SDK, PutAsyncIsNotSupported)},
-                { "get-transitivereports-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported)},
                 { "get-transitivereports-user-csharp-Beta-compiles", new KnownIssue(SDK, CountIsNotSupported)},
                 { "caseexportoperation-getdownloadurl-csharp-Beta-compiles", new KnownIssue(SDK, TypeCastIsNotSupported) },
 
@@ -315,6 +314,7 @@ namespace TestsCommon
                 { "educationassignment-setupresourcesfolder-csharp-Beta-compiles", new KnownIssue(Metadata, "EducationAssignmentSetUpResourcesFolder defined as odata action instead of function for 'PostAsync' generation")},
 
 
+                { "create-role-enabled-group-csharp-V1-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText)},
                 { "appconsentrequest-filterbycurrentuser-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accesspackageassignmentrequest-from-accesspackageassignmentrequests-2-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
                 { "create-accessreviewscheduledefinition-csharp-Beta-compiles", new KnownIssue(NeedsAnalysis, NeedsAnalysisText) },
