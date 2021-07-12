@@ -250,7 +250,7 @@ namespace MsGraphSDKSnippetsCompiler
 
             try
             {
-                var result =await  app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
+                var result = await  app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
                 tokenCache[tokenKey] = result.AccessToken;
                 return result.AccessToken;
             }
