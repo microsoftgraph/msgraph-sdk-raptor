@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
-using MsGraphSDKSnippetsCompiler;
 using MsGraphSDKSnippetsCompiler.Models;
+
 using NUnit.Framework;
+
 using TestsCommon;
 
 namespace CsharpBetaExecutionTests
@@ -11,28 +12,18 @@ namespace CsharpBetaExecutionTests
     [TestFixture]
     public class SnippetExecutionBetaTests
     {
-        public static IConfidentialClientApplication confidentialClientApp;
-        public static IPublicClientApplication publicClientApp;
+        private IConfidentialClientApplication _confidentialClientApp;
+        private IPublicClientApplication _publicClientApp;
+        private RaptorConfig _raptorConfig;
 
         [OneTimeSetUp]
-        public void Init()
+        public void OneTimeSetup()
         {
-            var config = AppSettings.Config();
-            var clientId = config.GetNonEmptyValue("ClientID");
-            var authority = config.GetNonEmptyValue("Authority");
-            var username = config.GetNonEmptyValue("Username");
-            var password = config.GetNonEmptyValue("Password");
-            // application permissions
-            var tenantId = config.GetNonEmptyValue("TenantID");
-            var clientSecret = config.GetNonEmptyValue("ClientSecret");
-            publicClientApp = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
-            confidentialClientApp = ConfidentialClientApplicationBuilder
-                .Create(clientId)
-                .WithTenantId(tenantId)
-                .WithClientSecret(clientSecret)
-                .Build();
-
+            _raptorConfig = TestsSetup.GetConfig();
+            _publicClientApp = TestsSetup.SetupPublicClientApp(_raptorConfig);
+            _confidentialClientApp = TestsSetup.SetupConfidentialClientApp(_raptorConfig);
         }
+
         /// <summary>
         /// Gets TestCaseData for Beta
         /// TestCaseData contains snippet file name, version and test case name
@@ -55,7 +46,7 @@ namespace CsharpBetaExecutionTests
         [RetryTestCaseSource(typeof(SnippetExecutionBetaTests), nameof(TestDataBeta), MaxTries = 3)]
         public async Task Test(ExecutionTestData testData)
         {
-            await CSharpTestRunner.Execute(testData,publicClientApp,confidentialClientApp);
+            await CSharpTestRunner.Execute(testData, _raptorConfig, _publicClientApp, _confidentialClientApp);
         }
     }
 }
