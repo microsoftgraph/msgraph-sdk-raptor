@@ -2,11 +2,14 @@
 
 using MsGraphSDKSnippetsCompiler;
 using MsGraphSDKSnippetsCompiler.Models;
+
 using NUnit.Framework;
+
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 
 namespace TestsCommon
 {
@@ -34,9 +37,16 @@ using KeyValuePair = Microsoft.Graph.KeyValuePair;
 
 public class GraphSDKTest
 {
-    public async Task Main(IAuthenticationProvider authProvider)
+    public async Task Main(IAuthenticationProvider authProvider, IHttpProvider httpProvider)
     {
-        //insert-code-here
+        try
+        {
+            //insert-code-here
+        }
+        catch(Exception e)
+        {
+            throw;
+        }
     }
 
     public HttpRequestMessage GetRequestMessage(IAuthenticationProvider authProvider)
@@ -104,7 +114,10 @@ public class GraphSDKTest
         /// 5. It uses the compiled binary to make a request to the demo tenant and reports error if there's a service exception i.e 4XX or 5xx response
         /// </summary>
         /// <param name="executionTestData">Test data containing information such as snippet file name</param>
-        public async static Task Execute(ExecutionTestData executionTestData)
+        /// <param name="config"></param>
+        /// <param name="publicClientApplication"></param>
+        /// <param name="confidentialClientApplication"></param>
+        public static async Task Execute(ExecutionTestData executionTestData, RaptorConfig config, IPublicClientApplication publicClientApplication, IConfidentialClientApplication confidentialClientApplication)
         {
             if (executionTestData == null)
             {
@@ -116,8 +129,10 @@ public class GraphSDKTest
             var (codeToCompile, codeSnippetFormatted) = GetCodeToExecute(executionTestData.FileContent);
 
             // Compile Code
-            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
-            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version).ConfigureAwait(false);
+            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath, config, publicClientApplication, confidentialClientApplication);
+            var executionResultsModel = await microsoftGraphCSharpCompiler
+                .ExecuteSnippet(codeToCompile, testData.Version)
+                .ConfigureAwait(false);
             var compilationOutputMessage = new CompilationOutputMessage(
                 executionResultsModel.CompilationResult,
                 codeToCompile,
@@ -151,36 +166,6 @@ public class GraphSDKTest
             }
         }
 
-        internal static string CaptureUriAndHeadersInException(string codeToCompile)
-        {
-            string resultVariable = null;
-            try
-            {
-                resultVariable = GetResultVariable(codeToCompile);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail("result variable is not found!" + Environment.NewLine + e.Message);
-            }
-
-            codeToCompile = codeToCompile.Replace("await graphClient", "graphClient")
-                .Replace(".GetAsync();", $@".GetHttpRequestMessage();
-
-        var uri = {resultVariable}.RequestUri;
-        var headers = {resultVariable}.Headers;
-        {resultVariable}.Method = HttpMethod.Get;
-        try
-        {{
-            await graphClient.HttpProvider.SendAsync({resultVariable});
-        }}
-        catch (Exception e)
-        {{
-            throw new Exception($""Request URI: {{uri}}{{Environment.NewLine}}Request Headers:{{Environment.NewLine}}{{headers}}"", e);
-        }}");
-
-            return codeToCompile;
-        }
-
         /// <summary>
         /// Modifies snippet to return HttpRequestMessage object so that we can extract the generated URL
         /// </summary>
@@ -204,6 +189,11 @@ public class GraphSDKTest
 
         return {resultVariable};");
 
+            var intendedClosingStatement = codeSnippet.LastIndexOf($"{resultVariable};", StringComparison.OrdinalIgnoreCase);
+            // Semi-Colon closing the snippet is at LastIndexOf the return variable + Length of resultVariable + 1
+            var closingSemiColonIndex = intendedClosingStatement + resultVariable.Length + 1;
+            // Remove all text from intended closing statement to the end. 
+            codeSnippet = codeSnippet.Remove(closingSemiColonIndex);
             return codeSnippet;
         }
         private static string GetResultVariable(string codeToCompile)
@@ -231,11 +221,11 @@ public class GraphSDKTest
         {
             var (codeToCompile, codeSnippetFormatted) = GetCodeToCompile(IdentifierReplacer.Instance.ReplaceIds(fileContent));
 
-            // have another tranformation to insert GetRequestMessage method
+            // have another transformation to insert GetRequestMessage method
+            codeToCompile = codeToCompile.Replace("GraphServiceClient( authProvider );", "GraphServiceClient( authProvider, httpProvider );");
             codeToCompile = codeToCompile.Replace("return null; //return-request-message", "//insert-code-here");
             codeToCompile = BaseTestRunner.ConcatBaseTemplateWithSnippet(ReturnHttpRequestMessage(codeSnippetFormatted), codeToCompile);
-
-            return (CaptureUriAndHeadersInException(codeToCompile), codeSnippetFormatted);
+            return (codeToCompile, codeSnippetFormatted);
         }
 
         /// <summary>

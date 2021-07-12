@@ -1,6 +1,4 @@
-﻿using System;
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 using TestsCommon;
 
@@ -63,14 +61,6 @@ var ev@ent = await graphClient.Groups[\""8730b5a6-eca3-400d-9011-1f4202418218\""
         [TestCase("@event", VerbatimIdentifer, TestName = "@event")]
         [TestCase("@_event", VerbatimIdentifierWithUnderScore, TestName = "@_event")]
         [TestCase("_event", UnderScoreIdentifier, TestName = "_event")]
-        public void ShouldCaptureUriAndHeadersInException(string variableName, string testSnippet)
-        {
-            Assert.DoesNotThrow(() => CSharpTestRunner.CaptureUriAndHeadersInException(testSnippet));
-        }
-
-        [TestCase("@event", VerbatimIdentifer, TestName = "@event")]
-        [TestCase("@_event", VerbatimIdentifierWithUnderScore, TestName = "@_event")]
-        [TestCase("_event", UnderScoreIdentifier, TestName = "_event")]
         public void ShouldReturnHttpRequestMessage(string variableName, string testSnippet)
         {
             Assert.DoesNotThrow(() => CSharpTestRunner.ReturnHttpRequestMessage(testSnippet));
@@ -81,12 +71,5 @@ var ev@ent = await graphClient.Groups[\""8730b5a6-eca3-400d-9011-1f4202418218\""
         {
             Assert.Throws<AssertionException>(() => CSharpTestRunner.ReturnHttpRequestMessage(testSnippet));
         }
-
-        [TestCase("ev@ent", IncorrectVerbatimIdentifier, TestName = "ev@ent", Description = "Incorrect Verbatim Identifier")]
-        public void ShouldFailWhenCapturingUriWithIncorrectSnippet(string variableName, string testSnippet)
-        {
-            Assert.Throws<AssertionException>(() => CSharpTestRunner.CaptureUriAndHeadersInException(testSnippet));
-        }
-
     }
 }
