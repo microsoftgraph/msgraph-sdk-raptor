@@ -21,7 +21,7 @@ variables:
 steps:
 - template: common-templates/checkout.yml
 - template: common-templates/transform-app-settings.yml
-- template: compile-run-tests-vstest-template.yml
+- template: compile-run-tests-template.yml
   parameters:
     projectFileName: CsharpV1ExecutionTests
     runName: 'V1 C# Snippet Execution Tests $(testRunTitle)'
