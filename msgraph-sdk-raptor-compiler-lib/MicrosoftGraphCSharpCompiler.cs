@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using System.Security;
 using System.Text.Json;
 using System.Collections.Concurrent;
+using System.Net.Http.Headers;
 
 namespace MsGraphSDKSnippetsCompiler
 {
@@ -31,19 +32,33 @@ namespace MsGraphSDKSnippetsCompiler
     {
         private readonly string _markdownFileName;
         private readonly string _dllPath;
+        private readonly RaptorConfig _config;
+        private readonly IPublicClientApplication _publicClientApplication;
+        private readonly IConfidentialClientApplication _confidentialClientApp;
 
         /// for hiding bearer token
         private const string AuthHeaderPattern = "Authorization: Bearer .*";
         private const string AuthHeaderReplacement = "Authorization: Bearer <token>";
         private static readonly Regex AuthHeaderRegex = new Regex(AuthHeaderPattern, RegexOptions.Compiled);
 
-        // token cache
-        private static readonly object tokenLock = new object();
-        private static ConcurrentDictionary<string, string> tokenCache = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, IAccount> TokenCache = new();
 
         private const string DefaultAuthScope = "https://graph.microsoft.com/.default";
 
-        public MicrosoftGraphCSharpCompiler(string markdownFileName, string dllPath)
+        public MicrosoftGraphCSharpCompiler(string markdownFileName,
+            string dllPath,
+            RaptorConfig config,
+            IPublicClientApplication publicClientApplication,
+            IConfidentialClientApplication confidentialClientApp)
+        {
+            _markdownFileName = markdownFileName;
+            _dllPath = dllPath;
+            _config = config;
+            _publicClientApplication = publicClientApplication;
+            _confidentialClientApp = confidentialClientApp;
+        }
+        public MicrosoftGraphCSharpCompiler(string markdownFileName,
+            string dllPath)
         {
             _markdownFileName = markdownFileName;
             _dllPath = dllPath;
@@ -53,6 +68,7 @@ namespace MsGraphSDKSnippetsCompiler
         ///     Returns CompilationResultsModel which has the results status and the compilation diagnostics.
         /// </summary>
         /// <param name="codeSnippet">The code snippet to be compiled.</param>
+        /// <param name="version"></param>
         /// <returns>CompilationResultsModel</returns>
         private (CompilationResultsModel, Assembly) CompileSnippetAndGetAssembly(string codeSnippet, Versions version)
         {
@@ -132,9 +148,6 @@ namespace MsGraphSDKSnippetsCompiler
                 try
                 {
                     var requiresDelegatedPermissions = RequiresDelegatedPermissions(codeSnippet);
-                    var config = AppSettings.Config();
-                    var clientId = config.GetNonEmptyValue("ClientID");
-
                     dynamic instance = assembly.CreateInstance("GraphSDKTest");
                     IAuthenticationProvider authProvider;
 
@@ -143,27 +156,15 @@ namespace MsGraphSDKSnippetsCompiler
                         // delegated permissions
                         using var httpRequestMessage = instance.GetRequestMessage(null);
                         var scopes = await GetScopes(httpRequestMessage);
-                        var authority = config.GetNonEmptyValue("Authority");
-                        var username = config.GetNonEmptyValue("Username");
-                        var password = config.GetNonEmptyValue("Password");
-
                         authProvider = new DelegateAuthenticationProvider(async request =>
                         {
-                            var token = await GetATokenForGraph(clientId, authority, username, password, scopes);
-                            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                            var token = await GetATokenForGraph(scopes);
+                            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         });
                     }
                     else
                     {
-                        // application permissions
-                        var tenantId = config.GetNonEmptyValue("TenantID");
-                        var clientSecret = config.GetNonEmptyValue("ClientSecret");
-                        IConfidentialClientApplication confidentialClientApp = ConfidentialClientApplicationBuilder
-                            .Create(clientId)
-                            .WithTenantId(tenantId)
-                            .WithClientSecret(clientSecret)
-                            .Build();
-                        authProvider = new ClientCredentialProvider(confidentialClientApp, DefaultAuthScope);
+                        authProvider = new ClientCredentialProvider(_confidentialClientApp, DefaultAuthScope);
                     }
                     // Pass custom http provider to provide interception and logging
                     await (instance.Main(authProvider, new CustomHttpProvider()) as Task);
@@ -173,7 +174,7 @@ namespace MsGraphSDKSnippetsCompiler
                 {
                     var innerExceptionMessage = e.InnerException?.Message ?? string.Empty;
                     exceptionMessage = e.Message + Environment.NewLine + innerExceptionMessage;
-                    if (!bool.Parse(AppSettings.Config().GetSection("IsLocalRun").Value))
+                    if (!_config.IsLocalRun)
                     {
                         exceptionMessage = AuthHeaderRegex.Replace(exceptionMessage, AuthHeaderReplacement);
                     }
@@ -184,7 +185,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        /// Calls DevX Api to get required premissions
+        /// Calls DevX Api to get required permissions
         /// </summary>
         /// <param name="httpRequestMessage"></param>
         /// <returns></returns>
@@ -225,34 +226,35 @@ namespace MsGraphSDKSnippetsCompiler
         /// <summary>
         /// Acquires a token for given context
         /// </summary>
-        /// <param name="clientId">Client ID of the application</param>
-        /// <param name="authority">token authority, such as: https://login.microsoftonline.com/contoso.onmicrosoft.com</param>
-        /// <param name="username">username of the user for which the token is requested</param>
-        /// <param name="password">password of the user for which the token is requested</param>
         /// <param name="scopes">requested scopes in the token</param>
         /// <returns>token for the given context</returns>
-        static async Task<string> GetATokenForGraph(string clientId, string authority, string username, string password, string[] scopes)
+        private async Task<string> GetATokenForGraph(string[] scopes)
         {
-            var scopesSorted = scopes.ToList();
-            scopesSorted.Sort();
-            var tokenKey = string.Join("-", scopesSorted);
-            if (tokenCache.ContainsKey(tokenKey))
+            IAccount account = null;
+            if (TokenCache.ContainsKey(_config.Username))
             {
-                return tokenCache[tokenKey];
+                account = TokenCache[_config.Username];
             }
-
-            var app = PublicClientApplicationBuilder.Create(clientId).WithAuthority(authority).Build();
-
             using var securePassword = new SecureString();
-
             // convert plain password into a secure string.
-            password.ToList().ForEach(c => securePassword.AppendChar(c));
+            _config.Password.ToList().ForEach(c => securePassword.AppendChar(c));
 
             try
             {
-                var result = await  app.AcquireTokenByUsernamePassword(scopes, username, securePassword).ExecuteAsync();
-                tokenCache[tokenKey] = result.AccessToken;
-                return result.AccessToken;
+                AuthenticationResult authResult;
+                if (account == null)
+                {
+                    authResult = await _publicClientApplication
+                        .AcquireTokenByUsernamePassword(scopes, _config.Username, securePassword)
+                        .ExecuteAsync();
+                }
+                else
+                {
+                    authResult = await _publicClientApplication.AcquireTokenSilent(scopes, account).ExecuteAsync();
+                }
+
+                TokenCache[_config.Username] = authResult.Account;
+                return authResult.AccessToken;
             }
             catch (Exception e)
             {
@@ -266,7 +268,7 @@ namespace MsGraphSDKSnippetsCompiler
         /// <summary>
         ///     Gets the result of the Compilation.Emit method.
         /// </summary>
-        /// <param name="compilation">Immutable respresentation of a single invocation of the compiler</param>
+        /// <param name="compilation">Immutable representation of a single invocation of the compiler</param>
         private (EmitResult, Assembly) GetEmitResult(CSharpCompilation compilation)
         {
             Assembly assembly = null;
@@ -283,7 +285,7 @@ namespace MsGraphSDKSnippetsCompiler
         }
 
         /// <summary>
-        ///     Checks whether the EmitResult is successfull and returns an instance of CompilationResultsModel.
+        ///     Checks whether the EmitResult is successful and returns an instance of CompilationResultsModel.
         /// </summary>
         /// <param name="emitResult">The result of the Compilation.Emit method.</param>
         private CompilationResultsModel GetCompilationResults(EmitResult emitResult)
@@ -305,7 +307,7 @@ namespace MsGraphSDKSnippetsCompiler
         {
             // TODO: https://github.com/microsoftgraph/msgraph-sdk-raptor/issues/164
             const string graphClient = "graphClient.";
-            var apiPathStart = codeSnippet.IndexOf(graphClient) + graphClient.Length;
+            var apiPathStart = codeSnippet.IndexOf(graphClient, StringComparison.Ordinal) + graphClient.Length;
             var apiPath = codeSnippet[apiPathStart..];
 
             const RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline;

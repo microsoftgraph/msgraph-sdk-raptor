@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 
 namespace TestsCommon
 {
@@ -113,7 +114,10 @@ public class GraphSDKTest
         /// 5. It uses the compiled binary to make a request to the demo tenant and reports error if there's a service exception i.e 4XX or 5xx response
         /// </summary>
         /// <param name="executionTestData">Test data containing information such as snippet file name</param>
-        public async static Task Execute(ExecutionTestData executionTestData)
+        /// <param name="config"></param>
+        /// <param name="publicClientApplication"></param>
+        /// <param name="confidentialClientApplication"></param>
+        public static async Task Execute(ExecutionTestData executionTestData, RaptorConfig config, IPublicClientApplication publicClientApplication, IConfidentialClientApplication confidentialClientApplication)
         {
             if (executionTestData == null)
             {
@@ -125,8 +129,10 @@ public class GraphSDKTest
             var (codeToCompile, codeSnippetFormatted) = GetCodeToExecute(executionTestData.FileContent);
 
             // Compile Code
-            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath);
-            var executionResultsModel = await microsoftGraphCSharpCompiler.ExecuteSnippet(codeToCompile, testData.Version).ConfigureAwait(false);
+            var microsoftGraphCSharpCompiler = new MicrosoftGraphCSharpCompiler(testData.FileName, testData.DllPath, config, publicClientApplication, confidentialClientApplication);
+            var executionResultsModel = await microsoftGraphCSharpCompiler
+                .ExecuteSnippet(codeToCompile, testData.Version)
+                .ConfigureAwait(false);
             var compilationOutputMessage = new CompilationOutputMessage(
                 executionResultsModel.CompilationResult,
                 codeToCompile,
