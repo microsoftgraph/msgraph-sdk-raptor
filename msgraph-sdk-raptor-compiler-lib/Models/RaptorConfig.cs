@@ -13,7 +13,6 @@ namespace MsGraphSDKSnippetsCompiler.Models
             // application permissions
             TenantID = config.GetNonEmptyValue(nameof(TenantID));
             ClientSecret = config.GetNonEmptyValue(nameof(ClientSecret));
-            CertificateThumbprint = config.GetNonEmptyValue(nameof(CertificateThumbprint));
             DocsRepoCheckoutDirectory = config.GetNonEmptyValue(nameof(DocsRepoCheckoutDirectory));
             RaptorStorageConnectionString = config.GetNonEmptyValue(nameof(RaptorStorageConnectionString));
             SASUrl = config.GetNonEmptyValue(nameof(SASUrl));
