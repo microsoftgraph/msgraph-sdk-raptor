@@ -203,7 +203,7 @@ namespace TestsCommon
 
                 { "get-endpoints-csharp-Beta-compiles", new KnownIssue(SnippetGeneration, SameBlockNames) },
 
-                { "delete-userflowlanguagepage-csharp-{version}-compiles", new KnownIssue(SDK, StreamRequestDoesNotSupportDelete) },
+                {$"delete-userflowlanguagepage-csharp-{version}-compiles", new KnownIssue(SDK, StreamRequestDoesNotSupportDelete) },
                 {$"unfollow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 {$"follow-site-csharp-{version}-compiles", new KnownIssue(SDK, "SDK doesn't convert actions defined on collections to methods. https://github.com/microsoftgraph/MSGraph-SDK-Code-Generator/issues/250") },
                 { "get-android-count-csharp-V1-compiles", new KnownIssue(SDK, CountIsNotSupported) },
