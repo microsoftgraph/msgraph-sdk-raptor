@@ -21,7 +21,7 @@ namespace TestsCommon
         private const string SDKShellTemplate = @"using System;
 using Microsoft.Graph;
 using MsGraphSDKSnippetsCompiler;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -298,7 +298,6 @@ public class GraphSDKTest
   <Namespace>DayOfWeek = Microsoft.Graph.DayOfWeek</Namespace>
   <Namespace>KeyValuePair = Microsoft.Graph.KeyValuePair</Namespace>
   <Namespace>Microsoft.Graph</Namespace>
-  <Namespace>Newtonsoft.Json.Linq</Namespace>
   <Namespace>System.Threading.Tasks</Namespace>
   <Namespace>TimeOfDay = Microsoft.Graph.TimeOfDay</Namespace>
 </Query>

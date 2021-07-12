@@ -17,4 +17,3 @@ steps:
   - template: regular-tests.yml
   - ${{ if eq(parameters.shouldRunKnownFailures, true) }}:
     - template: known-failure-tests.yml
-  - template: generate-type-summary.yml
