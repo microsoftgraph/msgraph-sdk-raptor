@@ -12,8 +12,7 @@ resources:
      ref: main
 
 pool:
-  vmImage: 'windows-latest'
-
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
