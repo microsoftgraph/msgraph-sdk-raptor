@@ -144,48 +144,6 @@ $plannerBucket = reqDelegated -url "planner/plans/$($plannerPlan.id)/buckets" |
 $plannerBucket.id
 $identifiers.plannerBucket._value=$plannerBucket.Id
 
-$driveItem = reqDelegated -url "me/drive/root/children?`$filter=name eq 'Contoso Purchasing Data - Q1.xlsx'" |
-    Select-Object -First 1
-$driveItem.id
-$identifiers.driveItem._value = $driveItem.id
-
-$driveItemPermission = reqDelegated -url "me/drive/items/$($driveItem.id)/permissions" |
-    Select-Object -First 1
-$driveItemPermission.id
-$identifiers.driveItem.permission._value = $driveItemPermission.id
-
-$driveItemThumbnail = reqDelegated -url "me/drive/items/$($driveItem.id)/thumbnails" |
-    Select-Object -First 1
-$driveItemThumbnail.id
-$identifiers.driveItem.thumbnailSet._value = $driveItemThumbnail.id
-
-$driveItemVersion = reqDelegated -url "me/drive/items/$($driveItem.id)/versions" |
-    Select-Object -First 1
-$driveItemVersion.id
-$identifiers.driveItem.driveItemVersion._value = $driveItemVersion.id
-
-$driveItemWorkbookTable = reqDelegated -url "me/drive/items/$($driveItem.id)/workbook/tables" |
-    Where-Object { $_.name -eq "Table1" } |
-    Select-Object -First 1
-$driveItemWorkbookTable.id
-$identifiers.driveItem.workbookTable._value = $driveItemWorkbookTable.id
-
-$tableColumn = reqDelegated -url "me/drive/items/$($driveItem.id)/workbook/tables/$($driveItemWorkbookTable.id)/columns" |
-    Select-Object -First 1
-$tableColumn.id
-$identifiers.driveItem.workbookTable.workbookTableColumn._value = $tableColumn.id
-
-$tableRow = reqDelegated -url "me/drive/items/$($driveItem.id)/workbook/tables/$($driveItemWorkbookTable.id)/rows" |
-    Select-Object -First 1
-$tableRow.'@odata.id'
-$identifiers.driveItem.workbookTable.workbookTableRow._value = $tableRow.'@odata.id'
-
-$worksheet = reqDelegated -url "me/drive/items/$($driveItem.id)/workbook/worksheets" |
-    Where-Object { $_.name -eq "Sheet1" } |
-    Select-Object -First 1
-$worksheet.id
-$identifiers.driveItem.workbookWorksheet._value = $worksheet.id
-
 # tenant agnostic data
 $printEndpointId = "mpsdiscovery"
 $printEndpointId

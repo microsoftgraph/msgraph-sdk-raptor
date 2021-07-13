@@ -115,7 +115,7 @@ function Get-Token
                 Where-Object { $_.Contains("Read") -and !$_.Contains("Write") } | # same selection as the read-only permissions for the app
                 Join-String -Separator " "
             }
-            else {
+            if  (!$joinedScopeString) {
                 $joinedScopeString = $scopes.value |
                 Join-String -Separator " "
             }
@@ -172,7 +172,8 @@ function Request-DelegatedResource
 
     $jsonBody = $Body | ConvertTo-Json -Depth 3
     $response = Invoke-MgGraphRequest -Method $Method -Headers $Headers -Uri "https://graph.microsoft.com/$Version/$Uri" -Body $jsonBody -OutputType PSObject -ResponseHeadersVariable "respHeaderVar"
-    return $response.value ?? $response ?? $respHeaderVar
+    $serResponse = $response.value -is [System.Array] ? $response.value : $response
+    return $serResponse ?? $respHeaderVar
 }
 
 Function Get-RandomAlphanumericString {
